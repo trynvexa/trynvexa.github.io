@@ -7,33 +7,29 @@
   background-color: #e2faff;
 }
 
-section{
+section {
   padding-top: 5rem;
 }
 
-svg{
-  display:block;
+svg {
+  display: block;
 }
 
-footer{
-  background:#0d6efd;
-  color:white;
-  text-align:center;
-  padding:20px 0;
+footer {
+  background: skyblue;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
 }
 
-footer p{
-  margin:0;
+footer p {
+  margin: 0;
 }
 
 .gallery-img {
   width: 100%;
-  
 }
 
 #gallery .row > * {
   padding: 0;
 }
-
-
-
