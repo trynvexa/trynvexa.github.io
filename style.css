@@ -1,0 +1,30 @@
+.jumbotron {
+  padding-top: 6rem;
+  background-color: skyblue;
+}
+
+#project {
+  background-color: #e2faff;
+}
+
+section{
+  padding-top: 5rem;
+}
+
+svg{
+  display:block;
+}
+
+footer{
+  background:#0d6efd;
+  color:white;
+  text-align:center;
+  padding:20px 0;
+}
+
+footer p{
+  margin:0;
+}
+
+
+
