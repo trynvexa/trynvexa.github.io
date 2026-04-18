@@ -26,5 +26,14 @@ footer p{
   margin:0;
 }
 
+.gallery-img {
+  width: 100%;
+  
+}
+
+#gallery .row > * {
+  padding: 0;
+}
+
 
 
