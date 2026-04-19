@@ -114,21 +114,24 @@ footer p {
 
 .keyboard-img {
   position: absolute;
-  top: 52%;
   left: 50%;
-  transform: translate3d(-50%, -52%, 80px);
-  max-width: 350px;
-  transition: 0.8s;
+  top: 50%;
+  width: 85%;
+  max-width: 320px;
+  height: auto;
+  object-fit: contain;
+  transform: translate(-50%, -50%) translateZ(80px);
+  transition: transform 0.8s ease;
   z-index: 10;
 }
 
 .keyboard-box:hover .keyboard-img {
-  transform: translate3d(-50%, -52%, 100px) rotate(10deg) scale(1.1);
+  transform: translate(-50%, -50%) translateZ(100px) rotate(10deg) scale(1.08);
 }
 
-/* efek saat disentuh di HP */
+/* Saat disentuh di HP */
 .keyboard-box:active .keyboard-img {
-  transform: translate3d(-50%, -52%, 100px) rotate(12deg) scale(1.1);
+  transform: translate(-50%, -50%) translateZ(100px) rotate(12deg) scale(1.08);
 }
 
 /* MOBILE MODE */
@@ -137,43 +140,69 @@ footer p {
     height: 420px;
   }
 
-  /* hover otomatis aktif di HP */
   .keyboard-box::before {
     opacity: 0.15;
   }
 
   .keyboard-box::after {
     opacity: 0.15;
-    font-size: 3em;
+    font-size: 2.7em;
     top: 320px;
   }
 
   .keyboard-name {
-    top: 20px;
+    top: 18px;
     opacity: 1;
     font-size: 1.4em;
   }
 
   .keyboard-detail-button {
     opacity: 1;
-    bottom: 20px;
+    bottom: 18px;
     width: 80%;
   }
 
   .keyboard-img {
-    max-width: 250px;
-    transform: translate3d(-50%, -52%, 90px);
-    animation: floatKeyboard 2s ease-in-out infinite;
+    top: 47%;
+    width: 78%;
+    max-width: 240px;
+    transform: translate(-50%, -50%) translateZ(90px);
+    animation: floatKeyboard 2.2s ease-in-out infinite;
   }
 }
 
-/* Animasi Gerak */
+/* HP kecil */
+@media (max-width: 576px) {
+  .keyboard-box {
+    height: 390px;
+  }
+
+  .keyboard-box::after {
+    font-size: 2.1em;
+    top: 295px;
+  }
+
+  .keyboard-name {
+    font-size: 1.15em;
+  }
+
+  .keyboard-img {
+    top: 46%;
+    max-width: 210px;
+  }
+
+  .keyboard-detail-button {
+    width: 85%;
+  }
+}
+
+/* Animasi */
 @keyframes floatKeyboard {
   0%,
   100% {
-    transform: translate3d(-50%, -52%, 90px);
+    transform: translate(-50%, -50%) translateZ(90px);
   }
   50% {
-    transform: translate3d(-50%, -58%, 100px);
+    transform: translate(-50%, -56%) translateZ(105px);
   }
 }
