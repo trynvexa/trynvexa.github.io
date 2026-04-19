@@ -147,6 +147,42 @@
       </div>
     </section>
 
+    <section id="my-keyboard">
+      <div class="container" data-aos="zoom-in" data-aos-offset="200" data-aos-delay="100" data-aos-duration="1000">
+        <div class="row text-center mb-3">
+          <div class="col">
+            <h2>My Keyboard</h2>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="keyboard-box p-3 shadow-sm rounded">
+              <h4 class="keyboard-name">Keycap Layout Render</h4>
+              <img src="img/keyboard/1.png" alt="keycap" class="keyboard-img img-fluid" />
+              <a href="#" class="btn btn-light keyboard-detail-button mt-2">Show Details</a>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="keyboard-box p-3 shadow-sm rounded">
+              <h4 class="keyboard-name">RGB Acrylic</h4>
+              <img src="img/keyboard/2.png" alt="RGB Acrylic" class="keyboard-img img-fluid" />
+              <a href="#" class="btn btn-light keyboard-detail-button mt-2">Show Details</a>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="keyboard-box p-3 shadow-sm rounded">
+              <h4 class="keyboard-name">RGB Gaming Keyboard</h4>
+              <img src="img/keyboard/3.png" alt="RGB Gaming Keyboard" class="keyboard-img img-fluid" />
+              <a href="#" class="btn btn-light keyboard-detail-button mt-2">Show Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Contact -->
     <section id="contact" class="pt-5 pb-0">
       <div class="container" data-aos="fade-up" data-aos-offset="200" data-aos-delay="100" data-aos-duration="1000">
@@ -223,7 +259,7 @@
       gsap.to(".fs-5", {
         duration: 4,
         delay: 1.5,
-        text: "Saya adalah mahasiswa Teknik Rekayasa Perangkat Lunak (RPL) yang fokus pada pengembangan Front-End dan pembuatan website modern, responsif, serta interaktif.",
+        text: "Saya adalah pelajar Teknik Rekayasa Perangkat Lunak (RPL) yang fokus pada pengembangan Front-End dan pembuatan website modern, responsif, serta interaktif.",
       });
 
       const cardTexts = document.querySelectorAll(".card-text");
@@ -282,6 +318,35 @@
             btnKirim.classList.remove("d-none");
           });
       });
+    </script>
+
+    <script type="text/javascript" src="js/vanilla-tilt.min.js"></script>
+    <script type="text/javascript">
+      VanillaTilt.init(document.querySelectorAll(".keyboard-box"), {
+        max: 35,
+        speed: 400,
+      });
+    </script>
+
+    <script>
+      if (window.innerWidth <= 768) {
+        const keyboards = document.querySelectorAll(".keyboard-img");
+
+        keyboards.forEach((img) => {
+          img.addEventListener("touchmove", function (e) {
+            const touch = e.touches[0];
+
+            let moveX = touch.clientX / 20;
+            let moveY = touch.clientY / 20;
+
+            img.style.transform = `translate(-50%, -52%) rotateY(${moveX}deg) rotateX(${-moveY}deg) scale(1.1)`;
+          });
+
+          img.addEventListener("touchend", function () {
+            img.style.transform = "translate(-50%, -52%) rotateY(0deg) rotateX(0deg) scale(1)";
+          });
+        });
+      }
     </script>
   </body>
 </html>
