@@ -3,22 +3,20 @@
   background-color: skyblue;
 }
 
-.profile-img{
+.profile-img {
   width: 240px;
   height: 280px;
-
   object-fit: cover;
   border-radius: 50%;
-
   border: 5px solid white;
   transform: translateY(30px);
-
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-
   margin-bottom: 40px;
 }
 
-.social-icons{
+/* ================= SOCIAL ICONS ================= */
+
+.social-icons {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,9 +24,8 @@
   margin-top: 35px;
 }
 
-.social-icons a{
+.social-icons a {
   position: relative;
-
   width: 68px;
   height: 68px;
 
@@ -37,105 +34,61 @@
   align-items: center;
 
   border-radius: 50%;
-
   text-decoration: none;
 
   color: white;
   font-size: 1.7rem;
 
   background: rgba(255,255,255,0.08);
-
   border: 1px solid rgba(255,255,255,0.15);
 
   backdrop-filter: blur(15px);
 
   overflow: hidden;
 
-  transition: all 0.4s ease;
+  transition: 0.25s ease;
 
-  box-shadow:
-    0 10px 25px rgba(0,0,0,0.2),
-    inset 0 0 15px rgba(255,255,255,0.08);
-
-  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* delay animasi */
-.social-icons a:nth-child(2){
-  animation-delay: 0.5s;
-}
-
-.social-icons a:nth-child(3){
-  animation-delay: 1s;
-}
-
-/* cahaya muter */
-.social-icons a::before{
+/* efek cahaya */
+.social-icons a::before {
   content: "";
-
   position: absolute;
-
   width: 160%;
   height: 160%;
-
   background: linear-gradient(
     45deg,
     transparent,
     rgba(255,255,255,0.4),
     transparent
   );
-
   transform: rotate(45deg);
-
   top: -130%;
   left: -130%;
-
   transition: 0.6s;
 }
 
-.social-icons a:hover::before{
+.social-icons a:hover::before {
   top: 100%;
   left: 100%;
 }
 
-/* hover premium */
-.social-icons a:hover{
-  transform: translateY(-12px) scale(1.12);
-
-  background: linear-gradient(
-    135deg,
-    #ffffff,
-    #dff6ff
-  );
-
+/* hover desktop */
+.social-icons a:hover {
+  transform: scale(1.08);
+  background: #ffffff;
   color: #0dcaf0;
-
-  box-shadow:
-    0 15px 35px rgba(255,255,255,0.35),
-    0 0 30px rgba(255,255,255,0.45),
-    0 0 60px rgba(13,202,240,0.35);
+  box-shadow: 0 10px 25px rgba(13,202,240,0.25);
 }
 
-/* floating */
-@keyframes float{
-  0%{
-    transform: translateY(0px);
-  }
-
-  50%{
-    transform: translateY(-8px);
-  }
-
-  100%{
-    transform: translateY(0px);
-  }
-}
+/* ================= CARD ================= */
 
 .card {
   border: none;
   border-radius: 20px;
   overflow: hidden;
-  transition: 0.4s ease;
+  transition: 0.3s ease;
   height: 100%;
   color: #555;
   font-size: 15px;
@@ -144,7 +97,7 @@
 }
 
 .card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
@@ -166,18 +119,22 @@
   line-height: 1.7;
 }
 
+/* badge */
 .badge {
   margin-top: 10px;
   font-size: 13px;
   border-radius: 50px;
   padding: 10px 18px;
-} 
+}
 
+/* lead text */
 .lead {
   max-width: 700px;
   margin: auto;
   line-height: 1.8;
 }
+
+/* ================= SECTION ================= */
 
 #project {
   background-color: #e2faff;
@@ -191,6 +148,8 @@ svg {
   display: block;
 }
 
+/* ================= FOOTER ================= */
+
 footer {
   background: skyblue;
   color: white;
@@ -202,6 +161,8 @@ footer p {
   margin: 0;
 }
 
+/* ================= GALLERY ================= */
+
 .gallery-img {
   width: 100%;
 }
@@ -210,175 +171,66 @@ footer p {
   padding: 0;
 }
 
-/* My Keyboard Section */
-.keyboard-box {
-  position: relative;
-  background-color: skyblue;
-  border-radius: 10px;
-  height: 500px;
-  transform-style: preserve-3d;
-}
+/* ================= MOBILE OPTIMIZATION ================= */
 
-.keyboard-box::before {
-  content: "MY";
-  position: absolute;
-  color: white;
-  font-size: 6em;
-  font-weight: bold;
-  font-style: italic;
-  top: 30px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.keyboard-box:hover::after {
-  left: 50%;
-  transform: translate(-50%, 0);
-  opacity: 0.2;
-}
-
-.keyboard-box::after {
-  content: "KEYBOARD";
-  position: absolute;
-  color: white;
-  font-size: 4.3em;
-  font-weight: bold;
-  font-style: italic;
-  top: 350px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.keyboard-box:hover::before {
-  opacity: 0.2;
-}
-
-.keyboard-name {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  color: white;
-  text-align: center;
-  font-size: 2em;
-  transform: translate3d(0, 0, 50px);
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.keyboard-box:hover .keyboard-name {
-  top: 20px;
-  opacity: 1;
-}
-
-.keyboard-detail-button {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate3d(-50%, 0, 100px);
-  opacity: 0;
-  transition: 0.5s;
-}
-
-.keyboard-box:hover .keyboard-detail-button {
-  opacity: 1;
-  bottom: 20px;
-}
-
-.keyboard-img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 85%;
-  max-width: 320px;
-  height: auto;
-  object-fit: contain;
-  transform: translate(-50%, -50%) translateZ(80px);
-  transition: transform 0.8s ease;
-  z-index: 10;
-}
-
-.keyboard-box:hover .keyboard-img {
-  transform: translate(-50%, -50%) translateZ(100px) rotate(10deg) scale(1.08);
-}
-
-/* Saat disentuh di HP */
-.keyboard-box:active .keyboard-img {
-  transform: translate(-50%, -50%) translateZ(100px) rotate(12deg) scale(1.08);
-}
-
-/* MOBILE MODE */
 @media (max-width: 768px) {
-  .keyboard-box {
-    height: 420px;
+
+  .social-icons a {
+    backdrop-filter: none;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
   }
 
-  .keyboard-box::before {
-    opacity: 0.15;
+  .social-icons a:hover {
+    transform: scale(1.05);
   }
 
-  .keyboard-box::after {
-    opacity: 0.15;
-    font-size: 2.7em;
-    top: 320px;
+  .social-icons a:active {
+    transform: scale(0.95);
   }
 
-  .keyboard-name {
-    top: 18px;
-    opacity: 1;
-    font-size: 1.4em;
-  }
-
-  .keyboard-detail-button {
-    opacity: 1;
-    bottom: 18px;
-    width: 80%;
-  }
-
-  .keyboard-img {
-    top: 47%;
-    width: 78%;
-    max-width: 240px;
-    transform: translate(-50%, -50%) translateZ(90px);
-    animation: floatKeyboard 2.2s ease-in-out infinite;
+  .card:hover {
+    transform: translateY(-5px);
   }
 }
 
-/* HP kecil */
-@media (max-width: 576px) {
-  .keyboard-box {
-    height: 390px;
-  }
+/* ================= PERFORMANCE FIX ================= */
 
-  .keyboard-box::after {
-    font-size: 2.1em;
-    top: 295px;
-  }
-
-  .keyboard-name {
-    font-size: 1.15em;
-  }
-
-  .keyboard-img {
-    top: 46%;
-    max-width: 210px;
-  }
-
-  .keyboard-detail-button {
-    width: 85%;
-  }
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Animasi */
-@keyframes floatKeyboard {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) translateZ(90px);
+.social-icons a {
+  animation: floatIcon 3.5s ease-in-out infinite;
+}
+
+/* delay biar ga bareng */
+.social-icons a:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.social-icons a:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+/* animasi floating ringan */
+@keyframes floatIcon {
+  0% {
+    transform: translateY(0px);
   }
   50% {
-    transform: translate(-50%, -56%) translateZ(105px);
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  .social-icons a {
+    animation: floatIcon 4.5s ease-in-out infinite;
+  }
+
+  .social-icons a:hover {
+    transform: scale(1.05);
   }
 }
