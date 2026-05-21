@@ -696,6 +696,21 @@ html {
     right: 20px;
   }
 }
+
+/* HP tidak bisa fullscreen */
+@media (max-width: 768px) {
+  .gallery-card {
+    pointer-events: none;
+  }
+
+  .gallery-overlay {
+    display: none;
+  }
+
+  .gallery-img {
+    cursor: default;
+  }
+}
 /* ================= MOBILE OPTIMIZATION ================= */
 
 @media (max-width: 768px) {
