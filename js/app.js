@@ -2651,7 +2651,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
             </h2>
             <p class="pr-p pr-rev" style="--d:.52" data-kt="p">Freelance, kolaborasi, atau sekadar bertukar pikiran seputar web dan desain antarmuka — semuanya terbuka. Ceritakan idemu, sekecil apa pun.</p>
             <div class="pr-cta pr-rev" style="--d:.64">
-              <a class="pr-mail wa-btn" href="https://wa.me/6282276536979?text=Halo%20Zikri,%20saya%20tertarik%20bekerja%20sama%20dengan%20Anda" target="_blank" rel="noopener noreferrer">
+              <a class="pr-mail wa-btn" href="https://wa.me/6281367381826?text=Halo%20Zikri,%20saya%20tertarik%20bekerja%20sama%20dengan%20Anda" target="_blank" rel="noopener noreferrer">
                 <span class="pr-mail-l"><small>RESPONS CEPAT</small><b>Chat Langsung via WhatsApp</b></span>
                 <span class="pr-mail-ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
               </a>
@@ -2747,13 +2747,13 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
 
                   <!-- Tombol Aksi Langsung -->
                   <div class="pass-actions">
-                    <a class="pass-act-btn wa" href="https://wa.me/6282276536979?text=Halo%20Zikri,%20saya%20tertarik%20bekerja%20sama%20dengan%20Anda" target="_blank" rel="noopener noreferrer">
+                    <a class="pass-act-btn wa" href="https://wa.me/6281367381826?text=Halo%20Zikri,%20saya%20tertarik%20bekerja%20sama%20dengan%20Anda" target="_blank" rel="noopener noreferrer">
                       <div class="act-btn-ic">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.93.55 3.73 1.5 5.26L2 22l4.89-1.46C8.36 21.48 10.12 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm4.95 13.92c-.22.62-1.28 1.18-1.78 1.25-.47.07-1.07.1-3.23-.79-2.61-1.07-4.27-3.74-4.4-3.92-.13-.17-1.06-1.41-1.06-2.69 0-1.28.67-1.91.91-2.17.24-.26.53-.33.71-.33.18 0 .36 0 .52.01.17.01.4.07.62.6.24.58.82 2 .89 2.15.07.15.11.33.02.51-.09.18-.13.3-.27.46-.13.17-.28.37-.4.5-.13.13-.27.28-.11.55.15.26.68 1.12 1.46 1.82 1 .89 1.84 1.17 2.11 1.3.26.13.42.11.58-.07.15-.18.66-.77.84-1.04.18-.26.35-.22.6-.13.24.09 1.55.73 1.82.86.26.13.44.2.51.31.07.11.07.64-.15 1.26z"/></svg>
                       </div>
                       <div class="act-btn-text">
                         <span class="act-btn-lbl">WhatsApp</span>
-                        <span class="act-btn-sub">+62 822-7653-6979</span>
+                        <span class="act-btn-sub">+62 813-6738-1826</span>
                       </div>
                       <span class="act-btn-arr">&#8599;</span>
                     </a>

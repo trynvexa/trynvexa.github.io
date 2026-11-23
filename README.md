@@ -48,7 +48,7 @@
 
 ## 📬 Kontak
 
-- **WhatsApp**: [+62 822-7653-6979](https://wa.me/6282276536979)
+- **WhatsApp**: [+62 813-6738-1826](https://wa.me/6281367381826)
 - **Email**: [zikriganteng2023@gmail.com](mailto:zikriganteng2023@gmail.com)
 - **GitHub**: [@trynvexa](https://github.com/trynvexa)
 - **Instagram**: [@yo144484](https://www.instagram.com/yo144484/)
