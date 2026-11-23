@@ -29,9 +29,25 @@
 ├── index.html              # Markup HTML5 semantik & bersih
 ├── favicon.ico             # Ikon situs utama
 ├── css/
-│   └── style.css           # Sistem desain, layout responsif, tema & animasi 3D
+│   ├── base.css            # Variabel warna, reset, header dasar, panggung roda, & intro
+│   ├── layout.css          # Layout responsif, animasi karakter buddy, galeri Frame, & orbit Skill
+│   ├── pages.css           # Halaman detail Story, Music player, Proyek, & Kontak (3D Dev Pass)
+│   └── theme.css           # Tema Light/Dark, 3D Cardistry, background sutra, & optimasi mobile
 ├── js/
-│   └── app.js              # Mesin fisika kartu, buddy, i18n, audio player & halaman detail
+│   ├── intro.js            # Animasi layar pembuka & pelacakan mata SVG
+│   ├── theme.js            # Pengatur mode Terang / Gelap dengan localStorage
+│   ├── clock.js            # Jam real-time Medan (WIB / Asia-Jakarta)
+│   ├── mascot.js           # Pelacakan mata maskot header
+│   ├── buddy.js            # Fisika karakter duduk, lompat pindah huruf & reaksi kartu
+│   ├── i18n.js             # Mesin terjemahan instan 8 bahasa
+│   ├── skills.js           # Sistem orbit 15 teknologi & modal penjelasan
+│   ├── gallery.js          # Galeri Frame 3D Ring, Editorial Grid & Lightbox
+│   ├── music.js            # Pemutar piringan hitam MP3 & partikel debu kanvas
+│   ├── story.js            # Garis waktu benang merah (6 bab perjalanan)
+│   ├── contact.js          # Halaman Kontak Paper Riot, 3D Dev Pass & Quick Composer
+│   ├── projects.js         # Studi kasus proyek 3D, salin palet HEX & indeks semua proyek
+│   ├── carousel.js         # Mesin roda kartu radial, 3D Cardistry Deal/Flip & pecahan kaca
+│   └── background.js       # Latar belakang foto kartu blur (A) + gelombang sutra 3D (B)
 ├── assets/
 │   ├── images/             # Aset ilustrasi karakter, potret kartu, galeri & proyek (.webp / .jpg / .png)
 │   ├── icons/              # 15 ikon teknologi web & AI tools (.webp)
