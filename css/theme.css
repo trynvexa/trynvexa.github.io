@@ -79,14 +79,22 @@ html.home-enter .title .t1 i {
 @keyframes letterSilkIn {
   0% {
     opacity: 0;
-    transform: translateY(0.36em) scale(0.94);
-    filter: blur(3px);
+    transform: translate3d(0, 0.36em, 0) scale(0.94);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
+}
+
+/* Hardware Acceleration & Touch Fluidity on Desktop & Mobile */
+.stage {
+  touch-action: pan-y;
+}
+.card {
+  contain: layout style;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* 2. Tactile 3D Card Depth, Inner Photo Parallax & Soft Matte Sheen (Desktop) */
@@ -322,17 +330,17 @@ html.home-enter .title .t1 i {
 
   /* 5. Background Cinema Lebih Ringan & Hemat GPU di Layar HP */
   .bg-slide {
-    filter: blur(28px) saturate(1.38) contrast(1.08) !important;
+    filter: blur(22px) saturate(1.32) !important;
   }
   .bg-slide::after {
     display: none !important;
   }
   .bg-slide.on {
-    opacity: 0.44 !important;
+    opacity: 0.42 !important;
   }
   :root[data-theme="dark"] .bg-slide.on {
-    opacity: 0.52 !important;
-    filter: blur(30px) saturate(1.42) contrast(1.14) brightness(0.84) !important;
+    opacity: 0.5 !important;
+    filter: blur(22px) saturate(1.35) brightness(0.84) !important;
   }
 }
 
@@ -346,13 +354,13 @@ html.home-enter .title .t1 i {
 }
 .bg-cinema {
   position: absolute;
-  inset: -8%;
+  inset: -6%;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
-  will-change: transform;
-  transform: translate3d(calc(var(--px, 0) * -24px), calc(var(--py, 0) * -16px), 0);
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  contain: strict;
+  transform: translate3d(calc(var(--px, 0) * -18px), calc(var(--py, 0) * -12px), 0);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .bg-slide {
   position: absolute;
@@ -360,29 +368,28 @@ html.home-enter .title .t1 i {
   background-size: cover;
   background-position: 50% 35%;
   background-repeat: no-repeat;
-  filter: blur(26px) saturate(1.32);
+  filter: blur(22px) saturate(1.3);
   opacity: 0;
-  transform: scale(1.1);
-  transition:
-    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 4.2s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  transform: translate3d(0, 0, 0) scale(1.05);
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 .bg-slide::after {
   display: none;
 }
 .bg-slide.on {
   opacity: 0.4;
-  transform: scale(1.02);
 }
 :root[data-theme="dark"] .bg-slide.on {
   opacity: 0.48;
-  filter: blur(28px) saturate(1.36) brightness(0.84);
+  filter: blur(24px) saturate(1.34) brightness(0.84);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .bg-slide.on {
     opacity: 0.48;
-    filter: blur(28px) saturate(1.36) brightness(0.84);
+    filter: blur(24px) saturate(1.34) brightness(0.84);
   }
 }
 .bg-field {

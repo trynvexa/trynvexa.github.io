@@ -104,9 +104,7 @@
   cards.forEach(function(c){ c.insertAdjacentHTML('beforeend', CBACK_HTML); });
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) {
-    document.querySelectorAll('#warpdefs animate').forEach(function(a){ a.remove(); });
-  }
+  document.querySelectorAll('#warpdefs animate').forEach(function(a){ a.remove(); });
 
 
   // Industrial Gear Polygon Calculation
@@ -282,7 +280,7 @@
     }
   }
 
-  var farC = [], zC = [], activeC = -1, opC = [], lastPos = pos;
+  var farC = [], zC = [], activeC = -1, opC = [], tfC = [], backC = [], lastPos = pos;
   var tiltX = cards.map(function(){ return 0; }),
       tiltY = cards.map(function(){ return 0; }),
       tTiltX = cards.map(function(){ return 0; }),
@@ -390,7 +388,10 @@
       var totalY = (tiltY[i] || 0) + cardFlipY;
       var normY = ((totalY % 360) + 360) % 360;
       var isBack = normY > 90 && normY < 270;
-      c.classList.toggle('face-down', isBack);
+      if (isBack !== backC[i]) {
+        backC[i] = isBack;
+        c.classList.toggle('face-down', isBack);
+      }
       // Mirror horizontally when showing the back so the emblem isn't backwards, and keep front un-mirrored
       var renderY = isBack ? (totalY - 180) : totalY;
 
@@ -406,7 +407,11 @@
       var totalRot = d * step * fan + lean + orbitSpin;
       var totalScale = s * (E.on ? (0.84 + 0.16 * arr) * (0.94 + 0.06 * Math.min(1, fan)) : 1);
 
-      c.style.transform = 'rotate(' + totalRot.toFixed(2) + 'deg) translateY(' + totalYShift.toFixed(1) + 'px) scale(' + totalScale.toFixed(3) + ')' + (toss ? ' rotate(' + toss.toFixed(2) + 'deg)' : '') + tiltStr;
+      var nextTf = 'rotate(' + totalRot.toFixed(2) + 'deg) translateY(' + totalYShift.toFixed(1) + 'px) scale(' + totalScale.toFixed(3) + ')' + (toss ? ' rotate(' + toss.toFixed(2) + 'deg)' : '') + tiltStr;
+      if (nextTf !== tfC[i]) {
+        tfC[i] = nextTf;
+        c.style.transform = nextTf;
+      }
 
       // Kartu muncul mulus saat berputar
       var op = Math.max(0, Math.min(1, 1 - Math.max(0, absD - (isMob ? 1.4 : 1.5)) * (isMob ? 0.52 : 0.44)));
@@ -466,8 +471,8 @@
     afterSettle = cb || null;
     if (reduce) { lean = 0; setPos(t); if (afterSettle) { var f0 = afterSettle; afterSettle = null; f0(); } return; }
     var v = v0 || 0, lastT = performance.now();
-    // Stiffness ditingkatkan agar perputaran kartu bergerak jauh lebih cepat & responsif
-    var k = 0.00042, c = 1.82 * Math.sqrt(k);
+    // Stiffness & critical damping tuned for butter-smooth 60fps response on Desktop & Mobile
+    var k = 0.00048, c = 1.92 * Math.sqrt(k);
     stage.classList.add('moving');
     busy(true);
     function step(now) {
@@ -1004,42 +1009,53 @@
     fw.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + W + 'px;height:' + H + 'px;transform:scale(' + k + ');perspective:1200px';
     ['--w', '--m'].forEach(function(v){ var x = cs.getPropertyValue(v); if (x) fw.style.setProperty(v, x); });
     fxHost().appendChild(fw);
-    var cols = fxSmall ? 3 : 4, rows = fxSmall ? 5 : 6, V = [], x, y, i, j, polys = [], cx = W / 2, cy = H / 2, maxD = Math.hypot(cx, cy);
+    // Buat satu template clone ringan tanpa elemen tersembunyi (.cback, .gr, .gl, .ht)
+    var baseClone = c.cloneNode(true);
+    baseClone.setAttribute('aria-hidden', 'true');
+    baseClone.setAttribute('tabindex', '-1');
+    baseClone.removeAttribute('id');
+    baseClone.style.transform = 'none';
+    baseClone.style.transition = 'none';
+    [].forEach.call(baseClone.querySelectorAll('.cback, .gr, .gl, .ht'), function(n){ n.remove(); });
+    var cols = fxSmall ? 2 : 3, rows = fxSmall ? 3 : 4, V = [], x, y, i, j, polys = [], cx = W / 2, cy = H / 2, maxD = Math.hypot(cx, cy);
     for (y = 0; y <= rows; y++) { V[y] = []; for (x = 0; x <= cols; x++) V[y][x] = [
-      x / cols * 100 + (x === 0 || x === cols ? 0 : (Math.random() - .5) * 70 / cols),
-      y / rows * 100 + (y === 0 || y === rows ? 0 : (Math.random() - .5) * 70 / rows)]; }
+      x / cols * 100 + (x === 0 || x === cols ? 0 : (Math.random() - .5) * 65 / cols),
+      y / rows * 100 + (y === 0 || y === rows ? 0 : (Math.random() - .5) * 65 / rows)]; }
     for (j = 0; j < rows; j++) for (i = 0; i < cols; i++) {
       var p00 = V[j][i], p10 = V[j][i + 1], p11 = V[j + 1][i + 1], p01 = V[j + 1][i], q = Math.random();
-      if (q < .45) polys.push([p00, p10, p11, p01]);
-      else if (q < .72) { polys.push([p00, p10, p11]); polys.push([p00, p11, p01]); }
+      if (q < .55) polys.push([p00, p10, p11, p01]);
+      else if (q < .78) { polys.push([p00, p10, p11]); polys.push([p00, p11, p01]); }
       else { polys.push([p00, p10, p01]); polys.push([p10, p11, p01]); }
     }
+    var frag = document.createDocumentFragment();
+    var animSpecs = [];
     polys.forEach(function(pts){
       var mx = 0, my = 0;
       pts.forEach(function(p){ mx += p[0] / pts.length; my += p[1] / pts.length; });
-      var sx = mx / 100 * W, sy = my / 100 * H, sh = document.createElement('div'), cl = c.cloneNode(true);
+      var sx = mx / 100 * W, sy = my / 100 * H, sh = document.createElement('div'), cl = baseClone.cloneNode(true);
       sh.className = 'sh';
-      cl.setAttribute('aria-hidden', 'true'); cl.setAttribute('tabindex', '-1'); cl.removeAttribute('id');
-      sh.style.clipPath = 'polygon(' + pts.map(function(p){ return (p[0] + (p[0] - mx) * .012) + '% ' + (p[1] + (p[1] - my) * .012) + '%'; }).join(',') + ')';
-      sh.style.transformOrigin = sx + 'px ' + sy + 'px';
+      sh.style.clipPath = 'polygon(' + pts.map(function(p){ return (p[0] + (p[0] - mx) * .012).toFixed(1) + '% ' + (p[1] + (p[1] - my) * .012).toFixed(1) + '%'; }).join(',') + ')';
+      sh.style.transformOrigin = sx.toFixed(1) + 'px ' + sy.toFixed(1) + 'px';
       sh.appendChild(cl);
-      var z = Math.random(), a = Math.atan2(sy - cy, sx - cx) + (Math.random() - .5) * 1.1, d = (170 + Math.random() * 330) * (.6 + z * .8) * U, dn = Math.hypot(sx - cx, sy - cy) / maxD;
-      var dx = Math.cos(a) * d, dy = Math.sin(a) * d - 40 * U, zz = (z - .4) * 520, rx = (Math.random() - .5) * 220, ry = (Math.random() - .5) * 220, rz = (Math.random() - .5) * 150;
-      if (z > .85) sh.style.filter = 'blur(2px)';
-      fw.appendChild(sh);
+      var z = Math.random(), a = Math.atan2(sy - cy, sx - cx) + (Math.random() - .5) * 1.1, d = (165 + Math.random() * 310) * (.6 + z * .8) * U, dn = Math.hypot(sx - cx, sy - cy) / maxD;
+      var dx = Math.cos(a) * d, dy = Math.sin(a) * d - 38 * U, zz = (z - .4) * 480, rx = (Math.random() - .5) * 200, ry = (Math.random() - .5) * 200, rz = (Math.random() - .5) * 140;
+      frag.appendChild(sh);
+      animSpecs.push({ sh: sh, dx: dx, dy: dy, zz: zz, rx: rx, ry: ry, rz: rz, dn: dn });
+    });
+    fw.appendChild(frag);
+    animSpecs.forEach(function(s){
       if (rev) {
-        sh.animate([
-          { transform: tf(dx * 1.26, dy * 1.26, zz * 1.3, rx * 1.4, ry * 1.4, rz * 1.4, 1), opacity: 0, offset: 0, easing: 'linear' },
-          { transform: tf(dx * 1.2, dy * 1.2, zz * 1.2, rx * 1.3, ry * 1.3, rz * 1.3, 1), opacity: 1, offset: .15, easing: 'cubic-bezier(.6,0,.2,1)' },
+        s.sh.animate([
+          { transform: tf(s.dx * 1.22, s.dy * 1.22, s.zz * 1.25, s.rx * 1.35, s.ry * 1.35, s.rz * 1.35, 1), opacity: 0, offset: 0, easing: 'linear' },
+          { transform: tf(s.dx * 1.15, s.dy * 1.15, s.zz * 1.15, s.rx * 1.25, s.ry * 1.25, s.rz * 1.25, 1), opacity: 1, offset: .15, easing: 'cubic-bezier(.6,0,.2,1)' },
           { transform: tf(0, 0, 0, 0, 0, 0, 1), opacity: 1, offset: 1 }
-        ], { duration: 1000, delay: 150 + (1 - dn) * 140 + Math.random() * 30, fill: 'both' });
+        ], { duration: 860, delay: 100 + (1 - s.dn) * 110, fill: 'both' });
       } else {
-        sh.animate([
+        s.sh.animate([
           { transform: tf(0, 0, 0, 0, 0, 0, 1), opacity: 1, offset: 0, easing: 'cubic-bezier(.1,.8,.2,1)' },
-          { transform: tf(dx, dy, zz, rx, ry, rz, 1), opacity: 1, offset: .32, easing: 'ease-out' },
-          { transform: tf(dx * 1.2, dy * 1.2 - 14 * U, zz * 1.2, rx * 1.35, ry * 1.35, rz * 1.35, 1), opacity: 1, offset: .78, easing: 'ease-in' },
-          { transform: tf(dx * 1.32, dy * 1.32 - 24 * U, zz * 1.3, rx * 1.5, ry * 1.5, rz * 1.5, 1), opacity: 0, offset: 1 }
-        ], { duration: 1300, delay: dn * 140 + Math.random() * 30, fill: 'both' });
+          { transform: tf(s.dx, s.dy, s.zz, s.rx, s.ry, s.rz, 1), opacity: 1, offset: .34, easing: 'ease-out' },
+          { transform: tf(s.dx * 1.24, s.dy * 1.24 - 18 * U, s.zz * 1.22, s.rx * 1.4, s.ry * 1.4, s.rz * 1.4, 1), opacity: 0, offset: 1 }
+        ], { duration: 1020, delay: s.dn * 105, fill: 'both' });
       }
     });
   }
@@ -1265,13 +1281,29 @@
   // Interactive spring, ripple wave & trampoline physics on PORTOFOLIO title letters (Desktop & Touch)
   var titleEl = document.querySelector('.hd .title');
   if (titleEl && !reduce) {
-    var lState = [], lRaf = 0, mxL = -9999, myL = -9999, lActive = false;
+    var lState = [], lCenters = [], lBounds = null, lRaf = 0, mxL = -9999, myL = -9999, lActive = false;
     var dragIdx = -1, dragY0 = 0, dragMoved = false;
+
+    function cacheLetterRects() {
+      var lets = titleEl.querySelectorAll('.t1 i');
+      lBounds = titleEl.getBoundingClientRect();
+      lCenters = [];
+      for (var i = 0; i < lets.length; i++) {
+        var r = lets[i].getBoundingClientRect();
+        lCenters.push({
+          cx: r.left + r.width * 0.5,
+          cy: r.top + r.height * 0.5,
+          rad: Math.max(95, r.width * 1.85)
+        });
+      }
+    }
+    window.addEventListener('resize', function(){ lBounds = null; }, { passive: true });
 
     function getSt(i) {
       return lState[i] || (lState[i] = { x: 0, y: 0, r: 0, sx: 1, sy: 1, vx: 0, vy: 0, vr: 0, vsx: 0, vsy: 0 });
     }
     function startLetters() {
+      if (!lBounds || !lCenters.length) cacheLetterRects();
       if (!lRaf) lRaf = requestAnimationFrame(stepLetters);
     }
 
@@ -1307,13 +1339,11 @@
           ty = Math.max(-14, Math.min(34, myL - dragY0));
           tsy = 1 - (ty / 140);
           tsx = 1 + (ty / 200);
-        } else if (lActive) {
-          var rect = el.getBoundingClientRect();
-          var lcx = rect.left + rect.width * 0.5;
-          var lcy = rect.top + rect.height * 0.5;
-          var dx = mxL - lcx, dy = myL - lcy;
+        } else if (lActive && lCenters[i]) {
+          var lc = lCenters[i];
+          var dx = mxL - lc.cx, dy = myL - lc.cy;
           var dist = Math.hypot(dx, dy);
-          var rad = Math.max(95, rect.width * 1.85);
+          var rad = lc.rad;
           if (dist < rad) {
             var pull = Math.pow(1 - dist / rad, 1.45);
             tx = -(dx / (dist || 1)) * pull * 16;
@@ -1351,6 +1381,7 @@
 
     var hdEl = document.querySelector('.hd');
     if (hdEl) {
+      hdEl.addEventListener('pointerenter', cacheLetterRects, { passive: true });
       hdEl.addEventListener('pointermove', function(e){
         if (down) return;
         mxL = e.clientX; myL = e.clientY;
@@ -1359,8 +1390,9 @@
           startLetters();
           return;
         }
-        var tr = titleEl.getBoundingClientRect();
-        var near = e.clientY >= tr.top - 45 && e.clientY <= tr.bottom + 45 && e.clientX >= tr.left - 45 && e.clientX <= tr.right + 45;
+        if (!lBounds) cacheLetterRects();
+        var tr = lBounds;
+        var near = tr && e.clientY >= tr.top - 45 && e.clientY <= tr.bottom + 45 && e.clientX >= tr.left - 45 && e.clientX <= tr.right + 45;
         if (near) {
           lActive = true;
           startLetters();
