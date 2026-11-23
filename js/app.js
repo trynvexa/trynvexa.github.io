@@ -43,25 +43,35 @@ window.__introLayout=function(sc,portrait,vw,vh){
  * Manages color theme preference and meta tags
  */
 (function(){
-  // Theme toggle
+  // Theme toggle with localStorage persistence
   var themeBtn = document.getElementById('themeToggle');
   var mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+  try {
+    var savedTheme = localStorage.getItem('zk-theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  } catch (e) {}
   function isDark() {
     var t = document.documentElement.getAttribute('data-theme');
     return t ? t === 'dark' : mqDark.matches;
   }
   function syncTheme() {
+    if (!themeBtn) return;
     themeBtn.dataset.mode = isDark() ? 'dark' : 'light';
     var tc = document.getElementById('themeColor');
     if (tc) tc.setAttribute('content', isDark() ? '#101312' : '#eeebe2');
     themeBtn.setAttribute('aria-label', isDark() ? 'Ganti ke mode terang' : 'Ganti ke mode gelap');
   }
-  themeBtn.addEventListener('click', function(){
-    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
-    syncTheme();
-  });
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function(){
+      var next = isDark() ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('zk-theme', next); } catch (e) {}
+      syncTheme();
+    });
+  }
   syncTheme();
-
 })();
 
 
@@ -153,31 +163,139 @@ tk();setInterval(tk,60000);})();
   document.addEventListener('introdone',function(){ b.classList.remove('hop'); void b.offsetWidth; b.classList.add('hop'); },{once:true});
 })();
 
-/* Karakter: duduk di atas huruf bergelombang, ganti pose sesuai situasi */
+/* Karakter: duduk di atas huruf bergelombang, bisa melompat pindah huruf, memantul trampolin, & bereaksi sesuai kartu */
 (function(){
-  var b=document.getElementById('buddy'), hd=document.querySelector('.hd'), title=document.querySelector('.title'), lets=document.querySelectorAll('.t1 i'), L=lets[5];
-  if(!b||!hd||!L) return;
-  var probe=document.createElement('b'); probe.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline'; L.appendChild(probe);
+  var b=document.getElementById('buddy'), hd=document.querySelector('.hd'), title=document.querySelector('.title');
+  if(!b||!hd||!title) return;
+  var probe=document.createElement('b'); probe.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline';
+  var L=null, seatIdx=5;
+  var jump={on:false, x0:0, y0:0, t0:0, dur:480, arc:56, fromIdx:5, toIdx:5};
+  var air={y:0, vy:0};
+  var bopT=0;
+
+  function getLets(){ return title.querySelectorAll('.t1 i'); }
+  function ensureSeat(){
+    var lets=getLets();
+    if(!lets.length) return null;
+    if(seatIdx>=lets.length) seatIdx=Math.min(5, Math.floor(lets.length/2));
+    var target=lets[seatIdx];
+    if(L!==target || !L.isConnected || !probe.isConnected){
+      [].forEach.call(lets, function(el, idx){ el.classList.toggle('seated', idx===seatIdx); });
+      L=target;
+      if(L && !L.contains(probe)) L.appendChild(probe);
+    }
+    return L;
+  }
+  ensureSeat();
+
   var cv=document.createElement('canvas').getContext('2d'), capK='', capH=40;
-  function cap(cs){ var k=cs.fontWeight+cs.fontSize+cs.fontFamily; if(k!==capK){ capK=k; cv.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily; var m=cv.measureText('F'); capH=m.actualBoundingBoxAscent||parseFloat(cs.fontSize)*.7; } return capH; }
+  function cap(cs){ var k=cs.fontWeight+cs.fontSize+cs.fontFamily; if(k!==capK){ capK=k; cv.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily; var m=cv.measureText('F'); capH=m.actualBoundingBoxAscent||parseFloat(cs.fontSize)*.72; } return capH; }
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ capK=''; });
-  var P={}, pose='idle', pt=null, rd=matchMedia('(prefers-reduced-motion: reduce)').matches, clicks=[], lastAct=performance.now(), userT=-1e9, lean=0, tlean=0, bw=0, seat=.74, near=false, nearT=null, root=document.documentElement;
+  var P={}, pose='idle', pt=null, rd=matchMedia('(prefers-reduced-motion: reduce)').matches, clicks=[], lastAct=performance.now(), userT=-1e9, lean=0, tlean=0, wlean=0, bw=0, seat=.74, near=false, nearT=null, root=document.documentElement;
+  var curX=0, curY=0;
   [].forEach.call(b.querySelectorAll('.bp'),function(i){P[i.dataset.p]=i;});
   function set(n,ms){
+    if(!P[n]) return;
     if(n!==pose){ P[pose].classList.remove('on'); P[n].classList.add('on'); pose=n; if(!rd){ b.classList.remove('hop'); void b.offsetWidth; b.classList.add('hop'); } }
     clearTimeout(pt); if(ms) pt=setTimeout(function(){ set('idle'); },ms);
   }
   function act(){ lastAct=performance.now(); if(pose==='sleep') set('shock',1500); else if(pose==='chin') set('idle'); }
-  function frame(){
-    var hr=hd.getBoundingClientRect(), lr=L.getBoundingClientRect(), cs=getComputedStyle(title), fs=parseFloat(cs.fontSize)||60, pr=probe.getBoundingClientRect();
+
+  function jumpToLetter(idx, userTriggered){
+    var lets=getLets();
+    if(!lets.length) return;
+    idx=Math.max(0, Math.min(lets.length-1, idx));
+    if(userTriggered) lastAct=performance.now();
+    if(idx===seatIdx && !jump.on){
+      // Trampolin di huruf tempat duduk sekarang
+      air.vy = -8.5;
+      if(window.__zkLetterImpulse) window.__zkLetterImpulse(idx, 18);
+      set('wave', 1800);
+      return;
+    }
+    var dist=Math.abs(idx-seatIdx);
+    jump.on=true;
+    jump.x0=curX;
+    jump.y0=curY;
+    jump.t0=performance.now();
+    jump.dur=Math.min(640, 340 + dist*52);
+    jump.arc=Math.min(105, 38 + dist*11);
+    jump.fromIdx=seatIdx;
+    jump.toIdx=idx;
+    seatIdx=idx;
+    ensureSeat();
+    if(pose==='sleep'||pose==='chin') set('idle');
+  }
+  window.__zkBuddyJump = jumpToLetter;
+  window.__zkBuddyBounce = function(vy){
+    air.vy = Math.min(air.vy, vy || -9.5);
+    set('shock', 1500);
+  };
+  window.__zkBuddyWheelLean = function(wl){
+    wlean = Math.max(-14, Math.min(14, wl || 0));
+  };
+  window.__zkBuddySeatIdx = function(){ return seatIdx; };
+
+  function frame(now){
+    var curL=ensureSeat();
+    if(!curL){ requestAnimationFrame(frame); return; }
+    var hr=hd.getBoundingClientRect(), lr=curL.getBoundingClientRect(), cs=getComputedStyle(title), fs=parseFloat(cs.fontSize)||60, pr=probe.getBoundingClientRect();
     seat+=((pose==='idle'?.74:.83)-seat)*.12;
-    var sit=pr.top-cap(cs)+fs*.03, h=Math.max(0,Math.min((sit-hr.top-6)/.83,Math.max(fs*1.6,110),210));
-    if(h<60){ b.style.visibility='hidden'; }
+    var sit=(pr.top>0?pr.top:lr.bottom)-cap(cs)+fs*.04;
+    var availH=Math.max((sit-hr.top-2)/.82, fs*.82);
+    var h=Math.max(0,Math.min(availH,Math.max(fs*1.35,96),188));
+    if(h<44 || lr.width<4){ b.style.visibility='hidden'; }
     else {
       var w=h*420/602; b.style.visibility='visible';
       if(Math.abs(w-bw)>.5){ bw=w; b.style.width=w.toFixed(1)+'px'; b.style.height=h.toFixed(1)+'px'; }
-      lean+=(tlean-lean)*.1; b.style.setProperty('--so',(seat*100).toFixed(1)+'%'); b.style.transformOrigin='50% '+(seat*100).toFixed(1)+'%';
-      b.style.transform='translate3d('+(lr.left+lr.width/2-hr.left-w/2).toFixed(1)+'px,'+(sit-hr.top-h*seat).toFixed(1)+'px,0) rotate('+lean.toFixed(2)+'deg)';
+      var tx = lr.left+lr.width/2-hr.left-w/2;
+      var ty = sit-hr.top-h*seat;
+      var jRot = 0, bshScale = 1;
+
+      if(jump.on && !rd){
+        var p = Math.min(1, (now - jump.t0) / jump.dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        var arcY = Math.sin(Math.PI * p) * jump.arc;
+        curX = jump.x0 + (tx - jump.x0) * e;
+        curY = jump.y0 + (ty - jump.y0) * e - arcY;
+        jRot = (tx >= jump.x0 ? 1 : -1) * Math.sin(Math.PI * p) * 14;
+        bshScale = Math.max(0.35, 1 - Math.sin(Math.PI * p) * 0.65);
+        if(p >= 1){
+          jump.on = false;
+          air.vy = 2.6;
+          if(window.__zkLetterImpulse) window.__zkLetterImpulse(seatIdx, 15);
+          b.classList.remove('hop'); void b.offsetWidth; b.classList.add('hop');
+        }
+      } else {
+        // Fisika pantulan udara (trampolin)
+        if(Math.abs(air.y)>0.1 || Math.abs(air.vy)>0.1){
+          air.vy += 0.58; // gravitasi
+          air.y += air.vy;
+          if(air.y > 0){
+            air.y = 0;
+            if(air.vy > 2.2){
+              if(window.__zkLetterImpulse) window.__zkLetterImpulse(seatIdx, Math.min(16, air.vy * 1.8));
+              air.vy = -air.vy * 0.32;
+            } else {
+              air.vy = 0;
+            }
+          }
+        } else {
+          air.y = 0; air.vy = 0;
+        }
+        var bopY = (now < bopT && !rd) ? Math.abs(Math.sin(now / 135)) * -4.5 : 0;
+        curX = tx;
+        curY = ty + air.y + bopY;
+        bshScale = Math.max(0.45, 1 + air.y / 80);
+      }
+
+      wlean *= 0.88;
+      lean += ((tlean + wlean) - lean) * .12;
+      b.style.setProperty('--so',(seat*100).toFixed(1)+'%');
+      b.style.transformOrigin='50% '+(seat*100).toFixed(1)+'%';
+      b.style.transform='translate3d('+curX.toFixed(1)+'px,'+curY.toFixed(1)+'px,0) rotate('+(lean+jRot).toFixed(2)+'deg)';
+      var bsh=b.querySelector('.bsh');
+      if(bsh) bsh.style.transform='scaleX('+bshScale.toFixed(2)+')';
     }
     requestAnimationFrame(frame);
   }
@@ -195,20 +313,51 @@ tk();setInterval(tk,60000);})();
   b.querySelector('.bwrap').addEventListener('click',function(){
     var now=performance.now(); clicks=clicks.filter(function(t){return now-t<3000;}); clicks.push(now); lastAct=now;
     if(clicks.length>=3){ clicks=[]; set('angry',2600); if(!rd){ b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } }
-    else set('shock',1400);
+    else {
+      air.vy = -7.5;
+      if(window.__zkLetterImpulse) window.__zkLetterImpulse(seatIdx, 14);
+      set('shock',1400);
+    }
   });
   var st=document.getElementById('stage');
   ['pointerdown','wheel'].forEach(function(n){ st&&st.addEventListener(n,function(){ userT=performance.now(); },{passive:true}); });
   ['prev','next'].forEach(function(id){ var el=document.getElementById(id); el&&el.addEventListener('click',function(){ userT=performance.now(); }); });
-  var nm=document.getElementById('nm');
-  if(nm) new MutationObserver(function(){ if(performance.now()-userT<2500 && pose!=='angry' && pose!=='shock') set('point',1800); }).observe(nm,{childList:true,characterData:true,subtree:true});
+
+  // Reaksi spesifik terhadap kartu yang aktif
+  window.__zkBuddyCardReact = function(cardIdx){
+    if(performance.now()-userT>2800 || pose==='angry' || pose==='shock') return;
+    if(cardIdx===1){ // Music -> head-bop mengikuti irama
+      bopT = performance.now() + 3200;
+      set('idle');
+    } else if(cardIdx===4 || cardIdx===5){ // Skill / Proyek -> jempol
+      set('thumb', 2000);
+    } else if(cardIdx===2 || cardIdx===6){ // Me / Kontak -> melambai
+      set('wave', 2100);
+    } else {
+      set('point', 1800);
+    }
+  };
+
   var tg=document.getElementById('themeToggle'); tg&&tg.addEventListener('click',function(){ lastAct=performance.now(); set('thumb',1800); });
   function tick(){
     var idle=performance.now()-lastAct;
     if(idle>26000){ if(pose!=='sleep') set('sleep'); }
     else if(idle>14000){ if(pose==='idle') set('chin'); }
-    else if(idle>5000 && pose==='idle' && Math.random()<.35) set(Math.random()<.7?'wave':'thumb',2400);
-    setTimeout(tick,5000+Math.random()*4000);
+    else if(idle>2400 && pose==='idle' && !jump.on){
+      var r=Math.random();
+      if(r<.55){
+        var lets=getLets();
+        if(lets.length>2){
+          var stepDir = Math.random()<.5 ? -1 : 1;
+          var nxt = Math.max(1, Math.min(lets.length-2, seatIdx + stepDir));
+          if(nxt===seatIdx) nxt = Math.max(1, Math.min(lets.length-2, seatIdx - stepDir));
+          if(nxt!==seatIdx) jumpToLetter(nxt, false);
+        }
+      } else if(r<.82){
+        set(Math.random()<.65?'wave':'thumb',2200);
+      }
+    }
+    setTimeout(tick,3400+Math.random()*2400);
   }
   function go(){ lastAct=performance.now(); setTimeout(tick,5000); }
   if(root.classList.contains('intro-on')) document.addEventListener('introdone',go,{once:true}); else go();
@@ -352,7 +501,12 @@ tk();setInterval(tk,60000);})();
         }
       } catch (e) {}
       introEl.classList.add('out');
-      setTimeout(function(){ rootCls.remove('intro-on'); document.dispatchEvent(new Event('introdone')); }, 450);
+      setTimeout(function(){
+        rootCls.remove('intro-on');
+        rootCls.add('home-enter');
+        document.dispatchEvent(new Event('introdone'));
+        setTimeout(function(){ rootCls.remove('home-enter'); }, 2200);
+      }, 450);
       setTimeout(function(){ introEl.remove(); }, 1800);
     };
     introEl.addEventListener('click', endIntro);
@@ -394,7 +548,84 @@ var KO=["안녕하세요, <strong>M. Zikri Al-Bukhori</strong>입니다. <strong
   var NT={"Medan": ["Medan", "棉兰", "Medan", "ميدان", "Medan", "メダン", "메단"], "Playlist · 06 lagu": ["Playlist · 06 songs", "播放列表 · 06 首歌", "Lista de reproducción · 06 canciones", "قائمة التشغيل · 06 أغانٍ", "Playlist · 06 morceaux", "プレイリスト · 06曲", "플레이리스트 · 06곡"], "Enam lagu yang lagi nempel di kepala.": ["Six songs stuck in my head right now.", "最近脑子里一直循环的六首歌。", "Seis canciones que se me han quedado pegadas en la cabeza.", "ست أغنيات لا تفارق رأسي هذه الأيام.", "Six chansons qui me trottent dans la tête en ce moment.", "最近ずっと頭から離れない6曲。", "요즘 머릿속에서 떠나지 않는 여섯 곡."], "Pemutar": ["Player", "播放器", "Reproductor", "المشغّل", "Lecteur", "プレーヤー", "플레이어"], "Pilih lagu": ["Pick a song", "选择歌曲", "Elige una canción", "اختر أغنية", "Choisis un morceau", "曲を選ぶ", "곡을 선택하세요"], "Ketuk satu lagu di playlist": ["Tap a song in the playlist", "点按播放列表中的一首歌", "Toca una canción de la lista", "اضغط على أغنية في القائمة", "Touche un morceau de la playlist", "プレイリストの曲をタップ", "플레이리스트에서 곡을 눌러 보세요"], "Lagu belum bisa diputar. Coba ketuk lagi.": ["This song can't play yet. Try tapping again.", "这首歌暂时无法播放，请再点一次。", "Esta canción aún no se puede reproducir. Intenta tocar de nuevo.", "لا يمكن تشغيل هذه الأغنية الآن. حاول الضغط مرة أخرى.", "Ce morceau ne peut pas être lu pour l’instant. Touche à nouveau.", "まだこの曲を再生できません。もう一度タップしてください。", "아직 이 곡을 재생할 수 없어요. 다시 눌러 보세요."], "File lagu tidak bisa dibaca di perangkat ini.": ["The song file can't be read on this device.", "此设备无法读取这首歌的文件。", "Este dispositivo no puede leer el archivo de la canción.", "لا يمكن قراءة ملف الأغنية على هذا الجهاز.", "Ce fichier audio ne peut pas être lu sur cet appareil.", "このデバイスでは曲のファイルを読み込めません。", "이 기기에서는 곡 파일을 읽을 수 없어요."], "tool": ["tools", "工具", "herramientas", "أدوات", "outils", "ツール", "도구"], "Studi kasus: web toko kue dan restoran lokal. Pelanggan memilih menu di katalog, lalu memesan langsung lewat WhatsApp, tanpa server database yang mahal.": ["Case study: a website for a bakery and a local restaurant. Customers pick items from the catalog, then order directly via WhatsApp, with no expensive database server.", "案例研究：一家蛋糕店和本地餐厅的网站。顾客在目录中挑选菜单，然后直接通过 WhatsApp 下单，无需昂贵的数据库服务器。", "Caso de estudio: sitio web de una pastelería y un restaurante local. Los clientes eligen del catálogo y piden directamente por WhatsApp, sin un costoso servidor de base de datos.", "دراسة حالة: موقع لمحل حلويات ومطعم محلي. يختار الزبائن من الكتالوج ثم يطلبون مباشرة عبر واتساب، دون خادم قاعدة بيانات باهظ.", "Étude de cas : site web d’une pâtisserie et d’un restaurant local. Les clients choisissent dans le catalogue puis commandent directement via WhatsApp, sans serveur de base de données coûteux.", "ケーススタディ：ケーキ店と地元レストランのウェブサイト。お客様はカタログからメニューを選び、WhatsAppで直接注文できます。高価なデータベースサーバーは不要です。", "사례 연구: 케이크 가게와 동네 식당을 위한 웹사이트예요. 손님이 카탈로그에서 메뉴를 고르고 WhatsApp으로 바로 주문하며, 비싼 데이터베이스 서버가 필요 없어요."], "Katalog Interaktif": ["Interactive Catalog", "交互式目录", "Catálogo interactivo", "كتالوج تفاعلي", "Catalogue interactif", "インタラクティブカタログ", "인터랙티브 카탈로그"], "Pilih menu dengan mudah": ["Pick items with ease", "轻松挑选菜单", "Elige del menú con facilidad", "اختر من القائمة بسهولة", "Choisis facilement dans le menu", "メニューを簡単に選べる", "메뉴를 쉽게 고르세요"], "Pesan via WhatsApp": ["Order via WhatsApp", "通过 WhatsApp 下单", "Pedir por WhatsApp", "اطلب عبر واتساب", "Commander via WhatsApp", "WhatsAppで注文", "WhatsApp으로 주문"], "Satu ketukan": ["One tap", "轻点一下", "Un solo toque", "نقرة واحدة", "Une seule touche", "ワンタップ", "한 번의 터치"], "Ringan & cepat": ["Light & fast", "轻量又快速", "Ligero y rápido", "خفيف وسريع", "Léger et rapide", "軽くて速い", "가볍고 빠름"], "Buka demo langsung ↗": ["Open live demo ↗", "打开在线演示 ↗", "Abrir demo en vivo ↗", "افتح العرض المباشر ↗", "Ouvrir la démo en direct ↗", "ライブデモを開く ↗", "라이브 데모 열기 ↗"], "Mari": ["Let's", "让我们", "Vamos a", "هيّا", "Restons", "つながり", "우리"], "Terhubung": ["Connect", "保持联系", "conectar", "نتواصل", "en contact", "ましょう", "연결해요"], "Terbuka untuk tawaran kerja freelance, proyek kolaboratif, maupun diskusi seputar pengembangan web dan desain antarmuka.": ["Open to freelance offers, collaborative projects, and conversations about web development and interface design.", "欢迎自由职业邀约、合作项目，以及围绕网页开发和界面设计的交流。", "Abierto a ofertas freelance, proyectos colaborativos y conversaciones sobre desarrollo web y diseño de interfaces.", "منفتح على عروض العمل الحر والمشاريع التعاونية والنقاشات حول تطوير الويب وتصميم الواجهات.", "Ouvert aux missions freelance, aux projets collaboratifs et aux échanges sur le développement web et le design d’interface.", "フリーランスのご依頼、共同プロジェクト、ウェブ開発やインターフェースデザインについてのご相談をお待ちしています。", "프리랜서 제안, 협업 프로젝트, 웹 개발과 인터페이스 디자인에 관한 대화에 열려 있어요."], "Email": ["Email", "邮箱", "Correo", "البريد الإلكتروني", "E-mail", "メール", "이메일"], "M. Zikri Al-Bukhori": ["M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori", "엠. 지크리 알부카리"], "M. Zikri": ["M. Zikri", "M. Zikri", "M. Zikri", "M. Zikri", "M. Zikri", "M. Zikri", "엠. 지크리"], "Al-Bukhori": ["Al-Bukhori", "Al-Bukhori", "Al-Bukhori", "Al-Bukhori", "Al-Bukhori", "Al-Bukhori", "알부카리"], "Zikri.": ["Zikri.", "Zikri.", "Zikri.", "Zikri.", "Zikri.", "Zikri.", "지크리."], "PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO •": ["PORTFOLIO • PORTFOLIO • PORTFOLIO • PORTFOLIO • PORTFOLIO •", "作品集 • 作品集 • 作品集 • 作品集 • 作品集 •", "PORTAFOLIO • PORTAFOLIO • PORTAFOLIO • PORTAFOLIO • PORTAFOLIO •", "معرض الأعمال • معرض الأعمال • معرض الأعمال • معرض الأعمال • معرض الأعمال •", "PORTFOLIO • PORTFOLIO • PORTFOLIO • PORTFOLIO • PORTFOLIO •", "ポートフォリオ • ポートフォリオ • ポートフォリオ • ポートフォリオ • ポートフォリオ •", "포트폴리오 • 포트폴리오 • 포트폴리오 • 포트폴리오 • 포트폴리오 •"], "Portofolio": ["Portfolio", "作品集", "Portafolio", "معرض الأعمال", "Portfolio", "ポートフォリオ", "포트폴리오"], "Port": ["Port", "作品", "Porta", "الأعمال", "Port", "ポート", "포트"], "folio.": ["folio.", "集。", "folio.", "معرض", "folio.", "フォリオ。", "폴리오."], "> Front-End Developer": ["> Front-End Developer", "> 前端开发者", "> Desarrollador Front-End", "> مطوّر واجهات أمامية", "> Développeur Front-End", "> フロントエンド開発者", "> 프론트엔드 개발자"], "& UI Designer": ["& UI Designer", "& UI 设计师", "& Diseñador UI", "& مصمم واجهات", "& Designer UI", "& UIデザイナー", "& UI 디자이너"], "Build.": ["Build.", "构建。", "Construye.", "ابنِ.", "Construire.", "つくる。", "구축."], "Design.": ["Design.", "设计。", "Diseña.", "صمّم.", "Concevoir.", "デザインする。", "디자인."], "Innovate.": ["Innovate.", "创新。", "Innova.", "ابتكر.", "Innover.", "革新する。", "혁신."], "Turning ideas": ["Turning ideas", "把创意", "Convirtiendo ideas", "نحوّل الأفكار", "Transformer les idées", "アイデアを", "아이디어를"], "into interactive": ["into interactive", "变成可互动的", "en experiencias", "إلى تجارب", "en expériences", "インタラクティブな", "인터랙티브한"], "experiences.": ["experiences.", "体验。", "interactivas.", "تفاعلية.", "interactives.", "体験に。", "경험으로."], "Pembuka": ["Intro", "开场", "Introducción", "المقدمة", "Intro", "イントロ", "인트로"], "Portofolio 2026, Zikri, Front-End Developer dan UI Designer": ["Portfolio 2026, Zikri, Front-End Developer and UI Designer", "2026 作品集，Zikri，前端开发者与 UI 设计师", "Portafolio 2026, Zikri, desarrollador Front-End y diseñador UI", "معرض أعمال 2026، زكري، مطوّر واجهات أمامية ومصمم واجهات", "Portfolio 2026, Zikri, développeur Front-End et designer UI", "2026年ポートフォリオ、Zikri、フロントエンド開発者兼UIデザイナー", "2026 포트폴리오, 지크리, 프론트엔드 개발자 겸 UI 디자이너"], "Ganti ke mode gelap": ["Switch to dark mode", "切换到深色模式", "Cambiar a modo oscuro", "التبديل إلى الوضع الداكن", "Passer en mode sombre", "ダークモードに切り替え", "다크 모드로 전환"], "Ganti ke mode terang": ["Switch to light mode", "切换到浅色模式", "Cambiar a modo claro", "التبديل إلى الوضع الفاتح", "Passer en mode clair", "ライトモードに切り替え", "라이트 모드로 전환"], "Ilustrasi karakter, matanya mengikuti kursor": ["Character illustration whose eyes follow the cursor", "眼睛会跟随光标的角色插画", "Ilustración de un personaje cuyos ojos siguen el cursor", "رسم لشخصية تتبع عيناها المؤشر", "Illustration d’un personnage dont les yeux suivent le curseur", "目がカーソルを追うキャラクターのイラスト", "눈이 커서를 따라오는 캐릭터 일러스트"], "Karusel Kartu Radial": ["Radial card carousel", "环形卡片轮播", "Carrusel radial de tarjetas", "دوّار البطاقات الدائري", "Carrousel radial de cartes", "放射状カードカルーセル", "방사형 카드 캐러셀"], "Buka kartu Profil Zikri": ["Open Zikri’s profile card", "打开 Zikri 的个人资料卡片", "Abrir la tarjeta del perfil de Zikri", "افتح بطاقة الملف الشخصي لزكري", "Ouvrir la carte de profil de Zikri", "Zikri のプロフィールカードを開く", "지크리 프로필 카드 열기"], "Buka kartu Proyek Unggulan": ["Open the Featured Project card", "打开“精选项目”卡片", "Abrir la tarjeta del proyecto destacado", "افتح بطاقة المشروع المميز", "Ouvrir la carte du projet vedette", "「注目プロジェクト」カードを開く", "대표 프로젝트 카드 열기"], "Potret dengan sorot cahaya merah": ["Portrait lit by a red spotlight", "红色聚光灯下的肖像", "Retrato con un foco de luz roja", "صورة شخصية بإضاءة حمراء", "Portrait sous un projecteur rouge", "赤いスポットライトを浴びた肖像", "붉은 조명을 받은 인물 사진"], "Bermain gitar": ["Playing guitar", "弹吉他", "Tocando la guitarra", "يعزف على الغيتار", "Jouant de la guitare", "ギターを弾いている", "기타를 연주하는 모습"], "M. Zikri bermain gitar": ["M. Zikri playing guitar", "M. Zikri 在弹吉他", "M. Zikri tocando la guitarra", "M. Zikri يعزف على الغيتار", "M. Zikri jouant de la guitare", "M. Zikri がギターを弾いている", "엠. 지크리가 기타를 연주하는 모습"], "Foto": ["Photo", "照片", "Foto", "صورة", "Photo", "写真", "사진"], "Foto keahlian": ["Skills photo", "技能照片", "Foto de habilidades", "صورة المهارات", "Photo des compétences", "スキルの写真", "스킬 사진"], "Potret berkacamata hitam membaca koran di bawah langit biru": ["Portrait of a person in sunglasses reading a newspaper under a blue sky", "戴着墨镜、在蓝天下读报纸的肖像", "Retrato de una persona con gafas de sol leyendo un periódico bajo un cielo azul", "صورة لشخص بنظارة شمسية يقرأ جريدة تحت سماء زرقاء", "Portrait d’une personne en lunettes de soleil lisant un journal sous un ciel bleu", "青空の下、サングラスをかけて新聞を読む人物の肖像", "푸른 하늘 아래 선글라스를 끼고 신문을 읽는 인물 사진"], "Potret berjaket hitam dikelilingi koran yang beterbangan": ["Portrait of a person in a black jacket surrounded by flying newspapers", "身穿黑夹克、被漫天飞舞的报纸环绕的肖像", "Retrato de una persona con chaqueta negra rodeada de periódicos volando", "صورة لشخص بسترة سوداء تحيط به جرائد متطايرة", "Portrait d’une personne en veste noire entourée de journaux qui volent", "黒いジャケット姿で、舞い散る新聞に囲まれた人物の肖像", "검은 재킷을 입고 날아다니는 신문에 둘러싸인 인물 사진"], "Potret M. Zikri Al-Bukhori": ["Portrait of M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori 的肖像", "Retrato de M. Zikri Al-Bukhori", "صورة M. Zikri Al-Bukhori", "Portrait de M. Zikri Al-Bukhori", "M. Zikri Al-Bukhori のポートレート", "엠. 지크리 알부카리의 초상 사진"], "Detail Kartu": ["Card details", "卡片详情", "Detalle de la tarjeta", "تفاصيل البطاقة", "Détails de la carte", "カードの詳細", "카드 상세"], "Pratinjau foto": ["Photo preview", "照片预览", "Vista previa de la foto", "معاينة الصورة", "Aperçu de la photo", "写真のプレビュー", "사진 미리보기"], "Tutup foto": ["Close photo", "关闭照片", "Cerrar foto", "إغلاق الصورة", "Fermer la photo", "写真を閉じる", "사진 닫기"], "Foto sebelumnya": ["Previous photo", "上一张照片", "Foto anterior", "الصورة السابقة", "Photo précédente", "前の写真", "이전 사진"], "Foto berikutnya": ["Next photo", "下一张照片", "Foto siguiente", "الصورة التالية", "Photo suivante", "次の写真", "다음 사진"], "Pindah kartu": ["Switch card", "切换卡片", "Cambiar de tarjeta", "تبديل البطاقة", "Changer de carte", "カードを切り替える", "카드 이동"], "Lagi sering kuputar.": ["On repeat lately.", "最近常听的歌。", "Lo que suena en bucle últimamente.", "ما أكرره هذه الأيام.", "Ce que j’écoute en boucle.", "最近よく聴いている曲。", "요즘 자주 듣는 노래."], "Pemutar musik": ["Music player", "音乐播放器", "Reproductor de música", "مشغّل الموسيقى", "Lecteur de musique", "音楽プレーヤー", "음악 플레이어"], "Lagu sebelumnya": ["Previous song", "上一首", "Canción anterior", "الأغنية السابقة", "Morceau précédent", "前の曲", "이전 곡"], "Putar atau jeda": ["Play or pause", "播放或暂停", "Reproducir o pausar", "تشغيل أو إيقاف مؤقت", "Lecture ou pause", "再生または一時停止", "재생 또는 일시정지"], "Lagu berikutnya": ["Next song", "下一首", "Canción siguiente", "الأغنية التالية", "Morceau suivant", "次の曲", "다음 곡"], "Posisi lagu": ["Song position", "歌曲进度", "Posición de la canción", "موضع الأغنية", "Position du morceau", "曲の再生位置", "곡 재생 위치"], "Suara": ["Volume", "音量", "Volumen", "مستوى الصوت", "Volume", "音量", "음량"], "Event": ["Event", "Event", "Event", "Event", "Event", "Event", "이벤트"], "Commit": ["Commit", "Commit", "Commit", "Commit", "Commit", "Commit", "커밋"], "Branch": ["Branch", "Branch", "Branch", "Branch", "Branch", "Branch", "브랜치"], "Pages": ["Pages", "Pages", "Pages", "Pages", "Pages", "Pages", "페이지"], "State": ["State", "State", "State", "State", "State", "State", "상태"], "Hooks": ["Hooks", "Hooks", "Hooks", "Hooks", "Hooks", "Hooks", "훅"], "Utility": ["Utility", "Utility", "Utility", "Utility", "Utility", "Utility", "유틸리티"], "Timeline": ["Timeline", "Timeline", "Timeline", "Timeline", "Timeline", "Timeline", "타임라인"], "Template": ["Template", "Template", "Template", "Template", "Template", "Template", "템플릿"], "Routing": ["Routing", "Routing", "Routing", "Routing", "Routing", "Routing", "라우팅"], "Controller": ["Controller", "Controller", "Controller", "Controller", "Controller", "Controller", "컨트롤러"], "Database": ["Database", "Database", "Database", "Database", "Database", "Database", "데이터베이스"], "Flexbox": ["Flexbox", "Flexbox", "Flexbox", "Flexbox", "Flexbox", "Flexbox", "플렉스박스"], "Grid": ["Grid", "Grid", "Grid", "Grid", "Grid", "Grid", "그리드"]}, ND={"FRAME": "GALERI", "Skill & Keahlian": "Keahlian & Kemampuan", "tool": "alat", "Semua tool": "Semua alat", "Lima belas tool,": "Lima belas alat,", "Tool dan AI yang saya pakai tiap hari untuk mengubah ide jadi halaman yang rapi dan enak dipakai.": "Alat dan AI yang saya pakai tiap hari untuk mengubah ide jadi halaman yang rapi dan enak dipakai.", "Front-end development & desain antarmuka": "Pengembangan front-end & desain antarmuka", "Playlist · 06 lagu": "Daftar putar · 06 lagu", "Event": "Peristiwa", "Commit": "Komit", "Branch": "Cabang", "Pages": "Halaman", "State": "Status", "Hooks": "Kait", "Utility": "Utilitas", "Timeline": "Lini masa", "Template": "Templat", "Routing": "Perutean", "Controller": "Pengendali", "Database": "Basis data", "Port": "Porto", "folio.": "folio.", "> Front-End Developer": "> Pengembang Front-End", "& UI Designer": "& Desainer UI", "Build.": "Bangun.", "Design.": "Rancang.", "Innovate.": "Berinovasi.", "Turning ideas": "Mengubah ide", "into interactive": "jadi pengalaman", "experiences.": "yang interaktif.", "Portofolio 2026, Zikri, Front-End Developer dan UI Designer": "Portofolio 2026, Zikri, Pengembang Front-End dan Desainer UI", "Menyusun struktur halaman yang rapi, lalu menata layout responsif dengan Flexbox, Grid, dan animasi CSS.": "Menyusun struktur halaman yang rapi, lalu menata tata letak responsif dengan Flexbox, Grid, dan animasi CSS.", "Menambah interaksi seperti klik, gestur, dan animasi halus dengan memanipulasi tampilan langsung di browser.": "Menambah interaksi seperti klik, gestur, dan animasi halus dengan memanipulasi tampilan langsung di peramban.", "Masih tahap belajar. Fokus saya di reaktivitas data dan cara menyusun komponen dengan template.": "Masih tahap belajar. Fokus saya di reaktivitas data dan cara menyusun komponen dengan templat.", "Dimuat cepat dan tidak menumpuk library yang sebenarnya tidak perlu.": "Dimuat cepat dan tidak menumpuk pustaka yang sebenarnya tidak perlu.", "Kontras jelas, tombol cukup besar untuk jari, dan bisa dioperasikan lewat keyboard.": "Kontras jelas, tombol cukup besar untuk jari, dan bisa dioperasikan lewat papan ketik.", "Menyusun tampilan yang bersih, elegan, dan mobile-first.": "Menyusun tampilan yang bersih, elegan, dan mengutamakan layar HP.", "Memastikan tampilan nyaman dipakai semua orang, termasuk lewat keyboard.": "Memastikan tampilan nyaman dipakai semua orang, termasuk lewat papan ketik.", "Apa stack favorit untuk proyek kecil?": "Apa susunan teknologi favorit untuk proyek kecil?", "Bisa. Saya terbuka untuk freelance, proyek bersama, dan diskusi seputar pengembangan web dan desain antarmuka.": "Bisa. Saya terbuka untuk kerja lepas, proyek bersama, dan diskusi seputar pengembangan web dan desain antarmuka.", "Terbuka untuk tawaran kerja freelance, proyek kolaboratif, maupun diskusi seputar pengembangan web dan desain antarmuka.": "Terbuka untuk tawaran kerja lepas, proyek kolaboratif, maupun diskusi seputar pengembangan web dan desain antarmuka.", "Back-End": "Sisi Server", "AI Prompting": "Perintah AI", "Penjelasan skill": "Penjelasan keahlian", "Skill sebelumnya": "Keahlian sebelumnya", "Skill berikutnya": "Keahlian berikutnya", "Buka kartu Story": "Buka kartu Cerita", "Buka kartu Music": "Buka kartu Musik", "Buka kartu Frame": "Buka kartu Galeri"}, KOF={"Tool dan AI yang saya pakai tiap hari untuk mengubah ide jadi halaman yang rapi dan enak dipakai.": "제가 매일 쓰는 도구와 AI로, 아이디어를 깔끔하고 쓰기 편한 페이지로 바꿉니다.", "Cincin di tangan itu kotak alat saya. Tekan satu ikon, lepas, lalu baca cerita saya dengannya.": "손에 낀 반지는 제 도구 상자예요. 아이콘 하나를 누르고 놓은 다음, 그 도구와 함께한 제 이야기를 읽어 보세요.", "Tools": "도구", "AI Assistant": "AI 어시스턴트", "Web Stack": "웹 스택", "Lima belas tool,": "열다섯 가지 도구,", "semuanya pernah bikin begadang": "모두 밤샘을 하게 만들었던 것들", "Ketuk kartu mana pun. Saya tulis apa adanya, termasuk yang masih bikin bingung.": "아무 카드나 눌러 보세요. 아직 헷갈리는 부분까지 있는 그대로 적었어요.", "Jujur,": "솔직히,", "seberapa jago saya?": "저는 얼마나 잘할까요?", "Ini angka hari ini, bukan target. Akan naik seiring proyek.": "오늘 기준의 숫자일 뿐 목표가 아니에요. 프로젝트를 할수록 올라갈 거예요.", "Aturan main": "작업 원칙", "yang tidak saya langgar": "제가 어기지 않는 것들", "Dari coretan": "낙서에서", "sampai tayang": "공개까지", "Yang masih": "아직도", "bikin penasaran": "궁금한 것들", "Pertanyaan": "질문", "yang sering mampir": "자주 받는", "Kenapa saya betah": "계속하게 되는 이유", "Yang saya kerjakan dengannya": "이걸로 하는 일", "Tips": "팁", "Teman setianya": "늘 함께하는 짝꿍", "Tekan & lepas ikon · geser ke bawah": "아이콘을 눌렀다 놓기 · 아래로 스와이프", "Antarmuka rapi & responsif": "깔끔하고 반응형인 인터페이스", "Bersih, lega, konsisten": "깨끗하고 여유롭고 일관된", "AI jadi partner berpikir": "생각을 나누는 파트너, AI", "Web Ringan": "가벼운 웹", "Cepat dimuat di HP": "휴대폰에서도 빠르게 로딩", "Front-End": "프론트엔드", "UI Design": "UI 디자인", "AI Workflow": "AI 워크플로", "Front-End · UI Design · AI Workflow": "프론트엔드 · UI 디자인 · AI 워크플로", "Semua": "전체", "Animasi": "애니메이션", "Back-End": "백엔드", "AI": "AI", "Dasar": "기초", "Berkembang": "성장 중", "Menengah": "중급", "Mahir": "숙련", "Ahli": "전문가", "Markup Language": "마크업 언어", "Styling Language": "스타일링 언어", "CSS Framework": "CSS 프레임워크", "Front-End Framework": "프론트엔드 프레임워크", "Animation Library": "애니메이션 라이브러리", "PHP Framework": "PHP 프레임워크", "Front-End Library": "프론트엔드 라이브러리", "Code Editor": "코드 에디터", "Version Control": "버전 관리", "Menyusun struktur halaman yang rapi, lalu menata layout responsif dengan Flexbox, Grid, dan animasi CSS.": "깔끔한 페이지 구조를 짜고, Flexbox와 Grid, CSS 애니메이션으로 반응형 레이아웃을 구성합니다.", "Merancang tampilan yang bersih dan elegan dengan hierarki jelas, spasi lega, dan warna yang konsisten.": "명확한 위계, 여유로운 여백, 일관된 색으로 깔끔하고 우아한 화면을 설계합니다.", "Layout": "레이아웃", "Tipografi": "타이포그래피", "Warna": "색상", "AI Prompting": "AI 프롬프트", "Menulis instruksi yang jelas dan bertahap supaya AI memberi hasil tepat sasaran, lalu memeriksa hasilnya sendiri.": "AI가 정확한 결과를 내도록 명확하고 단계적인 지시문을 쓰고, 결과는 직접 검토합니다.", "Konteks": "맥락", "Iterasi": "반복 개선", "Verifikasi": "검증", "Menambah interaksi seperti klik, gestur, dan animasi halus dengan memanipulasi tampilan langsung di browser.": "브라우저에서 화면을 직접 조작해 클릭, 제스처, 부드러운 애니메이션 같은 인터랙션을 더합니다.", "Masih tahap berkembang. Fokus saya sekarang di cara membagi komponen dan mengatur alur data.": "아직 성장 단계예요. 지금은 컴포넌트를 나누는 법과 데이터 흐름을 다루는 데 집중하고 있어요.", "Komponen": "컴포넌트", "Menyusun tampilan responsif dengan cepat lewat utility class dan komponen siap pakai, lalu disesuaikan supaya punya karakter sendiri.": "유틸리티 클래스와 기성 컴포넌트로 반응형 화면을 빠르게 만들고, 저만의 개성이 드러나도록 다듬습니다.", "Animasi Web": "웹 애니메이션", "Menghidupkan halaman dengan GSAP dan Anime.js: urutan animasi, gerakan saat digulir, dan easing yang halus.": "GSAP와 Anime.js로 페이지에 생동감을 줍니다. 애니메이션 순서, 스크롤에 따른 움직임, 부드러운 이징까지.", "Masih tahap belajar. Fokus saya di reaktivitas data dan cara menyusun komponen dengan template.": "아직 배우는 단계예요. 데이터 반응성과 템플릿으로 컴포넌트를 구성하는 데 집중하고 있어요.", "Reaktivitas": "반응성", "Baru mulai. Saya belajar routing, controller, dan database supaya paham sisi server di balik tampilan.": "막 시작했어요. 화면 뒤의 서버 쪽을 이해하려고 라우팅, 컨트롤러, 데이터베이스를 배우고 있어요.", "Bersih": "깔끔함", "Tampilan lega dan tidak ramai, supaya mata langsung tahu harus melihat ke mana.": "화면이 여유롭고 복잡하지 않아서, 눈이 어디를 봐야 할지 바로 알 수 있어요.", "Ringan": "가벼움", "Dimuat cepat dan tidak menumpuk library yang sebenarnya tidak perlu.": "빠르게 로딩되고, 정말 필요 없는 라이브러리는 쌓아 두지 않아요.", "Mobile-First": "모바일 우선", "Dirancang dari layar kecil lebih dulu, lalu dilebarkan untuk layar yang besar.": "작은 화면부터 먼저 설계한 다음, 큰 화면에 맞게 넓힙니다.", "Nyaman Dipakai": "쓰기 편함", "Kontras jelas, tombol cukup besar untuk jari, dan bisa dioperasikan lewat keyboard.": "대비가 분명하고, 버튼은 손가락으로 누르기에 충분히 크며, 키보드로도 조작할 수 있어요.", "Riset": "리서치", "Memahami kebutuhan dan pengguna sebelum menyentuh kode.": "코드를 만지기 전에 필요와 사용자를 먼저 이해합니다.", "Saya mulai dengan bertanya: siapa yang memakai, untuk apa, dan apa yang paling penting bagi mereka. Referensi dikumpulkan dulu supaya arah desain tidak meraba-raba.": "누가 쓰는지, 무엇을 위해 쓰는지, 그들에게 가장 중요한 게 무엇인지 먼저 묻는 것부터 시작해요. 디자인 방향이 헤매지 않도록 레퍼런스를 먼저 모읍니다.", "Tujuan": "목표", "Pengguna": "사용자", "Referensi": "레퍼런스", "Desain": "디자인", "Menyusun tampilan yang bersih, elegan, dan mobile-first.": "깔끔하고 우아하며 모바일 우선인 화면을 구성합니다.", "Sketsa kasar dibuat dulu, lalu dirapikan jadi pilihan warna, huruf, dan jarak yang konsisten. Layar ponsel jadi acuan utama.": "먼저 대략적인 스케치를 만든 뒤, 일관된 색, 글꼴, 간격으로 다듬어요. 휴대폰 화면이 주된 기준이에요.", "Sketsa": "스케치", "Bangun": "구축", "Menulis front-end yang ringan, dengan AI sebagai partner berpikir.": "가벼운 프론트엔드를 만들고, AI는 생각을 나누는 파트너로 씁니다.", "Kode ditulis bertahap dan diuji di setiap langkah. AI membantu menjelaskan dan meninjau, sementara keputusan akhirnya tetap di tangan saya.": "코드는 단계적으로 쓰고 매 단계마다 테스트해요. AI는 설명과 검토를 돕고, 최종 결정은 제가 합니다.", "Review AI": "AI 검토", "Rilis": "출시", "Publikasi lewat GitHub Pages, lalu dirapikan dari masukan.": "GitHub Pages로 공개한 뒤, 받은 피드백으로 다듬습니다.", "Setelah tayang, saya mengecek di beberapa ukuran layar dan perangkat, lalu memperbaiki hal kecil yang baru terlihat saat dipakai.": "공개한 뒤에는 여러 화면 크기와 기기에서 확인하고, 실제로 써 봐야 보이는 사소한 부분을 고칩니다.", "Uji Layar": "화면 테스트", "Revisi": "수정", "React lanjutan": "React 심화", "Pola komponen yang lebih rapi dan pengelolaan state di proyek yang lebih besar.": "더 큰 프로젝트에서 더 깔끔한 컴포넌트 패턴과 상태 관리를 익히고 싶어요.", "JavaScript modern": "최신 JavaScript", "Animasi yang halus, penanganan gestur, dan cara menjaga performa.": "부드러운 애니메이션, 제스처 처리, 성능을 유지하는 방법.", "Alur kerja Git": "Git 작업 흐름", "Memakai branch dan commit yang tertata supaya riwayat proyek mudah dibaca.": "브랜치와 커밋을 잘 정리해서 프로젝트 기록을 읽기 쉽게 만들어요.", "Aksesibilitas web": "웹 접근성", "Memastikan tampilan nyaman dipakai semua orang, termasuk lewat keyboard.": "키보드를 포함해 누구에게나 편한 화면인지 확인합니다.", "Animasi dengan GSAP": "GSAP 애니메이션", "Menyusun timeline dan animasi saat halaman digulir tanpa mengorbankan performa.": "성능을 희생하지 않으면서 타임라인과 스크롤 애니메이션을 구성합니다.", "Dasar Laravel dan Vue": "Laravel과 Vue 기초", "Memahami alur data dari server ke tampilan, dari routing sampai komponen.": "서버에서 화면까지 데이터가 어떻게 흐르는지, 라우팅부터 컴포넌트까지 이해하고 싶어요.", "Kenapa memakai banyak asisten AI?": "왜 AI 어시스턴트를 여러 개 쓰나요?", "Setiap AI punya kelebihan masing-masing. Saya membandingkan jawabannya, lalu memutuskan sendiri mana yang paling masuk akal untuk kasus saya.": "AI마다 강점이 달라요. 답변을 서로 비교해 본 뒤, 제 경우에 가장 맞는 것을 제가 직접 결정해요.", "Apakah semua kode dibuat oleh AI?": "코드를 전부 AI가 만드나요?", "AI membantu menjelaskan, memberi alternatif, dan meninjau. Struktur, keputusan desain, dan pengujian hasil akhirnya tetap saya yang pegang.": "AI는 설명하고, 대안을 제시하고, 검토하는 걸 도와줘요. 구조, 디자인 결정, 최종 결과 테스트는 제가 맡아요.", "Apa stack favorit untuk proyek kecil?": "작은 프로젝트에 즐겨 쓰는 스택은 무엇인가요?", "HTML, CSS, dan JavaScript yang dipublikasikan lewat GitHub Pages. Ringan, murah, dan mudah dirawat tanpa server database.": "GitHub Pages로 공개하는 HTML, CSS, JavaScript예요. 가볍고, 저렴하고, 데이터베이스 서버 없이도 관리하기 쉬워요.", "Bisa diajak kolaborasi?": "협업도 가능한가요?", "Bisa. Saya terbuka untuk freelance, proyek bersama, dan diskusi seputar pengembangan web dan desain antarmuka.": "네. 프리랜서 작업, 공동 프로젝트, 웹 개발과 인터페이스 디자인에 관한 논의에 열려 있어요."}, WORD={"id": "PORTOFOLIO", "en": "PORTFOLIO", "zh": "作品集", "es": "PORTAFOLIO", "ar": "معرض الأعمال", "fr": "PORTFOLIO", "ja": "ポートフォリオ", "ko": "포트폴리오"}, DT={"id": "M. Zikri Al-Bukhori — Portofolio", "en": "M. Zikri Al-Bukhori — Portfolio", "zh": "M. Zikri Al-Bukhori — 作品集", "es": "M. Zikri Al-Bukhori — Portafolio", "ar": "M. Zikri Al-Bukhori — معرض الأعمال", "fr": "M. Zikri Al-Bukhori — Portfolio", "ja": "M. Zikri Al-Bukhori — ポートフォリオ", "ko": "엠. 지크리 알부카리 — 포트폴리오"};
   Object.keys(NT).forEach(function(k){T[k]=NT[k];});
   Object.keys(ND).forEach(function(k){D[k]=ND[k];});
+  delete D["Port"];
+  D["to my"] = "di ruang karya";
+  D["SKILL"] = "SKILL";
+  D["FRAME"] = "FRAME";
   Object.keys(KOF).forEach(function(k){if(T[k])T[k][6]=KOF[k];});
+  /* Additional complete 8-language translations for updated About (Me), Hero, Cards, Frame, Music, Projects & Contact */
+  Object.assign(D, {
+    "Edisi Pilihan • 2026": "Edisi Pilihan • 2026",
+    "Ruang Karya": "Ruang Karya",
+    "Creative Front-End Developer & UI Designer": "Creative Front-End Developer & Desainer UI"
+  });
+  Object.assign(T, {
+    "Edisi Pilihan • 2026": ["Selected Edition • 2026", "精选特辑 • 2026", "Edición Seleccionada • 2026", "إصدار مختار • 2026", "Édition Sélectionnée • 2026", "セレクテッド・エディション • 2026", "셀렉티드 에디션 • 2026"],
+    "Ruang Karya": ["Creative Space", "创意作品空间", "Espacio Creativo", "مساحة الإبداع", "Espace Créatif", "クリエイティブ空間", "크리에이티브 공간"],
+    "Creative Front-End Developer & UI Designer": ["Creative Front-End Developer & UI Designer", "创意前端开发者与 UI 设计师", "Desarrollador Front-End Creativo y Diseñador UI", "مطوّر واجهات أمامية إبداعي ومصمم UI", "Développeur Front-End Créatif & Designer UI", "クリエイティブ・フロントエンド開発者 & UIデザイナー", "크리에이티브 프론트엔드 개발자 & UI 디자이너"],
+    "to my": ["to my space", "我的作品空间", "a mi espacio", "في مساحة أعمالي", "dans mon espace", "私の制作空間へ", "나의 작업 공간에"],
+    "Jurnal": ["Journal", "历程", "Diario", "السيرة", "Journal", "ジャーナル", "저널"],
+    "Audio": ["Audio", "音乐", "Audio", "صوتيات", "Audio", "オーディオ", "오디오"],
+    "Profil": ["Profile", "简介", "Perfil", "الملف", "Profil", "プロフィール", "프로필"],
+    "Visual": ["Visual", "视觉", "Visual", "مرئيات", "Visuel", "ビジュアル", "비주얼"],
+    "Stack": ["Stack", "技术", "Stack", "التقنيات", "Stack", "スタック", "스택"],
+    "Karya": ["Works", "作品", "Obras", "أعمال", "Projets", "ワークス", "작업물"],
+    "Koneksi": ["Connect", "联系", "Conexión", "تواصل", "Contact", "コネクト", "커넥트"],
+    "Pengalaman Industri": ["Industry Experience", "行业实践", "Experiencia en la industria", "الخبرة العملية", "Expérience en entreprise", "実務経験", "실무 경험"],
+    "PKL di DigitalCODE (Web & UI)": ["Internship (PKL) at DigitalCODE (Web & UI)", "DigitalCODE 职场实习 (Web & UI)", "Prácticas (PKL) en DigitalCODE (Web & UI)", "تدريب ميداني في DigitalCODE (ويب وواجهات)", "Stage (PKL) chez DigitalCODE (Web & UI)", "DigitalCODE での実務インターン (Web & UI)", "DigitalCODE 현장 실습 (Web & UI)"],
+    "Pendidikan": ["Education", "教育背景", "Educación", "التعليم", "Formation", "学歴", "학력"],
+    "SMK Swasta Mandiri — Medan": ["SMK Swasta Mandiri — Medan", "SMK Swasta Mandiri 职业高中 — 棉兰", "SMK Swasta Mandiri — Medan", "ثانوية SMK Swasta Mandiri — ميدان", "SMK Swasta Mandiri — Medan", "SMK Swasta Mandiri — メダン", "SMK Swasta Mandiri — 메단"],
+    "Teknologi & Keahlian Utama": ["Core Technologies & Skills", "核心技术与专长", "Tecnologías y habilidades clave", "التقنيات والمهارات الأساسية", "Technologies et compétences clés", "主要技術・コアスキル", "핵심 기술 및 역량"],
+    "Lihat Proyek Unggulan": ["View Featured Projects", "查看精选项目", "Ver proyectos destacados", "عرض المشاريع المميزة", "Voir les projets phares", "注目プロジェクトを見る", "대표 프로젝트 보기"],
+    "Hubungi saya": ["Contact me", "联系我", "Contáctame", "تواصل معي", "Me contacter", "お問い合わせ", "문의하기"],
+    "Prinsip saya:": ["My principle:", "我的原则：", "Mi principio:", "مبدئي:", "Mon principe :", "私の信条：", "제 원칙:"],
+    "Senang mengeksplorasi teknologi baru, merancang tata letak yang bersih, serta menerjemahkan ide kreatif menjadi kode yang solid dan interaktif.": ["I enjoy exploring modern web technologies, crafting clean editorial layouts, and translating creative ideas into solid, interactive code.", "我热衷于探索前沿网络技术、设计简洁优雅的版面，并将创意构想转化为稳健且富有互动感的代码。", "Disfruto explorando nuevas tecnologías web, diseñando maquetaciones limpias y traduciendo ideas creativas en código sólido e interactivo.", "أستمتع باستكشاف تقنيات الويب الحديثة، وتصميم تخطيطات نظيفة، وترجمة الأفكار الإبداعية إلى كود متين وتفاعلي.", "J’aime explorer les nouvelles technologies web, concevoir des mises en page épurées et traduire des idées créatives en un code solide et interactif.", "新しいWeb技術を探求し、洗練されたレイアウトを設計し、クリエイティブな発想を堅牢でインタラクティブなコードへと形にすることを楽しんでいます。", "새로운 웹 기술을 탐구하고 깔끔한 레이아웃을 설계하며, 창의적인 아이디어를 탄탄하고 인터랙티브한 코드로 구현하는 것을 좋아합니다."],
+    "Cincin 3D": ["3D Ring", "3D 环廊", "Anillo 3D", "حلقة ثلاثية الأبعاد", "Anneau 3D", "3Dリング", "3D 링"],
+    "Grid Editorial": ["Editorial Grid", "画廊网格", "Cuadrícula editorial", "شبكة المعرض", "Grille éditoriale", "グリッド表示", "에디토리얼 그리드"],
+    "Perbesar Foto": ["Expand Photo", "放大照片", "Ampliar foto", "تكبير الصورة", "Agrandir la photo", "写真を拡大", "사진 확대"],
+    "Suara Synth": ["Synth Audio", "合成音效", "Audio Synth", "صوت سينث", "Audio Synth", "シンセ音", "신스 사운드"],
+    "Aktif": ["On", "开启", "Activo", "مفعّل", "Activé", "ON", "켜짐"],
+    "Bisu": ["Muted", "静音", "Silencio", "صامت", "Muet", "ミュート", "음소거"],
+    "Mode Studio Interaktif": ["Interactive Studio Mode", "交互式录音室模式", "Modo Estudio Interactivo", "وضع الاستوديو التفاعلي", "Mode Studio Interactif", "インタラクティブ・スタジオ", "인터랙티브 스튜디오 모드"],
+    "Lihat Semua Proyek": ["All Projects", "全部项目", "Todos los proyectos", "جميع المشاريع", "Tous les projets", "全プロジェクト一覧", "전체 프로젝트"],
+    "Studi Kasus": ["Case Study", "案例研究", "Caso de estudio", "دراسة حالة", "Étude de cas", "ケーススタディ", "케이스 스터디"],
+    "Peran": ["Role", "角色", "Rol", "الدور", "Rôle", "担当", "역할"],
+    "Tahun": ["Year", "年份", "Año", "السنة", "Année", "制作年", "연도"],
+    "Teknologi": ["Tech Stack", "技术栈", "Tecnologías", "التقنيات", "Technologies", "使用技術", "기술 스택"],
+    "Dilihat dari dekat": ["Closer inspection", "细节特写", "Vista de cerca", "نظرة عن قرب", "Vu de près", "ディテール解説", "디테일 클로즈업"],
+    "Warna yang dipakai": ["Color palette", "配色方案", "Paleta de colores", "لوحة الألوان", "Palette de couleurs", "カラーパレット", "컬러 팔레트"],
+    "Ketuk warna untuk menyalin kode HEX": ["Tap any swatch to copy HEX code", "点击色块复制 HEX 色值", "Toca un color para copiar el código HEX", "اضغط على اللون لنسخ كود HEX", "Touchez une couleur pour copier le code HEX", "色をタップしてHEXコードをコピー", "색상을 탭하여 HEX 코드 복사"],
+    "Isi halaman": ["Page architecture", "页面架构", "Estructura de la página", "بنية الصفحة", "Architecture de la page", "ページ構成", "페이지 구조"],
+    "Lihat situs": ["Visit live site", "访问在线网站", "Visitar sitio web", "زيارة الموقع المباشر", "Visiter le site", "ライブサイトを見る", "라이브 사이트 방문"],
+    "Perbesar layar": ["Fullscreen view", "全屏预览", "Vista completa", "عرض ملء الشاشة", "Plein écran", "フルスクリーン表示", "전체 화면 보기"],
+    "Proyek berikutnya": ["Next project", "下一个项目", "Siguiente proyecto", "المشروع التالي", "Projet suivant", "次のプロジェクト", "다음 프로젝트"],
+    "Semua Proyek Unggulan": ["All Featured Projects", "全部精选项目", "Todos los proyectos destacados", "جميع المشاريع المميزة", "Tous les projets phares", "注目プロジェクト一覧", "전체 대표 프로젝트"],
+    "Baca Studi Kasus": ["Read Case Study", "阅读案例", "Leer caso", "اقرأ الدراسة", "Lire l’étude", "詳細を見る", "케이스 스터디 읽기"],
+    "Buka Demo ↗": ["Live Demo ↗", "在线演示 ↗", "Demo en vivo ↗", "عرض مباشر ↗", "Démo live ↗", "ライブデモ ↗", "라이브 데모 ↗"],
+    "Tutup": ["Close", "关闭", "Cerrar", "إغلاق", "Fermer", "閉じる", "닫기"],
+    "Salin Email": ["Copy Email", "复制邮箱", "Copiar correo", "نسخ البريد", "Copier l’e-mail", "メールをコピー", "이메일 복사"],
+    "Tersalin!": ["Copied!", "已复制！", "¡Copiado!", "تم النسخ!", "Copié !", "コピーしました！", "복사됨!"]
+  });
+  Object.assign(H, {
+    "Halo, saya M. Zikri Al-Bukhori, seorang Front-End Developer & UI Designer yang berdomisili di Medan, Sumatera Utara. Saya berfokus pada perancangan antarmuka web modern yang responsif, rapi, dan mudah digunakan.": [
+      "Hello, I’m <strong>M. Zikri Al-Bukhori</strong>, a <strong>Front-End Developer &amp; UI Designer</strong> based in <strong>Medan, North Sumatra</strong>. I focus on crafting modern web interfaces that are responsive, clean, and effortless to use.",
+      "你好，我是 <strong>M. Zikri Al-Bukhori</strong>，一名常驻<strong>印尼北苏门答腊省棉兰</strong>的<strong>前端开发者与 UI 设计师</strong>。我专注于打造现代、响应式、整洁且好用的网页界面。",
+      "Hola, soy <strong>M. Zikri Al-Bukhori</strong>, <strong>Desarrollador Front-End y Diseñador UI</strong> radicado en <strong>Medan, Sumatra del Norte</strong>. Me enfoco en diseñar interfaces web modernas, adaptables, limpias y fáciles de usar.",
+      "مرحبًا، أنا <strong>M. Zikri Al-Bukhori</strong>، <strong>مطوّر واجهات أمامية ومصمم UI</strong> مقيم في <strong>ميدان، شمال سومطرة</strong>. أركّز على تصميم واجهات ويب حديثة ومتجاوبة وأنيقة وسهلة الاستخدام.",
+      "Bonjour, je suis <strong>M. Zikri Al-Bukhori</strong>, <strong>Développeur Front-End &amp; Designer UI</strong> basé à <strong>Medan, Sumatra du Nord</strong>. Je conçois des interfaces web modernes, réactives, soignées et intuitives.",
+      "こんにちは、<strong>北スマトラ・メダン</strong>を拠点に活動する<strong>フロントエンド開発者・UIデザイナー</strong>の <strong>M. Zikri Al-Bukhori</strong> です。レスポンシブで美しく、使いやすいモダンなWebインターフェースの設計に注力しています。",
+      "안녕하세요, <strong>북수마트라 메단</strong>에서 활동하는 <strong>프론트엔드 개발자 &amp; UI 디자이너</strong> <strong>엠. 지크리 알부카리</strong>입니다. 반응형이고 깔끔하며 사용하기 편한 모던 웹 인터페이스를 설계하고 구현합니다."
+    ],
+    "Prinsip saya: Mengutamakan kualitas visual, performa kode, dan pengalaman pengguna yang optimal.": [
+      "<span>My principle:</span> Prioritizing visual craft, code performance, and an optimal user experience.",
+      "<span>我的原则：</span> 坚持视觉品质、代码性能与最佳用户体验并重。",
+      "<span>Mi principio:</span> Priorizar la calidad visual, el rendimiento del código y una experiencia de usuario óptima.",
+      "<span>مبدئي:</span> إعطاء الأولوية للجودة البصرية، وأداء الكود، وتجربة المستخدم المثالية.",
+      "<span>Mon principe :</span> Donner la priorité à la qualité visuelle, à la performance du code et à une expérience utilisateur optimale.",
+      "<span>私の信条：</span> ビジュアルの品質、コードのパフォーマンス、そして最適なユーザー体験を最優先にすること。",
+      "<span>제 원칙:</span> 시각적 완성도, 코드 퍼포먼스, 그리고 최적의 사용자 경험을 최우선으로 합니다."
+    ]
+  });
   /* FRAME huruf besar mengikuti terjemahan "Frame" */
   if(T["Frame"])T["FRAME"]=T["Frame"].map(function(x){return x.toUpperCase();});
   /* aria "Buka kartu X" mengikuti nama kartu tiap bahasa */
@@ -1473,8 +1704,8 @@ window.SKR = (function(){
       var ch = L.ch, Rx = L.Rx, cy = L.cy;
 
       if (!t0) t0 = t;
-      var it = rm ? 9 : (t - t0 - 900) / 1000;
-      if (!introDone && it > 2.1) { introDone = true; lastAct = t; lastStep = t; st.classList.add('ready'); }
+      var it = rm ? 9 : (t - t0 - 80) / 1000;
+      if (!introDone && it > 0.85) { introDone = true; lastAct = t; lastStep = t; st.classList.add('ready'); }
 
       if (introDone && !drag) {
         if (fling) {
@@ -1522,9 +1753,44 @@ window.SKR = (function(){
         if (show !== cur) {
           cur = show;
           if (idxB) { idxB.textContent = pad(show + 1); idxB.classList.remove('roll'); void idxB.offsetWidth; idxB.classList.add('roll'); }
+          var nmEl = st.querySelector('.gidx-nm');
+          if (nmEl && ks[show]) {
+            var capEl = ks[show].querySelector('.cap');
+            if (capEl) nmEl.textContent = capEl.textContent;
+          }
         }
       }
       requestAnimationFrame(frame);
+    }
+    st.addEventListener('click', function(e){
+      var btn = e.target.closest('[data-gact]');
+      if (!btn) return;
+      e.stopPropagation();
+      var act = btn.getAttribute('data-gact');
+      var activeI = foc >= 0 ? foc : (cur >= 0 ? cur : 0);
+      if (act === 'prev') focusIdx(activeI - 1);
+      else if (act === 'next') focusIdx(activeI + 1);
+      else if (act === 'zoom' && window.galOpen) window.galOpen(activeI, ks);
+    });
+    var wrap = st.parentElement;
+    if (wrap) {
+      wrap.addEventListener('click', function(e){
+        var vBtn = e.target.closest('[data-gview]');
+        if (!vBtn) return;
+        var mode = vBtn.getAttribute('data-gview');
+        [].forEach.call(wrap.querySelectorAll('[data-gview]'), function(b){
+          var on = b.getAttribute('data-gview') === mode;
+          b.classList.toggle('on', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        wrap.classList.toggle('is-grid', mode === 'grid');
+      });
+      wrap.addEventListener('click', function(e){
+        var gCard = e.target.closest('.ggrid-card');
+        if (!gCard) return;
+        var gi = parseInt(gCard.getAttribute('data-gi'), 10) || 0;
+        if (window.galOpen) window.galOpen(gi, ks);
+      });
     }
     requestAnimationFrame(function(t){ last = t; frame(t); st.classList.add('in'); });
   }
@@ -1544,19 +1810,63 @@ window.SKR = (function(){
  * and responsive turntable controls.
  */
 (function(){
-/* ===== EDIT DI SINI: daftar lagu =====
-   t = judul, a = artis, d = durasi (m:ss), src = alamat file audio (mis. "audio/lagu1.mp3").
-   Kosongkan src kalau audionya belum ada (animasi tetap jalan sebagai pratinjau). */
+/* ===== Daftar lagu & Web Audio Studio Synth Engine =====
+   Mendukung file MP3 (jika tersedia di assets/audio/) sekaligus Mode Studio Interaktif
+   berbasis Web Audio API agar pemutar musik selalu berfungsi mulus tanpa error 404. */
 var TRACKS=[
-{t:"BAD",a:"ATEEZ",d:"2:36",src:"lagu-1.mp3"},
-{t:"RUDE!",a:"Hearts2Hearts",d:"3:20",src:"lagu-2.mp3"},
-{t:"REDRED",a:"CORTIS",d:"2:43",src:"lagu-3.mp3"},
-{t:"Drip",a:"ATEEZ",d:"3:02",src:"lagu-4.mp3"},
-{t:"BANG BANG BANG",a:"BIGBANG",d:"3:40",src:"lagu-5.mp3"},
-{t:"Bloody Paradise",a:"ENHYPEN",d:"2:11",src:"lagu-6.mp3"}
+{t:"BAD",a:"ATEEZ",d:"2:36",g:"Dark R&B · 118 BPM",bpm:118,notes:[220,261.63,329.63,392],src:""},
+{t:"RUDE!",a:"Hearts2Hearts",d:"3:20",g:"Upbeat Pop · 126 BPM",bpm:126,notes:[261.63,329.63,392,493.88],src:""},
+{t:"REDRED",a:"CORTIS",d:"2:43",g:"Alt Hip-Hop · 110 BPM",bpm:110,notes:[196,233.08,293.66,349.23],src:""},
+{t:"Drip",a:"ATEEZ",d:"3:02",g:"Performance Trap · 135 BPM",bpm:135,notes:[185,220,277.18,329.63],src:""},
+{t:"BANG BANG BANG",a:"BIGBANG",d:"3:40",g:"Electro Anthem · 130 BPM",bpm:130,notes:[246.94,293.66,369.99,440],src:""},
+{t:"Bloody Paradise",a:"ENHYPEN",d:"2:11",g:"Dark Synth · 122 BPM",bpm:122,notes:[207.65,246.94,311.13,392],src:""}
 ];
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 var au=new Audio(),cur=-1,ol=null,pg=null,bg=null,sim=false,simT=0,raf=0,rot=0,vel=0,last=0,cv=null,cx=null,P=[],np=null;au.preload="none";
+var synthOn=true,actx=null,synthTimer=0,stepIdx=0;
+function stopSynth(){
+  if(synthTimer){clearInterval(synthTimer);synthTimer=0;}
+}
+function playSynthStep(){
+  if(!synthOn||!sim||cur<0)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==="suspended")actx.resume();
+    var tr=TRACKS[cur],notes=tr.notes||[220,261.63,329.63,392];
+    var freq=notes[stepIdx%notes.length]*(stepIdx%8===7?1.5:1);
+    var now=actx.currentTime;
+    var osc=actx.createOscillator(),gain=actx.createGain(),flt=actx.createBiquadFilter();
+    osc.type=stepIdx%2===0?"triangle":"sine";
+    osc.frequency.setValueAtTime(freq,now);
+    flt.type="lowpass";
+    flt.frequency.setValueAtTime(920,now);
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.linearRampToValueAtTime(0.032,now+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+0.38);
+    osc.connect(flt);flt.connect(gain);gain.connect(actx.destination);
+    osc.start(now);osc.stop(now+0.4);
+    if(stepIdx%4===0){
+      var bass=actx.createOscillator(),bgain=actx.createGain();
+      bass.type="sine";
+      bass.frequency.setValueAtTime(notes[0]*0.5,now);
+      bass.frequency.exponentialRampToValueAtTime(notes[0]*0.25,now+0.18);
+      bgain.gain.setValueAtTime(0.04,now);
+      bgain.gain.exponentialRampToValueAtTime(0.0001,now+0.22);
+      bass.connect(bgain);bgain.connect(actx.destination);
+      bass.start(now);bass.stop(now+0.24);
+    }
+    stepIdx++;
+  }catch(e){}
+}
+function syncSynth(){
+  stopSynth();
+  if(sim&&cur>=0&&synthOn){
+    var bpm=(TRACKS[cur]&&TRACKS[cur].bpm)||120;
+    var iv=Math.round((60/bpm)*500);
+    playSynthStep();
+    synthTimer=setInterval(playSynthStep,iv);
+  }
+}
 function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+":"+("0"+s%60).slice(-2);}
 function secs(d){var p=d.split(":");return (+p[0]||0)*60+(+p[1]||0)||1;}
@@ -1570,47 +1880,83 @@ function srcOf(i){
   }catch(e){urls[i]=s;}
   return urls[i];
 }
-var noteT=0;
-function note(msg){
-  if(!pg)return;var n=pg.querySelector(".pnote");
-  if(!n){n=document.createElement("div");n.className="pnote";n.setAttribute("role","status");pg.appendChild(n);}
-  n.textContent=msg;n.classList.add("on");clearTimeout(noteT);noteT=setTimeout(function(){n.classList.remove("on");},3200);
+function fallbackToStudio(){
+  au.pause();au.removeAttribute("src");
+  sim=true;syncSynth();mark();
 }
 function go(){
-  var pr;try{pr=au.play();}catch(e){note("Lagu belum bisa diputar. Coba ketuk lagi.");mark();return;}
-  if(pr&&pr.catch)pr.catch(function(e){if(e&&e.name==="AbortError")return;note("Lagu belum bisa diputar. Coba ketuk lagi.");mark();});
+  var pr;try{pr=au.play();}catch(e){fallbackToStudio();return;}
+  if(pr&&pr.catch)pr.catch(function(e){if(e&&e.name==="AbortError")return;fallbackToStudio();});
 }
-function running(){return cur>=0&&(TRACKS[cur].src?live():sim);}
+function running(){return cur>=0&&(TRACKS[cur].src&&!sim?live():sim);}
 function ghost(t){var g=bg&&bg.querySelector(".ghost");if(!g)return;g.textContent=t;g.classList.remove("sw");void g.offsetWidth;g.classList.add("sw");}
 function mark(){
   if(!ol)return;var run=running();
-  if(pg)pg.classList.toggle("playing",run);if(np){np.classList.toggle("go",run);var kk=np.querySelector(".npk");if(kk)kk.textContent=run?"Sedang diputar":(cur>=0?"Dijeda":"Pemutar");}
+  if(pg)pg.classList.toggle("playing",run);
+  if(np){
+    np.classList.toggle("go",run);
+    var kk=np.querySelector(".npk");
+    if(kk)kk.textContent=run?"Sedang diputar":(cur>=0?"Dijeda":"Pemutar");
+    var sb=np.querySelector(".np-synth");
+    if(sb){
+      sb.classList.toggle("on",synthOn);
+      sb.setAttribute("aria-pressed",synthOn?"true":"false");
+      sb.querySelector("span").textContent=synthOn?"Aktif":"Bisu";
+    }
+  }
   [].forEach.call(ol.children,function(li,i){var b=li.firstChild;
     if(i===cur)b.setAttribute("aria-current","true");else{b.removeAttribute("aria-current");b.style.removeProperty("--p");}
     b.classList.toggle("go",i===cur&&run);});
 }
 var ACC=[["#e0654f","#f59a72"],["#cf5f82","#ee93ad"],["#c9524f","#e98479"],["#3f8cc2","#76bde0"],["#c8832a","#e8ae55"],["#3f8f7b","#6dbfa8"]];
-var SV={pv:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg>',nx:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg>',pl:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',ps:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>'};
+var SV={pv:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg>',nx:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg>',pl:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',ps:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',sn:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07"/></svg>'};
 function accent(i){if(!pg)return;var a=ACC[i%ACC.length];pg.style.setProperty("--acc",a[0]);pg.style.setProperty("--acc2",a[1]);pg.classList.add("started");}
 function npBuild(){
   if(np&&np.parentNode)np.parentNode.removeChild(np);
   np=document.createElement("div");np.className="np";np.setAttribute("role","group");np.setAttribute("aria-label","Pemutar musik");
-  np.innerHTML='<div class="npr"><span class="npd" aria-hidden="true"></span><div class="npi"><span class="npk">Pemutar</span><b class="npt">Pilih lagu</b><em class="npa">Ketuk satu lagu di playlist</em></div><div class="npc"><button type="button" class="npv pv" aria-label="Lagu sebelumnya">'+SV.pv+'</button><button type="button" class="npv npp" aria-label="Putar atau jeda"><span class="i1">'+SV.pl+'</span><span class="i2">'+SV.ps+'</span></button><button type="button" class="npv nx" aria-label="Lagu berikutnya">'+SV.nx+'</button></div></div><div class="npq"><span class="npm" aria-hidden="true">0:00</span><div class="npb" role="slider" tabindex="0" aria-label="Posisi lagu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><u></u></div><span class="npe" aria-hidden="true">0:00</span></div>';
+  np.innerHTML='<div class="npr"><span class="npd" aria-hidden="true"></span><div class="npi"><div class="np-head-row"><span class="npk">Pemutar</span><button type="button" class="np-synth on" aria-pressed="true" aria-label="Suara Synth">'+SV.sn+'<b>Suara Synth:</b><span>Aktif</span></button></div><b class="npt">Pilih lagu</b><em class="npa">Ketuk satu lagu di playlist</em></div><div class="npc"><button type="button" class="npv pv" aria-label="Lagu sebelumnya">'+SV.pv+'</button><button type="button" class="npv npp" aria-label="Putar atau jeda"><span class="i1">'+SV.pl+'</span><span class="i2">'+SV.ps+'</span></button><button type="button" class="npv nx" aria-label="Lagu berikutnya">'+SV.nx+'</button></div></div><div class="npq"><span class="npm" aria-hidden="true">0:00</span><div class="npb" role="slider" tabindex="0" aria-label="Posisi lagu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><u></u></div><span class="npe" aria-hidden="true">0:00</span></div>';
   np.querySelector(".pv").addEventListener("click",function(){pick(cur<=0?TRACKS.length-1:cur-1);});
   np.querySelector(".nx").addEventListener("click",function(){pick((cur+1)%TRACKS.length);});
   np.querySelector(".npp").addEventListener("click",function(){pick(cur<0?0:cur);});
+  np.querySelector(".np-synth").addEventListener("click",function(){
+    synthOn=!synthOn;
+    syncSynth();
+    mark();
+  });
   var sk=np.querySelector(".npb"),drag=false;
-  function seekTo(e){if(cur<0||!au.duration||!isFinite(au.duration))return;var r=sk.getBoundingClientRect();au.currentTime=au.duration*Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));}
+  function seekTo(e){
+    if(cur<0)return;
+    var r=sk.getBoundingClientRect(),ratio=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
+    if(TRACKS[cur].src&&!sim&&au.duration&&isFinite(au.duration)){
+      au.currentTime=au.duration*ratio;
+    }else{
+      var dur=secs(TRACKS[cur].d);
+      simT=dur*ratio;
+      if(ol&&ol.children[cur])ol.children[cur].firstChild.style.setProperty("--p",ratio);
+      npTime(simT,dur);
+    }
+  }
   sk.addEventListener("pointerdown",function(e){drag=true;seekTo(e);try{sk.setPointerCapture(e.pointerId);}catch(x){}});
   sk.addEventListener("pointermove",function(e){if(drag)seekTo(e);});
   sk.addEventListener("pointerup",function(){drag=false;});
   sk.addEventListener("pointercancel",function(){drag=false;});
   sk.addEventListener("keydown",function(e){
-    if(cur<0||!au.duration||!isFinite(au.duration))return;
-    if(e.key==="ArrowRight"||e.key==="ArrowLeft"){au.currentTime=Math.min(au.duration,Math.max(0,au.currentTime+(e.key==="ArrowRight"?5:-5)));e.preventDefault();}});
+    if(cur<0)return;
+    if(e.key==="ArrowRight"||e.key==="ArrowLeft"){
+      var delta=e.key==="ArrowRight"?5:-5;
+      if(TRACKS[cur].src&&!sim&&au.duration&&isFinite(au.duration)){
+        au.currentTime=Math.min(au.duration,Math.max(0,au.currentTime+delta));
+      }else{
+        var dur=secs(TRACKS[cur].d);
+        simT=Math.min(dur,Math.max(0,simT+delta));
+        npTime(simT,dur);
+      }
+      e.preventDefault();
+    }
+  });
   (ol.parentNode||pg).appendChild(np);
 }
-function npSet(i){if(!np)return;np.querySelector(".npt").textContent=TRACKS[i].t;np.querySelector(".npa").textContent=TRACKS[i].a;npTime(0,secs(TRACKS[i].d));}
+function npSet(i){if(!np)return;np.querySelector(".npt").textContent=TRACKS[i].t;np.querySelector(".npa").textContent=TRACKS[i].a+" · "+(TRACKS[i].g||"");npTime(0,secs(TRACKS[i].d));}
 function npTime(t,d){
   if(!np)return;var f=d&&isFinite(d)?Math.min(1,t/d):0;np.style.setProperty("--p",f);
   var m=np.querySelector(".npm"),e=np.querySelector(".npe"),b=np.querySelector(".npb");
@@ -1618,9 +1964,13 @@ function npTime(t,d){
 }
 function pick(i){
   var x=TRACKS[i];
-  if(i===cur){if(x.src){if(au.paused)go();else au.pause();}else sim=!sim;mark();return;}
-  cur=i;simT=0;au.pause();accent(i);npSet(i);
-  if(x.src){au.src=srcOf(i);go();}else{au.removeAttribute("src");sim=true;}
+  if(i===cur){
+    if(x.src&&!sim){if(au.paused)go();else au.pause();}
+    else{sim=!sim;syncSynth();}
+    mark();return;
+  }
+  cur=i;simT=0;stepIdx=0;au.pause();stopSynth();accent(i);npSet(i);
+  if(x.src){sim=false;au.src=srcOf(i);go();}else{au.removeAttribute("src");sim=true;syncSynth();}
   ghost(x.t);mark();
 }
 au.addEventListener("timeupdate",function(){
@@ -1631,8 +1981,8 @@ au.addEventListener("loadedmetadata",function(){
   var d=ol.children[cur].querySelector(".d");if(d)d.textContent=TRACKS[cur].d;
 });
 au.addEventListener("play",mark);au.addEventListener("pause",mark);
-au.addEventListener("error",function(){if(au.getAttribute("src"))note("File lagu tidak bisa dibaca di perangkat ini.");mark();});
-au.addEventListener("ended",function(){var n=cur+1;while(n<TRACKS.length&&!TRACKS[n].src)n++;if(n<TRACKS.length)pick(n);else{au.currentTime=0;mark();}});
+au.addEventListener("error",function(){if(au.getAttribute("src")&&cur>=0)fallbackToStudio();});
+au.addEventListener("ended",function(){pick((cur+1)%TRACKS.length);});
 
 function dustInit(){
   cv=bg.querySelector(".dust");cx=cv&&cv.getContext("2d");P=[];
@@ -1650,37 +2000,32 @@ function dust(t,run,dt){
   });
 }
 function tick(now){
-  if(!ol||!ol.isConnected){raf=0;return;}
+  if(!ol||!ol.isConnected){stopSynth();raf=0;return;}
   var dt=Math.min(.05,(now-last)/1000||0);last=now;var run=running();
   vel+=((run?72:0)-vel)*Math.min(1,dt*(run?1.6:2.2));rot=(rot+vel*dt)%360;
   bg.style.setProperty("--rot",rot.toFixed(2));
-  if(cur>=0&&!TRACKS[cur].src&&sim){
-    simT+=dt;var p=simT/secs(TRACKS[cur].d);ol.children[cur].firstChild.style.setProperty("--p",Math.min(1,p));
+  if(cur>=0&&sim){
+    var totalDur=secs(TRACKS[cur].d);
+    simT+=dt;
+    var p=Math.min(1,simT/totalDur);
+    if(ol.children[cur])ol.children[cur].firstChild.style.setProperty("--p",p);
+    npTime(simT,totalDur);
     if(p>=1)pick((cur+1)%TRACKS.length);
   }
   dust(now,run,dt);raf=requestAnimationFrame(tick);
 }
-function split(){
-  var pt=pg.querySelector(".pt");if(!pt||pt.dataset.sp)return;pt.dataset.sp=1;pt.setAttribute("aria-label","Lagi sering kuputar.");var n=0;
-  (function walk(node){[].slice.call(node.childNodes).forEach(function(c){
-    if(c.nodeType===3){var f=document.createDocumentFragment();
-      [].forEach.call(c.textContent,function(ch){if(ch===" "){f.appendChild(document.createTextNode(" "));return;}
-        var s=document.createElement("span");s.className="ch";s.setAttribute("aria-hidden","true");s.style.setProperty("--i",n++);s.textContent=ch;f.appendChild(s);});
-      c.replaceWith(f);}
-    else if(c.nodeType===1&&c.tagName!=="BR")walk(c);});})(pt);
-}
 function fill(el){
-  if(el.dataset.ok)return;el.dataset.ok=1;ol=el;cur=-1;sim=false;pg=el.closest(".pg");bg=pg.querySelector(".bg");
+  if(el.dataset.ok)return;el.dataset.ok=1;ol=el;cur=-1;sim=false;stopSynth();pg=el.closest(".pg");bg=pg.querySelector(".bg");
   el.innerHTML=TRACKS.map(function(x,i){
-    return '<li style="--i:'+i+'"><button type="button" class="tk" data-i="'+i+'" aria-label="'+esc(x.t)+', '+esc(x.a)+', '+esc(x.d)+'"><span class="n">'+("0"+(i+1)).slice(-2)+'</span><span class="eqb" aria-hidden="true"><i></i><i></i><i></i></span><b>'+esc(x.t)+'</b><em>'+esc(x.a)+'</em><span class="d">'+esc(x.d)+'</span></button></li>';
+    return '<li style="--i:'+i+'"><button type="button" class="tk" data-i="'+i+'" aria-label="'+esc(x.t)+', '+esc(x.a)+', '+esc(x.d)+'"><span class="n">'+("0"+(i+1)).slice(-2)+'</span><span class="eqb" aria-hidden="true"><i></i><i></i><i></i></span><b>'+esc(x.t)+'</b><em>'+esc(x.a)+' <small class="tk-g">&middot; '+esc(x.g||'')+'</small></em><span class="d">'+esc(x.d)+'</span></button></li>';
   }).join("");
   el.addEventListener("click",function(e){var b=e.target.closest(".tk");if(b)pick(+b.dataset.i);});
   el.addEventListener("mousemove",function(e){var b=e.target.closest(".tk");if(!b)return;var r=b.getBoundingClientRect();b.style.setProperty("--hx",(e.clientX-r.left)+"px");b.style.setProperty("--hy",(e.clientY-r.top)+"px");});
-  split();npBuild();mark();
+  npBuild();mark();
   if(!reduce){dustInit();last=performance.now();if(!raf)raf=requestAnimationFrame(tick);}
 }
 function scan(){
-  if(ol&&!ol.isConnected){au.pause();if(np&&np.parentNode)np.parentNode.removeChild(np);np=null;ol=null;pg=null;bg=null;cur=-1;sim=false;vel=0;}
+  if(ol&&!ol.isConnected){au.pause();stopSynth();if(np&&np.parentNode)np.parentNode.removeChild(np);np=null;ol=null;pg=null;bg=null;cur=-1;sim=false;vel=0;}
   var e=document.getElementById("plist");if(e)fill(e);
 }
 new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});scan();
@@ -1697,7 +2042,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
  */
 (function(){
   var pg=document.getElementById("pg"),pgb=document.getElementById("pgb");if(!pg||!pgb)return;
-  var DICT = {"en": {"bk": "Back", "c1p1": "I was born in 2011. Since I was little, I grew up surrounded by the love of the people closest to me.", "c1p2": "I was raised by two families: my father's side and my mother's side. In my daily life, I would spend one week living with my father's family, then the next week with my mother's. These two families became an important part of my life's journey, giving me care, affection, and a place to grow.", "c1p3": "I am also the first grandchild in both families. My arrival was part of the family's joy, and I grew up with many beautiful memories alongside people who have always loved me.", "c1p4": "My childhood was filled with simple things that may look ordinary, but mean a great deal to me.", "c1w": "2011", "c1t": "The Beginning", "c2p1": "At the age of four, I entered the world of education through kindergarten. There, I began to get to know a new environment, learned to interact with others, and slowly came to understand many things about the world around me.", "c2p2": "As I grew older, I began to gain experiences and achievements that became a source of pride.", "c2p3": "One of the moments I remember most is winning the city-level Tahfidz championship at the age of six. That achievement became one of my greatest sources of pride as a child.", "c2p4": "I felt happy and proud of myself for achieving something through my own effort. That moment became a memory I still hold dear to this day.", "c2w": "Age 4", "c2t": "First Steps", "c3p1": "At the age of seven, I began elementary school at MIS Aisyiyah Sumatera Utara.", "c3p2": "At this school, I learned a great deal, not only about academics, but also about discipline, responsibility, and how to become a better person.", "c3p3": "Elementary school became one of the most memorable parts of my life. I spent my days filled with stories, experiences, and memories that I still remember today.", "c3p4": "During this time, I also had a male best friend who stayed with me from first grade of elementary school until third grade of junior high. We grew up together, went through many stories, and became part of each other's life journey.", "c3p5": "Every year had its own story. There was laughter, happiness, new experiences, and moments that can never be repeated.", "c3p6": "To me, elementary school was not just about studying in class, but also about friendship, memories, and experiences that shaped who I am.", "c3w": "Age 7", "c3t": "Elementary School", "c4p1": "After finishing elementary school, I continued my education at MTs Aisyiyah Sumatera Utara.", "c4p2": "Junior high was an important phase of my life. During this time, I began to learn how to rise from a low point and to live life slowly, one step at a time.", "c4p3": "Not everything went the way I had hoped. There were many things I had to face, many feelings I kept to myself, and many experiences that taught me to become stronger.", "c4p4": "But I did not stop there.", "c4p5": "I began to live day by day, trying to understand myself and rediscover the spirit I had lost. Slowly, I learned to accept my circumstances and keep moving forward, even when it wasn't easy.", "c4p6": "At this school, I also met many friends who accompanied me on my journey. With them, I gained many stories, experiences, and memories that made my junior high years more meaningful.", "c4p7": "I also achieved various accomplishments while studying there. These became reminders that I was able to get through hard times and still grow into a better person.", "c4p8": "Junior high taught me that everyone has their own process, and sometimes we have to go through hard times to find the strength within ourselves.", "c4w": "Junior high", "c4t": "Rising Again", "c5p1": "After junior high, I continued my education at SMK Swasta Mandiri.", "c5p2": "At first, I thought life in vocational school might not be as enjoyable as I had imagined. I had many worries about the new environment, new friends, and the experiences I would face.", "c5p3": "But after going through it, it turned out not to be as bad as I had feared.", "c5p4": "I met many new friends and teachers who became part of my journey. There were many stories, laughter, experiences, and lessons I gained while living my life at SMK.", "c5p5": "This is where I began to learn more about the world I want to pursue. I started getting to know new things, trying to understand my own abilities, and slowly finding the path I want to take.", "c5p6": "Life at SMK taught me to be more independent, to dare to try, and to start thinking about my own future.", "c5w": "Vocational high school", "c5t": "A New Chapter", "c6p1": "I am now in my second year of SMK and am going through my first work placement (PKL) at a company called DigitalCODE.", "c6p2": "This experience has become a new chapter that means a great deal to me.", "c6p3": "Here, I am gaining a lot of useful knowledge and experience. I am getting to know the working environment, learning new things, and getting the chance to develop skills that I had previously only studied at school.", "c6p4": "Every day is an opportunity for me to learn, try, and understand more.", "c6p5": "I realize there is still much I need to learn, but I am grateful for the chance to grow and gain new experiences.", "c6p6": "This work placement is one of my first steps toward getting to know the real world, and part of my journey toward finding my future.", "c6w": "Second year of SMK", "c6t": "My First Experience in the Working World", "c7p1": "Today, I am someone who is still learning, growing, and trying to understand myself.", "c7p2": "Looking back on my life, from my childhood, my school years, friendships, and achievements, to the many experiences I have been through, I realize that all of it has played a role in shaping who I am today.", "c7p3": "I may not fully know what my future will look like. There is still so much I want to learn, many dreams I want to achieve, and many experiences I want to have.", "c7p4": "Still, I am proud of myself for having come through so many journeys to reach this point.", "c7p5": "I believe that every small step I take today will become part of my bigger story in the future.", "c7w": "Now", "c7t": "Who I Am Today", "c8p1": "My journey is still long.", "c8p2": "There are still many stories yet to be written, many experiences yet to be felt, and many dreams waiting to come true.", "c8p3": "I do not know for certain where this journey will take me. But I want to keep learning, keep growing, and keep becoming a better person than I was the day before.", "c8p4": "I want to enjoy every part of the process, appreciate every experience, and not forget the people who have been part of my journey.", "c8p5": "Because to me, life is not only about the final destination, but also about every step that brings me there.", "c8w": "Next", "c8t": "An Ending That Is Not Yet the End", "e1": "This is my story so far.", "e2": "And my journey continues.", "e3": "Keep growing, keep learning, and keep being yourself.", "h": "My Story", "sub": "A journey about growing, learning, and finding myself.", "lead": "Everyone has a story, and this is mine — a journey that began with love, grew through many experiences, and continues to this day."}, "zh": {"bk": "返回", "h": "我的故事", "sub": "一段关于成长、求知与探寻自我的旅程。", "lead": "每个人都有属于自己的故事，而这就是我的故事——一段始于关爱、历经成长、不断积累经验，并持续走向未来的旅程。", "c1w": "2011年", "c1t": "生命的开端", "c1p1": "我出生于2011年。自幼起，我便在身边至亲至爱之人的关怀与陪伴中长大。", "c1p2": "我由两个家庭共同抚养长大，一个是父亲这边的家族，另一个是母亲那边的家族。日常生活中，我一周住在父亲家，下周住在母亲家。这两个家庭成为我生命旅程中最重要的部分，给予我悉心的关爱、温暖以及茁壮成长的天地。", "c1p3": "我也是两个家族的长孙。我的到来为家庭带来了许多欢笑，童年的每一幕都留下了被爱意包围的美好回忆。", "c1p4": "我的童年充满了简单纯粹的小事，它们看似平凡，却对我意义非凡。", "c2w": "4岁", "c2t": "迈出第一步", "c2p1": "四岁时，我走进幼儿园，开始踏入求学之路。在那里，我认识了新的环境，学会与人交往，慢慢地了解身边的这个广阔世界。", "c2p2": "随着年龄增长，我开始收获属于自己的经历和令自己骄傲的成就。", "c2p3": "令我记忆尤深的一刻，是我六岁那年获得了全市《古兰经》诵读记忆比赛（Tahfidz）冠军。这项荣誉成为我童年最值得自豪的事情之一。", "c2p4": "我为自己通过努力取得的成绩感到欣喜与自豪。那一刻的记忆，至今深深烙印在我的心中。", "c3w": "7岁", "c3t": "小学时光", "c3p1": "七岁时，我进入北苏门答腊 MIS Aisyiyah 小学开启了小学阶段的学习。", "c3p2": "在这所学校，我学到了很多，不仅是课本知识，更有纪律、责任感，以及如何成为一个更好的人。", "c3p3": "小学时光是我生命中最难忘的片段之一。那些充满欢笑、故事与回忆的日子，至今历历在目。", "c3p4": "在那段时光里，我还收获了一位挚友，我们从小学一年级一路形影不离地陪伴到初中三年级。我们共同成长，彼此见证了对方的人生起步。", "c3p5": "每一个年头都有专属的故事。有欢笑、有快乐、有新的体验，还有永远无法复制的珍贵瞬间。", "c3p6": "对我而言，小学不仅是在教室里念书，更是友谊、回忆与塑造自我品格的重要阶段。", "c4w": "初中时期", "c4t": "重拾力量与奋起", "c4p1": "小学毕业后，我升入了北苏门答腊 MTs Aisyiyah 初中继续学业。", "c4p2": "初中是我人生中至关重要的转折点。在这段时期，我学会了如何从低谷中重新站起来，踏实从容地面对生活。", "c4p3": "并非所有的事都能如愿以偿。我经历过许多考验，把很多情绪默默藏在心底，正是那些磨砺教会了我变得坚强。", "c4p4": "然而，我并未就此止步。", "c4p5": "我开始踏实过好每一天，努力读懂自己，重新找回曾经丢失的斗志。我学会了欣然接纳现状，即便前路不易，也要坚定向阳而行。", "c4p6": "在初中，我也结识了许多温暖的朋友。与他们相伴的时光充满故事与欢笑，让初中岁月变得格外丰盈。", "c4p7": "在那期间，我也斩获了多项殊荣与成绩。这些收获时刻提醒着我：我有能力跨越荆棘，蜕变成更优秀的自己。", "c4p8": "初中岁月让我明白：每个人都有属于自己的节奏，有时唯有经历风雨，方能发掘内心深处坚不可摧的力量。", "c5w": "职业高中", "c5t": "开启崭新篇章", "c5p1": "告别初中后，我进入了 Mandiri 私立职业高中（SMK Swasta Mandiri）深造。", "c5p2": "起初，我以为职高生活可能并不如想象中那般顺心，我对陌生的环境、新同学以及未知的挑战怀揣着种种忐忑。", "c5p3": "然而真正投入其中后，才发现一切远比我想象的更加美好。", "c5p4": "我结识了许多并肩作战的新伙伴和悉心指引的恩师。在职高的日子里，满载着欢声笑语、宝贵经验与丰富知识。", "c5p5": "正是在这里，我开始深入接触自己真正热爱的领域。我探索新技术、发掘自身的潜能，并逐渐明晰了未来想要奔赴的方向。", "c5p6": "职高生活教会了我独立思考、勇于尝试，并开始为自己的前程深谋远虑。", "c6w": "职高二年级", "c6t": "职场初体验", "c6p1": "如今我已升入职高二年级，正在一家名为 DigitalCODE 的企业进行我的首次职场实习（PKL）。", "c6p2": "这段宝贵的实习经历是我人生中意义非凡的全新一页。", "c6p3": "在这里，我汲取了海量的实战知识与实操经验。我深入融入真实的工作环境，不断接触前沿技能，将课堂上的理论化为实践能力。", "c6p4": "每一天都是我求知、探索和拓宽眼界的绝佳机会。", "c6p5": "我深知自己还有很多知识需要掌握，但我由衷感恩能获得这样蜕变成长与探索新知的机遇。", "c6p6": "这次实习是我迈向真实社会的第一步，也是我寻觅未来之路的关键拼图。", "c7w": "当下", "c7t": "今天的我", "c7p1": "今天的我，依然是一个在求知路上不断前行、持续成长并探寻自我的少年。", "c7p2": "回望走过的路，从童年时光、校园岁月、深厚情谊、所获荣誉，到每一次经历的考验，我深刻明白这一切都在塑造着今天的我。", "c7p3": "未来的全貌或许尚未全然揭晓。我心中依然怀揣着无尽的好奇、渴望实现的梦想，以及想要亲身体验的万千广阔。", "c7p4": "但我为自己感到骄傲，因为我踏踏实实走过了每一段旅程，坚定地来到了今天的位置。", "c7p5": "我深信，今天迈出的每一个微小步伐，都将在未来的宏大篇章中留下闪光的印记。", "c8w": "未来", "c8t": "未完待续的前路", "c8p1": "我的旅途才刚刚开始。", "c8p2": "还有无数故事等待书写，无数精彩等待感受，无数梦想等待去实现。", "c8p3": "我无法准确预测这条路会将我带往何方，但我唯愿保持热爱，不断求索、持续成长，成为比昨天更好的自己。", "c8p4": "我想细细品味沿途的每一个过程，珍视每一次经历，永远铭记那些在我生命旅途中给予我温暖的人。", "c8p5": "因为对我来说，人生的意义不仅在于抵达终点，更在于奔赴终点的每一步风景。", "e1": "这就是迄今为止我的故事。", "e2": "而我的旅程，仍在继续。", "e3": "持续生长，不断探索，勇敢做真实的自己。"}, "fr": {"bk": "Retour", "h": "Mon histoire", "sub": "Un voyage fait de croissance, d’apprentissage et de découverte de soi.", "lead": "Chaque personne a une histoire, et voici la mienne — un voyage commencé dans l’amour, forgé par les expériences et qui se poursuit encore aujourd’hui.", "c1w": "2011", "c1t": "Le commencement", "c1p1": "Je suis né en 2011. Depuis mon enfance, j’ai grandi entouré de l’amour et de la bienveillance de mes proches.", "c1p2": "J’ai été élevé par deux familles : celle de mon père et celle de ma mère. Au quotidien, je passais une semaine avec la famille paternelle, puis la semaine suivante avec la famille maternelle. Ces deux familles ont joué un rôle essentiel dans mon parcours, m’offrant écoute, affection et un foyer pour m’épanouir.", "c1p3": "Je suis également le premier petit-enfant des deux côtés. Mon arrivée a été une grande joie pour toute la famille, et j’ai grandi bercé de merveilleux souvenirs aux côtés de personnes qui m’ont toujours aimé.", "c1p4": "Mon enfance a été faite de choses simples en apparence, mais d’une immense valeur pour moi.", "c2w": "À 4 ans", "c2t": "Les premiers pas", "c2p1": "À l’âge de quatre ans, j’ai découvert l’école à la maternelle. C’est là que j’ai commencé à m’ouvrir à un nouvel environnement, à interagir avec les autres et à comprendre peu à peu le monde qui m’entourait.", "c2p2": "En grandissant, j’ai commencé à vivre des expériences et à remporter des réussites qui sont devenues de vraies fiertés.", "c2p3": "L’un des moments les plus marquants de mon enfance a été ma victoire au concours municipal de récitation coranique (Tahfidz) à l’âge de six ans. Cette réussite reste l’une de mes plus belles fiertés de petit garçon.", "c2p4": "J’étais tellement heureux et fier d’avoir accompli quelque chose par mes propres efforts. Ce souvenir m’accompagne encore aujourd’hui.", "c3w": "À 7 ans", "c3t": "Les années d'école primaire", "c3p1": "À sept ans, j’ai commencé l’école primaire à la MIS Aisyiyah Sumatera Utara.", "c3p2": "Dans cette école, j’ai énormément appris, pas seulement sur le plan scolaire, mais aussi sur la discipline, le sens des responsabilités et la façon de devenir meilleur chaque jour.", "c3p3": "L’école primaire a été l’une des périodes les plus marquantes de ma vie. Mes journées étaient remplies d’histoires, de découvertes et de souvenirs encore gravés dans ma mémoire.", "c3p4": "À cette époque, j’avais aussi un meilleur ami qui m’a accompagné du CP jusqu’à la classe de 3ème. Nous avons grandi ensemble, partagé mille aventures et façonné réciproquement nos parcours.", "c3p5": "Chaque année avait son lot d’histoires, de rires, de bonheur, de nouveautés et d’instants uniques qui ne reviendront jamais.", "c3p6": "Pour moi, l’école primaire ne se résumait pas aux cours en classe : c’était avant tout l’amitié, les souvenirs et les expériences qui ont forgé ma personnalité.", "c4w": "Les années collège", "c4t": "L'heure de rebondir", "c4p1": "Après l’école primaire, j’ai poursuivi mes études au collège MTs Aisyiyah Sumatera Utara.", "c4p2": "Le collège a été une étape clé dans ma vie. C’est durant cette période que j’ai appris à surmonter les moments difficiles et à reprendre goût à la vie, pas à pas.", "c4p3": "Tout ne s’est pas toujours passé comme je l’espérais. Il y a eu des défis à relever, des sentiments que j’ai gardés pour moi et des épreuves qui m’ont appris à devenir plus fort.", "c4p4": "Pourtant, je ne me suis jamais arrêté là.", "c4p5": "J’ai commencé à vivre au jour le jour, à chercher à me comprendre et à retrouver cette flamme qui s’était un temps éteinte. Doucement, j’ai appris à accepter les choses et à avancer, même quand ce n’était pas simple.", "c4p6": "Dans cet établissement, j’ai rencontré de précieux amis qui ont embelli ma route. Avec eux, j’ai partagé tant de rires et de souvenirs qui ont donné tout son sens à cette période.", "c4p7": "J’y ai également obtenu plusieurs récompenses scolaires et distinctions. Elles m’ont rappelé que j’avais la force de franchir les caps difficiles et d’en sortir grandi.", "c4p8": "Le collège m’a enseigné que chacun a son propre rythme, et qu’il faut parfois traverser la tempête pour découvrir la force qui sommeille en soi.", "c5w": "Lycée professionnel (SMK)", "c5t": "Un nouveau chapitre", "c5p1": "Après le collège, j’ai continué mon parcours au lycée professionnel SMK Swasta Mandiri.", "c5p2": "Au début, je craignais que la vie au lycée pro ne soit pas aussi agréable que je l’espérais. J’avais pas mal d’appréhension face à ce nouvel univers, aux nouveaux camarades et aux défis à venir.", "c5p3": "Mais une fois lancé, la réalité a été bien plus belle que mes craintes.", "c5p4": "J’ai fait la connaissance d’amis formidables et d’enseignants inspirants. Mon quotidien au lycée est riche en fous rires, en anecdotes et en leçons de vie.", "c5p5": "C’est là que j’ai commencé à approfondir le domaine qui me passionne réellement. J’ai découvert de nouvelles compétences, pris conscience de mon potentiel et tracé la voie que je désire suivre.", "c5p6": "Le lycée m’a appris à devenir plus autonome, à oser expérimenter et à bâtir dès maintenant mon avenir.", "c6w": "2ème année de lycée pro", "c6t": "Premiers pas dans le monde professionnel", "c6p1": "Je suis actuellement en deuxième année de SMK et j’effectue mon premier stage en entreprise chez DigitalCODE.", "c6p2": "Cette expérience marque une étape majeure et profondément enrichissante dans ma vie.", "c6p3": "J’y acquiers énormément de compétences concrètes et de connaissances utiles. Je découvre les réalités du monde du travail et développe des aptitudes que je n’avais jusqu’alors abordées qu’en théorie à l’école.", "c6p4": "Chaque journée est une formidable occasion d’apprendre, de créer et d’élargir mes horizons.", "c6p5": "Je sais bien qu’il me reste encore beaucoup à explorer, mais je suis infiniment reconnaissant d’avoir cette opportunité de progresser.", "c6p6": "Ce stage est l’une de mes premières passerelles vers le monde réel, et une brique essentielle dans la construction de mon futur.", "c7w": "Aujourd'hui", "c7t": "Qui je suis aujourd'hui", "c7p1": "Aujourd’hui, je suis quelqu’un qui continue d’apprendre, d’évoluer et d’apprendre à mieux se connaître.", "c7p2": "En posant un regard sur mon chemin — depuis la petite enfance jusqu’à l’école, les amitiés, les réussites et les épreuves surmontées — je réalise que tout cela a contribué à forger l’homme que je deviens.", "c7p3": "Je ne sais peut-être pas encore exactement de quoi sera fait demain. J’ai tant de choses à apprendre, tant de rêves à accomplir et tant d’expériences à vivre.", "c7p4": "Mais je suis fier de mon chemin, fier d’avoir bravé les étapes pour me tenir là où j’en suis aujourd’hui.", "c7p5": "J’ai la conviction que chaque petit pas posé aujourd’hui sera une ligne précieuse dans la grande histoire de demain.", "c8w": "À suivre", "c8t": "Une fin qui n'est qu'un début", "c8p1": "Mon voyage ne fait que commencer.", "c8p2": "Tant de pages restent à écrire, tant d’émotions restent à vivre, et tant de projets attendent de voir le jour.", "c8p3": "J’ignore où cette route me mènera exactement, mais je veux continuer d’apprendre, de grandir et d’être chaque jour un peu meilleur que la veille.", "c8p4": "Je veux savourer chaque étape, apprécier chaque découverte et ne jamais oublier celles et ceux qui ont marqué ma route.", "c8p5": "Car pour moi, la vie n’est pas qu’une destination finale : c’est avant tout chaque pas qui nous y achemine.", "e1": "Voici mon histoire jusqu'à présent.", "e2": "Et l'aventure continue.", "e3": "Continuer de grandir, d'apprendre, et de rester fidèle à soi-même."}, "es": {"bk": "Volver", "h": "Mi historia", "sub": "Un viaje de crecimiento, aprendizaje y descubrimiento personal.", "lead": "Cada persona tiene una historia, y esta es la mía: un viaje que comenzó con amor, creció con experiencias y continúa hasta el día de hoy.", "c1w": "2011", "c1t": "El comienzo", "c1p1": "Nací en 2011. Desde pequeño crecí rodeado del cariño de mis seres queridos.", "c1p2": "Fui criado por dos familias: la de mi padre y la de mi madre. En mi vida diaria, pasaba una semana con la familia de mi padre y la siguiente con la de mi madre. Ambas familias han sido una parte fundamental de mi vida, brindándome atención, amor y un lugar para crecer.", "c1p3": "También soy el primer nieto de ambas familias. Mi llegada fue una gran alegría y crecí con hermosos recuerdos junto a personas que siempre me han amado.", "c1p4": "Mi infancia estuvo llena de cosas sencillas que pueden parecer comunes, pero significan mucho para mí.", "c2w": "A los 4 años", "c2t": "Primeros pasos", "c2p1": "A los cuatro años ingresé al jardín de infancia. Allí comencé a conocer un nuevo entorno, aprender a relacionarme con los demás y comprender poco a poco el mundo que me rodeaba.", "c2p2": "Con el paso de los años, comencé a tener experiencias y logros que se convirtieron en un orgullo personal.", "c2p3": "Uno de los momentos que más recuerdo es haber ganado el campeonato municipal de memorización del Corán (Tahfidz) a los seis años. Ese logro fue uno de mis mayores orgullos de niño.", "c2p4": "Me sentí muy feliz y orgulloso de mí mismo por haber alcanzado algo con mi propio esfuerzo. Ese recuerdo me acompaña hasta hoy.", "c3w": "A los 7 años", "c3t": "Años de primaria", "c3p1": "A los siete años inicié la escuela primaria en MIS Aisyiyah Sumatera Utara.", "c3p2": "En esta escuela aprendí mucho, no solo en lo académico, sino también en disciplina, responsabilidad y en cómo ser una mejor persona.", "c3p3": "La escuela primaria fue una de las etapas más memorables de mi vida, llena de historias y recuerdos que aún guardo con cariño.", "c3p4": "Durante esa época tuve un gran amigo con quien compartí desde primer grado de primaria hasta tercer año de secundaria. Crecimos juntos y fuimos parte del camino del otro.", "c3p5": "Cada año tuvo su propia historia: risas, felicidad, nuevas experiencias y momentos únicos que no volverán a repetirse.", "c3p6": "Para mí, la primaria no fue solo estudiar en el aula, sino también amistad, recuerdos y vivencias que moldearon mi forma de ser.", "c4w": "La secundaria", "c4t": "Tiempo de superación", "c4p1": "Tras terminar la primaria, continué mis estudios en la secundaria MTs Aisyiyah Sumatera Utara.", "c4p2": "La secundaria fue una etapa muy importante. En este periodo aprendí a levantarme de los momentos difíciles y a vivir la vida con calma, paso a paso.", "c4p3": "No todo salió como esperaba. Tuve que enfrentar desafíos, guardar sentimientos para mí y vivir experiencias que me hicieron más fuerte.", "c4p4": "Sin embargo, no me detuve allí.", "c4p5": "Comencé a vivir día a día, intentando comprenderme y recuperar el entusiasmo perdido. Poco a poco aprendí a aceptar las circunstancias y seguir adelante, aunque no siempre fuera fácil.", "c4p6": "Allí también conocí a grandes amigos que me acompañaron. Con ellos viví anécdotas y recuerdos que hicieron que esta etapa fuera muy significativa.", "c4p7": "También obtuve varios reconocimientos académicos durante mis estudios, recordatorios de que fui capaz de superar momentos difíciles y crecer.", "c4p8": "La secundaria me enseñó que cada persona tiene su propio proceso y que a veces hay que atravesar tiempos difíciles para hallar nuestra fuerza interior.", "c5w": "Escuela vocacional (SMK)", "c5t": "Un nuevo capítulo", "c5p1": "Después de la secundaria continué mis estudios en la escuela técnica vocacional SMK Swasta Mandiri.", "c5p2": "Al principio pensé que la vida en SMK quizás no sería tan agradable como imaginaba, con dudas sobre el nuevo entorno, compañeros y retos.", "c5p3": "Pero al vivirlo, resultó no ser tan malo como temía.", "c5p4": "Conocí a muchos nuevos amigos y profesores que fueron parte de mi camino. En SMK acumulé muchas historias, risas y aprendizajes valiosos.", "c5p5": "Aquí comencé a profundizar en el mundo que realmente me apasiona. Conocí nuevas áreas, comprendí mis habilidades y tracé el camino que deseo seguir.", "c5p6": "La vida en SMK me enseñó a ser más independiente, a atreverme a probar y a pensar en mi propio futuro.", "c6w": "2.º año de SMK", "c6t": "Primera experiencia laboral", "c6p1": "Actualmente curso el segundo año de SMK y realizo mis primeras prácticas laborales (PKL) en una empresa llamada DigitalCODE.", "c6p2": "Esta experiencia se ha convertido en un nuevo capítulo sumamente significativo en mi vida.", "c6p3": "Aquí adquiero muchos conocimientos y experiencias útiles. Conozco el entorno laboral real y desarrollo habilidades que antes solo veía en la escuela.", "c6p4": "Cada día es una oportunidad para aprender, experimentar y comprender más.", "c6p5": "Sé que todavía tengo mucho por aprender, pero agradezco de corazón la oportunidad de crecer y adquirir nuevas experiencias.", "c6p6": "Estas prácticas son uno de mis primeros pasos para conocer el mundo real y encontrar mi futuro.", "c7w": "Ahora", "c7t": "Quién soy hoy", "c7p1": "Hoy soy alguien que sigue aprendiendo, creciendo y buscando entenderse a sí mismo.", "c7p2": "Al mirar atrás hacia mi vida —infancia, escuela, amistades, logros y desafíos— comprendo que todo ha influido en la persona que soy hoy.", "c7p3": "Quizás aún no sepa con certeza cómo será mi futuro. Tengo muchas cosas por aprender, sueños por alcanzar y experiencias por vivir.", "c7p4": "Pero estoy orgulloso de mí mismo por haber recorrido todos estos caminos hasta llegar aquí.", "c7p5": "Confío en que cada pequeño paso que doy hoy será parte de mi gran historia en el futuro.", "c8w": "Siguiente", "c8t": "Un final que aún no termina", "c8p1": "Mi camino aún es largo.", "c8p2": "Quedan muchas historias por escribir, experiencias por sentir y sueños por hacer realidad.", "c8p3": "No sé con certeza a dónde me llevará este viaje, pero deseo seguir aprendiendo, creciendo y siendo mejor cada día.", "c8p4": "Quiero disfrutar cada proceso, valorar cada vivencia y no olvidar a quienes han sido parte de mi camino.", "c8p5": "Porque para mí, la vida no es solo el destino final, sino cada paso que nos lleva hacia él.", "e1": "Esta es mi historia hasta ahora.", "e2": "Y mi viaje continúa.", "e3": "Seguir creciendo, seguir aprendiendo y seguir siendo uno mismo."}, "ja": {"bk": "戻る", "h": "私のストーリー", "sub": "成長し、学び、自分自身を見つける旅。", "lead": "誰にでも物語があり、これが私の物語です。愛から始まり、経験を通じて育ち、今もなお続いている旅路です。", "c1w": "2011年", "c1t": "始まりの時", "c1p1": "私は2011年に生まれました。幼い頃から、身近な大切な人々のたくさんの愛情に囲まれて育ちました。", "c1p2": "私は父方と母方の2つの家庭で育てられました。1週間は父の家で、次の1週間は母の家で過ごす生活でした。この2つの家族は私の成長の場であり、かけがえのない存在です。", "c1p3": "私は両家の初孫でもありました。私の誕生は家族の大きな喜びであり、温かい思い出に包まれて育ちました。", "c1p4": "私の幼少期は、一見普通に見えるけれど、自分にとってはかけがえのない温かな日常で満たされていました。", "c2w": "4歳", "c2t": "最初の一歩", "c2p1": "4歳の時に幼稚園に入園し、教育の世界へ足を踏み入れました。新しい環境を知り、人との関わり方を学び、少しずつ広い世界を理解し始めました。", "c2p2": "年齢を重ねるにつれて、自分だけの経験や誇りに思える実績が増えていきました。", "c2p3": "今でも鮮明に覚えているのは、6歳の時に市レベルのコーラン暗誦大会（Tahfidz）で優勝したことです。幼少期の大きな誇りのひとつです。", "c2p4": "自分の努力で何かを成し遂げられたことが本当に嬉しく、誇らしかったことを覚えています。その瞬間は今も大切な思い出です。", "c3w": "7歳", "c3t": "小学校時代", "c3p1": "7歳の時に北スマトラの MIS Aisyiyah 小学校に入学し、小学校生活をスタートさせました。", "c3p2": "この学校では学問だけでなく、規律や責任感、より良い人間になるための多くを学びました。", "c3p3": "小学校生活は人生の中で最も印象深い時期のひとつで、数々のエピソードや思い出で満ち溢れていました。", "c3p4": "この頃、小1から中3までずっと一緒に過ごした親友がいました。互いに成長し合い、かけがえのない時間を共にしました。", "c3p5": "毎年が特別な物語でした。笑顔、喜び、新しい体験、そして二度と戻らない輝く瞬間がありました。", "c3p6": "私にとって小学校は単なる教室での勉強ではなく、友情と思い出、自分を形作った大切な時間でした。", "c4w": "中学校時代", "c4t": "再び立ち上がる時", "c4p1": "小学校を卒業後、北スマトラの MTs Aisyiyah 中学校へ進学しました。", "c4p2": "中学時代は人生の重要な転機となりました。この時期、私は困難から立ち直り、一歩一歩前へ進むことを学びました。", "c4p3": "すべてが思い通りにいくわけではありませんでした。一人で抱え込んだ感情や多くの試練が、私を強くしてくれました。", "c4p4": "それでも、私はそこで止まりませんでした。", "c4p5": "一日一日を大切に生き、自分を見つめ直し、失いかけた情熱を取り戻していきました。困難でも前を向くことを覚えました。", "c4p6": "この学校でも支え合える多くの友人と出会い、中学生活はより深みのある思い出となりました。", "c4p7": "在学中には様々な実績も残すことができ、困難を乗り越えて成長できる自分の力を実感しました。", "c4p8": "誰もが自分自身の歩みを持っており、困難を経験してこそ内に秘めた強さを見出せることを学びました。", "c5w": "職業高校（SMK）", "c5t": "新しい章へ", "c5p1": "中学校を卒業後、SMK Swasta Mandiri（私立マンディリ職業高校）へ進学しました。", "c5p2": "最初は新しい環境や友人関係への不安があり、想像通り楽しい生活になるか心配でした。", "c5p3": "しかし実際に飛び込んでみると、心配していたような悪いことは何一つありませんでした。", "c5p4": "多くの新しい仲間や先生方に出会い、笑いと学びに満ちた充実した日々を過ごしています。", "c5p5": "ここで私は本当に打ち込みたい分野を見つけ、新しい技術を学び、自分の可能性を広げることができました。", "c5p6": "高校生活を通じて、自立心や挑戦する勇気、そして未来へのビジョンを持つことができました。", "c6w": "高校2年生", "c6t": "社会での初めての経験", "c6p1": "現在、高校2年生になり、DigitalCODEという企業で初めての実務インターンシップ（PKL）を経験しています。", "c6p2": "この経験は、私の人生において非常に意義深い新しい一歩となっています。", "c6p3": "学校で学んだ知識を実際の現場で応用し、実践的なスキルと多くの知見を得ることができています。", "c6p4": "毎日が新しい挑戦であり、学びと発見の連続です。", "c6p5": "まだまだ学ぶべきことは多いですが、成長できる貴重な機会に心から感謝しています。", "c6p6": "このインターンシップは実社会を知る第一歩であり、将来を切り拓く大切な糧となっています。", "c7w": "現在", "c7t": "今日の自分", "c7p1": "今日の私は、今もなお学び続け、成長し、自分を深めようとしている一人の人間です。", "c7p2": "幼少期から学生時代、友人たち、成し遂げてきたこと、すべての道のりが今の自分を作っていると実感しています。", "c7p3": "未来のすべてが分かっているわけではありません。学びたいこと、叶えたい夢、体験したい世界がまだたくさんあります。", "c7p4": "それでも、数々の道のりを経てここまで歩んできた自分を誇りに思っています。", "c7p5": "今日踏み出す小さな一歩が、未来の大きな物語の一部になると信じています。", "c8w": "これから", "c8t": "まだ終わらない旅", "c8p1": "私の旅はまだまだこれからです。", "c8p2": "まだ書かれていない物語、まだ感じたことのない体験、実現を待つ夢がたくさんあります。", "c8p3": "この道がどこへ続くかは分かりませんが、学び続け、成長し、昨日より良い自分であり続けたいです。", "c8p4": "すべての道のりを楽しみ、すべての経験を大切にし、出会った人々への感謝を忘れずに歩んでいきます。", "c8p5": "人生は最終目的地だけでなく、そこへ向かう一歩一歩の道のりこそが大切だからです。", "e1": "これが私のこれまでの物語です。", "e2": "そして、私の旅は続きます。", "e3": "成長し続け、学び続け、自分らしくあり続けること。"}, "ar": {"bk": "رجوع", "h": "قصتي", "sub": "رحلة عن النمو، والتعلّم، واكتشاف الذات.", "lead": "لكل منا قصة، وهذه قصتي — رحلة بدأت بالمحبة، ونمت عبر التجارب، وتستمر حتى يومنا هذا.", "c1w": "2011", "c1t": "البداية", "c1p1": "ولدت في عام 2011. ومنذ صغري، نشأت محاطًا بمحبة ورعاية أقرب الناس إليّ.", "c1p2": "نشأت في كنف عائلتين: عائلة والدي وعائلة والدتي. في حياتي اليومية، كنت أقضي أسبوعًا مع عائلة والدي، والأسبوع التالي مع عائلة والدتي. كانت هاتان العائلتان جزءًا أساسيًا في مسيرة حياتي، منحاني الرعاية والمحبة ومكانًا للنمو.", "c1p3": "كما أنني الحفيد الأول لكلا العائلتين. كان مجيئي بهجة للجميع، ونشأت بذكريات جميلة بصحبة من أحبوني دائمًا.", "c1p4": "كانت طفولتي مليئة بأشياء بسيطة قد تبدو عادية، لكنها تعني لي الكثير.", "c2w": "في سن 4 سنوات", "c2t": "الخطوات الأولى", "c2p1": "في سن الرابعة، دخلت عالم التعليم عبر الروضة. ومن هناك بدأت أتعرف على بيئة جديدة، وأتعلّم التفاعل مع الآخرين، وأفهم العالم من حولي تدريجيًا.", "c2p2": "مع تقدمي في العمر، بدأت أخوض تجارب وأحقق إنجازات أصبحت مصدر فخر لي.", "c2p3": "من أكثر اللحظات التي أعتز بها فوزي ببطولة حفظ القرآن الكريم (تحفيظ) على مستوى المدينة في سن السادسة. كان ذلك الإنجاز فخرًا كبيرًا في طفولتي.", "c2p4": "شعرت بسعادة وفخر كبيرين لأنني حققت شيئًا بجهدي الذاتي. وبقيت تلك اللحظة ذكرى عزيزة أحملها حتى الآن.", "c3w": "في سن 7 سنوات", "c3t": "المرحلة الابتدائية", "c3p1": "في سن السابعة، بدأت المرحلة الابتدائية في مدرسة MIS Aisyiyah في سومطرة الشمالية.", "c3p2": "في هذه المدرسة تعلمت الكثير، ليس في الجانب الدراسي فقط، بل في الانضباط وتحمل المسؤولية وكيف أكون شخصًا أفضل.", "c3p3": "كانت المرحلة الابتدائية من أجمل محطات حياتي، مليئة بالقصص والتجارب والذكريات العالقة في ذهني.", "c3p4": "خلال هذه الفترة، رافقني صديق مخلص من الصف الأول الابتدائي حتى الثالث المتوسط. كبرنا معًا وخضنا تجارب مشتركة.", "c3p5": "كان لكل عام حكايته: ضحكات وسعادة وتجارب جديدة ولحظات لا تعوض.", "c3p6": "بالنسبة لي، لم تكن الابتدائية مجرد دراسة، بل صداقة وذكريات وتجارب صنعت شخصيتي.", "c4w": "المرحلة المتوسطة", "c4t": "النهوض من جديد", "c4p1": "بعد الابتدائية، واصلت تعليمي في مدرسة MTs Aisyiyah المتوسطة في سومطرة الشمالية.", "c4p2": "كانت المرحلة المتوسطة محطة فاصلة في حياتي، تعلمت فيها كيف أنهض من العثرات وأمضي قدمًا بروية.", "c4p3": "لم تجر كل الأمور كما تمنيت؛ واجهت صعوبات واحتفظت بمشاعر لنفسي، وتلك التجارب علمتني أن أكون أقوى.", "c4p4": "ومع ذلك، لم أستسلم.", "c4p5": "بدأت أعيش كل يوم بيومه، محاولًا فهم نفسي واستعادة العزيمة. تعلمت الرضا والتقدم حتى لو كان الطريق صعبًا.", "c4p6": "التقيت بأصدقاء رائعين رافقوني في الرحلة، وقضينا معًا أوقاتًا لا تُنسى.", "c4p7": "كما حققت إنجازات دراسية كانت تذكيرًا بقدرتي على تجاوز الأوقات الصعبة والتطور نحو الأفضل.", "c4p8": "علمتني هذه المرحلة أن لكل إنسان وتيرته، وأحيانًا علينا خوض الصعاب لنكتشف قوتنا الكامنة.", "c5w": "الثانوية المهنية (SMK)", "c5t": "فصل جديد", "c5p1": "بعد المتوسطة، انتقلت إلى ثانوية مانديري المهنية الخاصة (SMK Swasta Mandiri).", "c5p2": "في البداية، خشيت ألا تكون الحياة المهنية ممتعة، وتملكتني مخاوف بشأن البيئة والزملاء والتحديات الجديدة.", "c5p3": "لكن مع التجربة، تبين أن كل شيء أفضل بكثير مما ظننت.", "c5p4": "تعرفت على أصدقاء جدد وأساتذة متميزين، وكانت أيامي مليئة بالضحكات والتجارب والدروس المفيدة.", "c5p5": "هنا بدأت أتعمق في المجال الذي أحبه، واكتشفت مهارات جديدة وفهمت قدراتي ورسمت طريقي المستقبلي.", "c5p6": "علمتني الثانوية المهنية الاعتماد على النفس والشجاعة في التجربة والتفكير الجاد في مستقبلي.", "c6w": "الصف الثاني الثانوي", "c6t": "التجربة الأولى في سوق العمل", "c6p1": "أنا الآن في الصف الثاني الثانوي المهني وأخوض تدريبي الميداني الأول (PKL) في شركة تدعى DigitalCODE.", "c6p2": "هذه التجربة تمثل محطة جديدة وذات معنى كبير في حياتي.", "c6p3": "أكتسب هنا معارف وخبرات عملية قيّمة، وأتعرف على بيئة العمل الحقيقية وأطور مهاراتي البرمجية.", "c6p4": "كل يوم هو فرصة حقيقية للتعلّم والتجربة واستيعاب المزيد.", "c6p5": "أدرك أن أمامي الكثير لأتعلمه، لكنني ممتن للغاية لفرصة التطور وخوض تجارب جديدة.", "c6p6": "هذا التدريب خطوة أولى للتعرف على العالم الحقيقي ورسم ملامح مستقبلي.", "c7w": "الآن", "c7t": "أنا اليوم", "c7p1": "أنا اليوم شخص يواصل التعلّم والتطور والبحث عن ذاته.", "c7p2": "حين أتأمل مسيرة حياتي من الطفولة والمدرسة والصداقات والإنجازات والصعوبات، أدرك أن كل ذلك صقل شخصيتي الحالية.", "c7p3": "قد لا أعرف مستقبلي بالتفصيل، وما زال لدي الكثير لأتعلمه وأحلام أود تحقيقها وتجارب أنتظر عيشها.", "c7p4": "لكنني فخور بنفسي لأنني اجتزت كل تلك المحطات ووصلت إلى هنا.", "c7p5": "أؤمن بأن كل خطوة صغيرة أخطوها اليوم ستكون جزءًا من قصتي الكبرى في الغد.", "c8w": "القادم", "c8t": "نهاية ليست سوى بداية", "c8p1": "رحلتي لا تزال طويلة.", "c8p2": "لا تزال هناك قصص تنتظر أن تُكتب، وتجارب لم أختبرها بعد، وأحلام تنتظر أن تتحقق.", "c8p3": "لا أعلم بالضبط إلى أين ستأخذني هذه الرحلة، لكنني عازم على مواصلة التعلّم والتطور لأكون أفضل من الأمس.", "c8p4": "أريد الاستمتاع بكل خطوة، وتقدير كل تجربة، وألا أنسى أبدًا من كانوا عونًا لي في طريقي.", "c8p5": "لأن الحياة في نظري ليست مجرد نقطة وصول، بل هي كل خطوة تقودنا إليها.", "e1": "هذه هي قصتي حتى الآن.", "e2": "ورحلتي لا تزال مستمرة.", "e3": "واصل النمو، واصل التعلّم، وكن دائمًا كما أنت."}, "ko": {"h": "나의 이야기", "sub": "성장하고, 배우고, 나 자신을 찾아가는 여정에 대한 이야기.", "lead": "누구나 자신만의 이야기가 있고, 이것이 저의 이야기입니다. 사랑에서 시작해 다양한 경험을 통해 자라났고, 오늘까지 이어지고 있는 여정입니다.", "bk": "뒤로", "c1w": "2011", "c1t": "삶의 시작", "c1p1": "저는 2011년에 태어났습니다. 어릴 적부터 가장 가까운 사람들의 사랑 속에서 자랐습니다.", "c1p2": "저는 두 가족의 손에서 자랐습니다. 아버지 쪽 가족과 어머니 쪽 가족입니다. 일상에서는 한 주는 아버지 쪽 가족과, 다음 주는 어머니 쪽 가족과 함께 지냈습니다. 이 두 가족은 제 인생 여정의 중요한 부분이 되어, 관심과 사랑, 그리고 자랄 수 있는 자리를 주었습니다.", "c1p3": "저는 두 가족 모두에서 첫 손주이기도 합니다. 제가 태어난 것은 가족의 기쁨이 되었고, 저를 늘 사랑해 주는 사람들과 함께 아름다운 추억을 많이 쌓으며 자랐습니다.", "c1p4": "저의 어린 시절은 평범해 보일 수 있지만 제게는 큰 의미가 있는 소박한 것들로 가득했습니다.", "c2w": "4세", "c2t": "첫걸음", "c2p1": "네 살 때 유치원을 통해 교육의 세계에 첫발을 들였습니다. 그곳에서 새로운 환경을 접하고, 다른 사람들과 어울리는 법을 배우며, 제 주변 세상에 대해 조금씩 이해하게 되었습니다.", "c2p2": "나이가 들면서 저만의 자부심이 되는 경험과 성취가 생기기 시작했습니다.", "c2p3": "가장 기억에 남는 순간 중 하나는 여섯 살에 시(市) 단위 타흐피즈(Tahfidz, 꾸란 암송) 대회에서 우승한 일입니다. 그 성취는 어린 시절 제게 가장 큰 자부심 중 하나가 되었습니다.", "c2p4": "제 노력으로 무언가를 이루었다는 사실이 행복하고 스스로 자랑스러웠습니다. 그 순간은 지금까지도 소중히 간직하고 있는 기억입니다.", "c3w": "7세", "c3t": "초등학교 시절", "c3p1": "일곱 살에 MIS Aisyiyah Sumatera Utara에서 초등학교 생활을 시작했습니다.", "c3p2": "이 학교에서 학업뿐 아니라 규율과 책임감, 그리고 더 나은 사람이 되는 방법까지 많은 것을 배웠습니다.", "c3p3": "초등학교 시절은 제 인생에서 가장 기억에 남는 시기 중 하나입니다. 다양한 이야기와 경험, 지금도 기억하고 있는 추억으로 하루하루를 채웠습니다.", "c3p4": "이 시기에 저에게는 남자 단짝 친구가 있었는데, 초등학교 1학년부터 중학교 3학년까지 늘 함께했습니다. 우리는 함께 자라며 많은 이야기를 겪었고, 서로의 인생 여정의 일부가 되었습니다.", "c3p5": "해마다 저마다의 이야기가 있었습니다. 웃음과 행복, 새로운 경험, 그리고 다시는 되풀이될 수 없는 순간들이 있었습니다.", "c3p6": "저에게 초등학교 시절은 단지 교실에서 공부하는 시간이 아니라, 우정과 추억, 그리고 지금의 저를 만든 경험들이었습니다.", "c4w": "중학교 시절", "c4t": "다시 일어서다", "c4p1": "초등학교를 마친 뒤, MTs Aisyiyah Sumatera Utara에서 학업을 이어 갔습니다.", "c4p2": "중학교 시절은 제 인생에서 중요한 시기였습니다. 이때 저는 바닥에서 다시 일어나는 법을 배우고, 천천히 한 걸음씩 삶을 살아가기 시작했습니다.", "c4p3": "모든 일이 제가 바란 대로 흘러가지는 않았습니다. 마주해야 할 일이 많았고, 혼자 품고 있던 감정도 많았으며, 더 강해지는 법을 배우게 한 여러 경험이 있었습니다.", "c4p4": "하지만 저는 거기서 멈추지 않았습니다.", "c4p5": "저는 하루하루를 살아 내며 스스로를 이해하려 했고, 잃어버렸던 의욕을 다시 찾았습니다. 때로는 쉽지 않았지만, 천천히 상황을 받아들이고 계속 앞으로 나아가는 법을 배웠습니다.", "c4p6": "이 학교에서 제 여정을 함께해 준 많은 친구들도 만났습니다. 그 친구들과 함께하며 많은 이야기와 경험, 추억을 얻었고, 덕분에 중학교 시절이 더욱 의미 있게 되었습니다.", "c4p7": "그곳에서 공부하는 동안 여러 성과도 거두었습니다. 그 일들은 제가 힘든 시기를 이겨 내고 더 나은 사람으로 성장할 수 있다는 것을 일깨워 주었습니다.", "c4p8": "중학교 시절은 사람마다 각자의 과정이 있고, 때로는 힘든 시간을 지나야 내 안의 힘을 발견할 수 있다는 것을 가르쳐 주었습니다.", "c5w": "직업계 고등학교", "c5t": "새로운 장", "c5p1": "중학교를 마친 뒤, SMK Swasta Mandiri로 진학했습니다.", "c5p2": "처음에는 직업계 고등학교 생활이 제가 상상했던 만큼 즐겁지 않을 것이라고 생각했습니다. 새로운 환경, 새로운 친구들, 앞으로 마주할 경험들에 대한 걱정이 많았습니다.", "c5p3": "하지만 직접 겪어 보니 걱정했던 것만큼 나쁘지 않았습니다.", "c5p4": "저는 제 여정의 일부가 되어 준 많은 새 친구들과 선생님들을 만났습니다. SMK에서 생활하며 많은 이야기와 웃음, 경험, 그리고 배움을 얻었습니다.", "c5p5": "이곳에서 제가 몰두하고 싶은 분야에 대해 더 많이 배우기 시작했습니다. 새로운 것들을 접하고, 제 능력을 이해하려 노력하며, 제가 가고 싶은 길을 조금씩 찾아가고 있습니다.", "c5p6": "SMK 생활은 저에게 더 독립적이 되고, 용기 내어 도전하며, 저만의 미래를 생각하기 시작하는 법을 가르쳐 주었습니다.", "c6w": "SMK 2학년", "c6t": "일터에서의 첫 경험", "c6p1": "저는 현재 SMK 2학년이 되었고, DigitalCODE라는 회사에서 첫 현장실습(PKL)을 하고 있습니다.", "c6p2": "이 경험은 제 인생에서 매우 의미 있는 새로운 장이 되었습니다.", "c6p3": "이곳에서 유익한 지식과 경험을 많이 얻고 있습니다. 업무 환경을 알아 가고, 새로운 것을 배우며, 학교에서만 배웠던 역량을 키워 볼 기회를 얻고 있습니다.", "c6p4": "하루하루가 배우고, 시도하고, 더 많은 것을 이해할 기회입니다.", "c6p5": "아직 배워야 할 것이 많다는 것을 알지만, 성장하고 새로운 경험을 얻을 기회가 있다는 것에 감사합니다.", "c6p6": "이번 현장실습은 진짜 세상을 알아 가는 첫걸음 중 하나이자, 제 미래를 찾아가는 여정의 일부입니다.", "c7w": "지금", "c7t": "오늘의 나", "c7p1": "오늘의 저는 여전히 배우고, 성장하며, 스스로를 이해하려 노력하는 사람입니다.", "c7p2": "어린 시절과 학창 시절, 우정과 성취, 그리고 지금까지 겪어 온 여러 경험을 되돌아보면, 그 모든 것이 오늘의 저를 만드는 데 한몫했다는 것을 깨닫습니다.", "c7p3": "제 미래가 어떤 모습일지는 아직 다 알지 못합니다. 배우고 싶은 것도, 이루고 싶은 꿈도, 느껴 보고 싶은 경험도 여전히 많습니다.", "c7p4": "그래도 저는 수많은 여정을 지나 여기까지 온 제 자신이 자랑스럽습니다.", "c7p5": "오늘 제가 내딛는 작은 한 걸음 한 걸음이 미래의 더 큰 이야기의 일부가 되리라고 믿습니다.", "c8w": "다음", "c8t": "아직 끝이 아닌 끝", "c8p1": "저의 여정은 아직 깁니다.", "c8p2": "아직 쓰이지 않은 이야기도, 아직 느끼지 못한 경험도, 이루어지기를 기다리는 꿈도 많이 남아 있습니다.", "c8p3": "이 여정이 저를 어디로 데려갈지는 정확히 알지 못합니다. 하지만 계속 배우고, 계속 성장하며, 어제보다 더 나은 사람이 되고 싶습니다.", "c8p4": "모든 과정을 즐기고, 모든 경험을 소중히 여기며, 제 여정의 일부가 되어 준 사람들을 잊지 않고 싶습니다.", "c8p5": "저에게 삶은 최종 목적지만이 아니라, 저를 그곳으로 이끄는 한 걸음 한 걸음에 관한 것이기도 하기 때문입니다.", "e1": "여기까지가 지금까지의 제 이야기입니다.", "e2": "그리고 저의 여정은 계속됩니다.", "e3": "계속 성장하고, 계속 배우고, 계속 나 자신이 되어 가기를."}};
+  var DICT = {"en":{"bk":"Back","h":"My Story","sub":"A journey of growth, craft, and finding direction through web development & UI design.","lead":"From growing up in Medan to stepping into the software industry — here are the real chapters that shaped my discipline, curiosity, and craft.","c1w":"2011 · Medan","c1t":"Roots & Early Achievement","c1p1":"Born in 2011 in Medan, North Sumatra, and raised with warmth across both my father's and mother's extended families as the first grandchild on both sides.","c1p2":"One of my earliest proud milestones was winning 1st Place in the City-Level Tahfidz Championship at age six — an early lesson that consistent focus and dedication yield real results.","c2w":"School Years","c2t":"Character & Foundation","c2p1":"Completed elementary education at MIS Aisyiyah Sumatera Utara and junior high at MTs Aisyiyah Sumatera Utara.","c2p2":"Those years built my sense of discipline, resilience through challenges, lasting friendships, and an early curiosity for how digital interfaces work.","c3w":"Vocational High School","c3t":"Entering Software & Web at SMK Swasta Mandiri","c3p1":"Continued my education at SMK Swasta Mandiri in Medan, where curiosity turned into focused technical practice.","c3p2":"Here I began diving deeper into web engineering, learning to think independently, experiment boldly, and build a clear path toward front-end development.","c4w":"Self-Taught Craft","c4t":"Deepening Code, Motion & UI Design","c4p1":"Honed semantic HTML5, modern CSS3 and Tailwind CSS architecture, interactive JavaScript (ES6+), and motion choreography with GSAP and Anime.js.","c4p2":"Realized that great digital products require both visual precision and clean, fast-loading code that feels effortless on any screen.","c5w":"2nd Year SMK · Industry","c5t":"Industry Work Placement (PKL) at DigitalCODE","c5p1":"Currently in my second year of SMK, completing my first industry work placement (PKL) at DigitalCODE.","c5p2":"Working in a real production environment has sharpened my workflow — translating classroom fundamentals into practical, well-structured web interfaces.","c6w":"Today & Beyond","c6t":"Present Focus & Future Vision","c6p1":"Building responsive landing pages, interactive UI systems, and modern web experiences from Medan while continuously expanding into React, Vue, and AI-assisted workflows.","c6p2":"Open to freelance projects, creative collaborations, and building meaningful digital products.","e1":"Keep growing, keep building, and stay authentic.","e2":"Every line of code is a step toward a better craft.","ctaProj":"Explore Featured Projects ↗","ctaContact":"Start a Conversation ↗"},"zh":{"bk":"返回","h":"我的故事","sub":"一段关于成长、磨砺以及在网页开发与界面设计中探索方向的旅程。","lead":"从在棉兰成长到踏入软件行业——以下是我培养自律、好奇心与技术匠心的真实篇章。","c1w":"2011 · 棉兰","c1t":"成长根基与早期荣誉","c1p1":"2011年出生于北苏门答腊棉兰，作为父母双方家族的长孙，在两个大家庭的关爱与陪伴中成长。","c1p2":"六岁时荣获全市 Tahfidz（古兰经背诵）比赛冠军——这是我人生中第一次深刻体会到专注与坚持的力量。","c2w":"校园岁月","c2t":"品格塑造与求学基础","c2p1":"先后就读于北苏门答腊 MIS Aisyiyah 小学与 MTs Aisyiyah 初中。","c2p2":"那段岁月塑造了我的自律与韧性，收获了深厚的挚友，也点燃了我对数字界面与计算机技术的最初好奇。","c3w":"职业高中","c3t":"在 SMK Swasta Mandiri 开启编程之路","c3p1":"升入棉兰 SMK Swasta Mandiri（私立曼迪里职业高中），将对技术的好奇转化为系统的工程实践。","c3p2":"在这里我开始深入研究网页开发，学会独立思考、勇敢尝试，并锁定了前端工程与 UI 设计的发展方向。","c4w":"自主深耕","c4t":"精进代码架构、动效与界面设计","c4p1":"深入掌握语义化 HTML5、CSS3 与 Tailwind CSS 架构、JavaScript (ES6+)，以及 GSAP 和 Anime.js 交互动画。","c4p2":"深刻认识到优秀的数字作品需要兼具视觉美感与高性能、可访问的整洁代码。","c5w":"职高二年级 · 行业实践","c5t":"在 DigitalCODE 进行企业实习 (PKL)","c5p1":"目前就读职高二年级，正在 DigitalCODE 进行我的首次企业实习（PKL）。","c5p2":"在真实的生产环境中协作，将课堂所学转化为高质量的实战网页界面与工作流。","c6w":"当下与未来","c6t":"当前重心与未来愿景","c6p1":"在棉兰持续构建响应式落地页与交互式 Web 体验，同时深入探索 React、Vue 与 AI 辅助开发工作流。","c6p2":"欢迎自由职业项目、创意合作，共同打造令人难忘的数字产品。","e1":"持续成长，不断构建，保持真诚。","e2":"每一行代码都是迈向更精湛技艺的一步。","ctaProj":"查看精选项目 ↗","ctaContact":"与我联系 ↗"},"es":{"bk":"Volver","h":"Mi Historia","sub":"Un viaje de crecimiento, oficio y dirección en el desarrollo web y diseño de interfaces.","lead":"Desde mi infancia en Medan hasta mis primeros pasos en la industria del software: estos son los capítulos reales que forjaron mi disciplina y oficio.","c1w":"2011 · Medan","c1t":"Raíces y Primer Logro","c1p1":"Nací en 2011 en Medan, Sumatra Septentrional, criado con el cariño de las familias de mi padre y de mi madre como primer nieto de ambas.","c1p2":"A los seis años gané el 1.er lugar en el Campeonato Municipal de Tahfidz, aprendiendo desde temprano el valor de la constancia.","c2w":"Etapa Escolar","c2t":"Carácter y Fundamentos","c2p1":"Cursé la primaria en MIS Aisyiyah Sumatera Utara y la secundaria en MTs Aisyiyah Sumatera Utara.","c2p2":"Esos años forjaron mi disciplina, resiliencia ante los retos, grandes amistades y mi fascinación inicial por las interfaces digitales.","c3w":"Escuela Vocacional","c3t":"Entrando al Mundo Web en SMK Swasta Mandiri","c3p1":"Continué mis estudios en SMK Swasta Mandiri en Medan, donde la curiosidad se convirtió en práctica técnica constante.","c3p2":"Allí comencé a profundizar en el desarrollo web, aprendiendo a ser autónomo, experimentar y definir mi camino en el front-end.","c4w":"Exploración Autodidacta","c4t":"Código, Animación y Diseño UI","c4p1":"Perfeccioné HTML5 semántico, CSS3 moderno, Tailwind CSS, JavaScript (ES6+) y microinteracciones con GSAP y Anime.js.","c4p2":"Comprendí que la estética visual y el rendimiento del código deben ir siempre de la mano.","c5w":"2.º Año SMK · Industria","c5t":"Prácticas Profesionales (PKL) en DigitalCODE","c5p1":"Actualmente curso el segundo año de SMK y realizo mis primeras prácticas profesionales (PKL) en DigitalCODE.","c5p2":"Colaborar en un entorno laboral real ha fortalecido mi flujo de trabajo y mi capacidad de construir interfaces listas para producción.","c6w":"Hoy y Futuro","c6t":"Enfoque Actual y Visión","c6p1":"Construyendo páginas web rápidas, accesibles e interactivas desde Medan, mientras amplío mis habilidades en React, Vue y flujos con IA.","c6p2":"Abierto a proyectos freelance y colaboraciones creativas.","e1":"Seguir aprendiendo, innovando y creciendo.","e2":"Cada línea de código es un paso para mejorar.","ctaProj":"Ver Proyectos Destacados ↗","ctaContact":"Contactarme ↗"},"ar":{"bk":"رجوع","h":"قصتي","sub":"رحلة نمو وشغف في تطوير الويب وتصميم الواجهات.","lead":"من النشأة في ميدان إلى خوض تجربة العمل الفعلي في صناعة البرمجيات — هذه هي الفصول الحقيقية التي شكّلت انضباطي ومهارتي.","c1w":"2011 · ميدان","c1t":"الجذور والإنجاز المبكر","c1p1":"ولدت عام 2011 في ميدان بشمال سومطرة، ونشأت محاطًا بمحبة عائلتي والدي ووالدتي كأول حفيد في العائلتين.","c1p2":"في سن السادسة حققت المركز الأول في بطولة تحفيظ القرآن الكريم على مستوى المدينة — درس مبكر في قيمة الاجتهاد والمثابرة.","c2w":"سنوات الدراسة","c2t":"بناء الشخصية والأساس العلمي","c2p1":"أكملت المرحلة الابتدائية في MIS Aisyiyah Sumatera Utara والمتوسطة في MTs Aisyiyah Sumatera Utara.","c2p2":"غرسَت فيّ تلك السنوات الانضباط والقدرة على تجاوز الصعاب، وبداية شغفي بعالم التقنية والواجهات الرقمية.","c3w":"التعليم المهني","c3t":"دخول عالم البرمجة في SMK Swasta Mandiri","c3p1":"واصلت تعليمي في ثانوية مانديري المهنية الخاصة (SMK Swasta Mandiri) في ميدان، حيث تحول الفضول إلى ممارسة تقنية.","c3p2":"بدأت هنا التعمق في تطوير الويب والاعتماد على الذات ورسم مساري كمطور واجهات أمامية.","c4w":"التطوير الذاتي","c4t":"إتقان الكود والحركة وتصميم الواجهات","c4p1":"تعمقت في HTML5 الدلالي، وCSS3 وTailwind CSS، وجافاسكريبت الحديثة، وتحريك الواجهات باستخدام GSAP وAnime.js.","c4p2":"أدركت أن جمال التصميم وأداء الكود السريع يجب أن يسيرا معًا بتوازن تام.","c5w":"السنة الثانية · التدريب الميداني","c5t":"التدريب العملي (PKL) في شركة DigitalCODE","c5p1":"أدرس حاليًا في السنة الثانية من الثانوية المهنية وأخوض تدريبي الميداني الأول (PKL) في شركة DigitalCODE.","c5p2":"العمل في بيئة إنتاج حقيقية صقل مهاراتي وحوّل المعرفة النظرية إلى واجهات ويب عملية متقنة.","c6w":"اليوم والمستقبل","c6t":"التركيز الحالي والرؤية المستقبلية","c6p1":"أصمم وأطوّر واجهات ويب متجاوبة وحديثة من ميدان، مع التوسع المستمر في React وVue وأدوات الذكاء الاصطناعي.","c6p2":"متاح للمشاريع الحرة والتعاون الإبداعي في بناء منتجات رقمية مميزة.","e1":"مواصلة التعلّم والابتكار والنمو.","e2":"كل سطر برمجي هو خطوة نحو الإتقان.","ctaProj":"استكشف المشاريع المميزة ↗","ctaContact":"تواصل معي ↗"},"fr":{"bk":"Retour","h":"Mon Histoire","sub":"Un parcours de croissance, de rigueur et de création dans le développement web et le design UI.","lead":"De mon enfance à Medan jusqu’à mon immersion professionnelle dans le logiciel — voici les chapitres authentiques de mon parcours.","c1w":"2011 · Medan","c1t":"Racines & Première Fierté","c1p1":"Né en 2011 à Medan, au nord de Sumatra, j’ai grandi entouré de l’affection de mes familles paternelle et maternelle en tant que premier petit-enfant.","c1p2":"À six ans, j’ai remporté le 1er prix du championnat municipal de Tahfidz, une première victoire qui m’a appris la valeur de la persévérance.","c2w":"Années Scolaires","c2t":"Caractère & Fondations","c2p1":"Scolarité primaire à la MIS Aisyiyah Sumatera Utara puis au collège MTs Aisyiyah Sumatera Utara.","c2p2":"Ces années ont forgé ma discipline, ma résilience, des amitiés durables et ma fascination pour les interfaces numériques.","c3w":"Lycée Professionnel","c3t":"Cap sur le Web à la SMK Swasta Mandiri","c3p1":"Poursuite de mes études au lycée professionnel SMK Swasta Mandiri à Medan, où ma curiosité s’est transformée en pratique technique.","c3p2":"C’est là que j’ai approfondi le développement web, cultivé mon autonomie et tracé ma voie en front-end et UI design.","c4w":"Exploration Autodidacte","c4t":"Code, Motion & Design d’Interface","c4p1":"Maîtrise de HTML5 sémantique, CSS3 moderne, Tailwind CSS, JavaScript (ES6+) et des animations avec GSAP et Anime.js.","c4p2":"Convaincu que l’exigence visuelle et la performance technique doivent toujours avancer ensemble.","c5w":"2e Année SMK · Entreprise","c5t":"Stage en Entreprise (PKL) chez DigitalCODE","c5p1":"Actuellement en deuxième année de SMK, j’effectue mon premier stage professionnel (PKL) au sein de l’entreprise DigitalCODE.","c5p2":"Cette immersion en production réelle me permet d’appliquer mes compétences sur des projets concrets et exigeants.","c6w":"Aujourd’hui & Demain","c6t":"Focus Actuel & Vision","c6p1":"Conception d’interfaces web modernes, rapides et accessibles depuis Medan, tout en approfondissant React, Vue et les workflows IA.","c6p2":"Ouvert aux missions freelance et aux collaborations créatives.","e1":"Continuer d’apprendre, d’innover et de progresser.","e2":"Chaque ligne de code est un pas vers l’excellence.","ctaProj":"Voir les Projets Phares ↗","ctaContact":"Me Contacter ↗"},"ja":{"bk":"戻る","h":"私のストーリー","sub":"Web開発とUIデザインを通じて成長し、自分の道を切り拓くまでの軌跡。","lead":"メダンでの幼少期からソフトウェア業界での実務インターンシップまで——私の規律と探究心を形作った実際の歩みです。","c1w":"2011年 · メダン","c1t":"ルーツと幼少期の達成","c1p1":"2011年、北スマトラ州メダン生まれ。父方・母方双方の初孫として、二つの温かい家族の愛情に包まれて育ちました。","c1p2":"6歳の時、市レベルのコーラン暗誦大会（Tahfidz）で優勝。努力を続けることの大切さを学んだ原体験です。","c2w":"学生時代","c2t":"人格形成と基礎","c2p1":"MIS Aisyiyah Sumatera Utara 小学校、MTs Aisyiyah Sumatera Utara 中学校で学びました。","c2p2":"規律や困難から立ち上がる粘り強さ、かけがえのない友情を育みながら、デジタルの画面が動く仕組みに強い興味を持つようになりました。","c3w":"職業高校 (SMK)","c3t":"SMK Swasta Mandiri でWebの世界へ","c3p1":"メダンの私立マンディリ職業高校（SMK Swasta Mandiri）へ進学し、技術への好奇心を実践的な学びへと昇華させました。","c3p2":"自立心と挑戦する勇気を養い、フロントエンド開発とUIデザインという自分の道を見出しました。","c4w":"独学と探求","c4t":"コード設計・モーション・UIデザインの深化","c4p1":"セマンティックなHTML5、モダンなCSS3とTailwind CSS、JavaScript (ES6+)、GSAPやAnime.jsによるアニメーション表現を習得。","c4p2":"視覚的な美しさと高速でクリーンなコードは常に両立すべきだという信念を確立しました。","c5w":"高校2年 · 実務経験","c5t":"DigitalCODE での企業インターンシップ (PKL)","c5p1":"現在高校2年生として、DigitalCODE にて初めての実務インターンシップ（PKL）に取り組んでいます。","c5p2":"実際の開発現場でチームと協働し、学校で学んだ知識を実用的なWebインターフェースへと形にしています。","c6w":"現在とこれから","c6t":"現在のフォーカスと展望","c6p1":"メダンを拠点にレスポンシブで洗練されたWeb体験を構築しつつ、React、Vue、AIワークフローの探求を続けています。","c6p2":"フリーランス案件やクリエイティブなコラボレーションを歓迎しています。","e1":"学び続け、革新し、成長し続ける。","e2":"すべてのコードの一行が、より良い作り手への一歩。","ctaProj":"注目プロジェクトを見る ↗","ctaContact":"お問い合わせ ↗"},"ko":{"bk":"뒤로","h":"나의 이야기","sub":"웹 개발과 UI 디자인을 통해 성장하고 방향을 찾아가는 여정.","lead":"메단에서의 어린 시절부터 소프트웨어 업계 실무 인턴십까지 — 저의 끈기와 호기심, 기술적 장인정신을 만든 실제 이야기입니다.","c1w":"2011 · 메단","c1t":"뿌리와 첫 번째 성취","c1p1":"2011년 북수마트라 메단에서 태어나 친가와 외가 양쪽의 첫 손주로서 두 가족의 따뜻한 사랑 속에 자랐습니다.","c1p2":"여섯 살 때 시 단위 타흐피즈(Tahfidz) 경연대회에서 우승하며 꾸준한 노력이 결실을 맺는다는 것을 일찍 배웠습니다.","c2w":"학창 시절","c2t":"인성과 기초를 다진 시간","c2p1":"MIS Aisyiyah Sumatera Utara 초등학교와 MTs Aisyiyah Sumatera Utara 중학교를 졸업했습니다.","c2p2":"이 시기 동안 규율과 회복탄력성, 소중한 우정을 쌓으며 디지털 인터페이스에 대한 첫 호기심을 키웠습니다.","c3w":"직업고등학교 (SMK)","c3t":"SMK Swasta Mandiri에서 시작된 웹 개발","c3p1":"메단의 SMK Swasta Mandiri 직업고등학교에 진학해 기술에 대한 호기심을 본격적인 실습으로 연결했습니다.","c3p2":"스스로 탐구하고 도전하는 법을 배우며 프론트엔드 개발과 UI 디자인이라는 명확한 진로를 찾았습니다.","c4w":"자기주도 탐구","c4t":"코드 아키텍처, 모션 & UI 디자인 심화","c4p1":"시맨틱 HTML5, 최신 CSS3 및 Tailwind CSS, JavaScript(ES6+), 그리고 GSAP·Anime.js 인터랙션 모션을 깊이 익혔습니다.","c4p2":"시각적 완성도와 빠르고 깔끔한 코드 성능이 함께 가야 한다는 원칙을 세웠습니다.","c5w":"고2 · 산업체 실습","c5t":"DigitalCODE 실무 인턴십 (PKL)","c5p1":"현재 직업고등학교 2학년에 재학 중이며 DigitalCODE에서 첫 기업 현장실습(PKL)을 수행하고 있습니다.","c5p2":"실제 프로덕션 환경에서 협업하며 배운 지식을 실용적이고 완성도 높은 웹 인터페이스로 구현하고 있습니다.","c6w":"현재와 비전","c6t":"오늘의 집중과 앞으로의 방향","c6p1":"메단을 기반으로 반응형 웹과 인터랙티브 UI를 구축하며 React, Vue, AI 워크플로로 역량을 넓히고 있습니다.","c6p2":"프리랜스 프로젝트와 창의적인 협업을 언제나 환영합니다.","e1":"계속 배우고, 혁신하며, 성장하기.","e2":"코드 한 줄 한 줄이 더 나은 개발자가 되기 위한 발걸음입니다.","ctaProj":"주요 프로젝트 보기 ↗","ctaContact":"문의하기 ↗"}};
   var LBL={id:"Indonesia",en:"English",zh:"中文",es:"Español",ar:"العربية",fr:"Français",ja:"日本語",ko:"한국어"},
       BK={id:"Kembali ke daftar kartu",en:"Back to the card list",zh:"返回卡片列表",es:"Volver a la lista de tarjetas",ar:"العودة إلى قائمة البطاقات",fr:"Retour à la liste des cartes",ja:"カード一覧に戻る",ko:"카드 목록으로 돌아가기"},
       OL={id:"Garis waktu cerita saya",en:"Timeline of my story",zh:"我的故事时间线",es:"Línea de tiempo de mi historia",ar:"الجدول الزمني لقصتي",fr:"Chronologie de mon histoire",ja:"私のストーリーのタイムライン",ko:"나의 이야기 타임라인"},
@@ -1850,7 +2195,19 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     role: {id:"Front-End Developer · UI Designer", en:"Front-End Developer · UI Designer", zh:"前端开发者 · UI 设计师", es:"Desarrollador Front-End · Diseñador UI", ar:"مطوّر واجهات أمامية · مصمم واجهات", fr:"Développeur Front-End · Designer UI", ja:"フロントエンド開発者 · UIデザイナー", ko:"프론트엔드 개발자 · UI 디자이너"},
     ticker: {id:"ADA PROYEK? • FREELANCE • KOLABORASI • FRONT-END • UI DESIGN • MEDAN, INDONESIA • BALAS <24 JAM •", en:"GOT A PROJECT? • FREELANCE • COLLABORATION • FRONT-END • UI DESIGN • MEDAN, INDONESIA • REPLIES <24H •", zh:"有项目? • 自由职业 • 合作 • 前端 • UI 设计 • 印尼棉兰 • 24 小时内回复 •", es:"¿TIENES UN PROYECTO? • FREELANCE • COLABORACIÓN • FRONT-END • DISEÑO UI • MEDAN, INDONESIA • RESPUESTA <24 H •", ar:"لديك مشروع؟ • عمل حر • تعاون • واجهات أمامية • تصميم واجهات • ميدان، إندونيسيا • رد خلال 24 ساعة •", fr:"UN PROJET ? • FREELANCE • COLLABORATION • FRONT-END • DESIGN UI • MEDAN, INDONÉSIE • RÉPONSE <24 H •", ja:"プロジェクトありますか？ • フリーランス • コラボレーション • フロントエンド • UIデザイン • インドネシア・メダン • 24時間以内に返信 •", ko:"프로젝트가 있나요? • 프리랜스 • 협업 • 프론트엔드 • UI 디자인 • 인도네시아 메단 • 24시간 내 답장 •"},
     vtick: {id:"EDISI 06 • POTRET • ZIKRI • MEDAN • 2026 •", en:"EDITION 06 • PORTRAIT • ZIKRI • MEDAN • 2026 •", zh:"第 06 期 • 肖像 • ZIKRI • 棉兰 • 2026 •", es:"EDICIÓN 06 • RETRATO • ZIKRI • MEDAN • 2026 •", ar:"العدد 06 • صورة • زكري • ميدان • 2026 •", fr:"ÉDITION 06 • PORTRAIT • ZIKRI • MEDAN • 2026 •", ja:"第06号 • ポートレート • ズィクリ • メダン • 2026 •", ko:"에디션 06 • 포트레이트 • 지크리 • 메단 • 2026 •"},
-    alt: {id:"Zikri di antara lembaran koran yang beterbangan", en:"Zikri among flying sheets of newspaper", zh:"Zikri 置身于飞舞的报纸之间", es:"Zikri entre hojas de periódico al vuelo", ar:"زكري بين أوراق صحف متطايرة", fr:"Zikri parmi des feuilles de journal qui s’envolent", ja:"舞い散る新聞紙の中に立つズィクリ", ko:"신문지가 날리는 가운데 서 있는 지크리"}
+    alt: {id:"Zikri di antara lembaran koran yang beterbangan", en:"Zikri among flying sheets of newspaper", zh:"Zikri 置身于飞舞的报纸之间", es:"Zikri entre hojas de periódico al vuelo", ar:"زكري بين أوراق صحف متطايرة", fr:"Zikri parmi des feuilles de journal qui s’envolent", ja:"舞い散る新聞紙の中に立つズィクリ", ko:"신문지가 날리는 가운데 서 있는 지크리"},
+    fast: {id:"RESPONS CEPAT", en:"FAST RESPONSE", zh:"快速响应", es:"RESPUESTA RÁPIDA", ar:"استجابة سريعة", fr:"RÉPONSE RAPIDE", ja:"迅速な対応", ko:"빠른 응답"},
+    waChat: {id:"Chat Langsung via WhatsApp", en:"Direct Chat via WhatsApp", zh:"通过 WhatsApp 直接聊天", es:"Chat directo por WhatsApp", ar:"محادثة مباشرة عبر واتساب", fr:"Discussion directe via WhatsApp", ja:"WhatsAppで直接チャット", ko:"WhatsApp으로 바로 대화"},
+    copyMail: {id:"Salin Email", en:"Copy Email", zh:"复制邮箱", es:"Copiar correo", ar:"نسخ البريد", fr:"Copier l’e-mail", ja:"メールをコピー", ko:"이메일 복사"},
+    copied: {id:"Tersalin!", en:"Copied!", zh:"已复制!", es:"¡Copiado!", ar:"تم النسخ!", fr:"Copié !", ja:"コピー完了!", ko:"복사됨!"},
+    compTitle: {id:"KIRIM PESAN CEPAT", en:"QUICK INQUIRY COMPOSER", zh:"快速发送消息", es:"MENSAJE RÁPIDO", ar:"إرسال رسالة سريعة", fr:"MESSAGE RAPIDE", ja:"クイックメッセージ作成", ko:"빠른 메시지 작성"},
+    compName: {id:"Nama Anda", en:"Your Name", zh:"您的姓名", es:"Tu nombre", ar:"اسمك", fr:"Votre nom", ja:"お名前", ko:"이름"},
+    compMsg: {id:"Ceritakan singkat proyek atau ide Anda...", en:"Briefly describe your project or idea...", zh:"简述您的项目或想法...", es:"Describe brevemente tu proyecto o idea...", ar:"صف مشروعك أو فكرتك باختصار...", fr:"Décrivez brièvement votre projet ou idée...", ja:"プロジェクトやアイデアを簡単に教えてください...", ko:"프로젝트나 아이디어를 간단히 적어주세요..."},
+    compWa: {id:"Kirim ke WhatsApp ↗", en:"Send to WhatsApp ↗", zh:"发送到 WhatsApp ↗", es:"Enviar a WhatsApp ↗", ar:"إرسال عبر واتساب ↗", fr:"Envoyer sur WhatsApp ↗", ja:"WhatsAppで送信 ↗", ko:"WhatsApp으로 보내기 ↗"},
+    compMail: {id:"Kirim via Email ↗", en:"Send via Email ↗", zh:"通过邮件发送 ↗", es:"Enviar por Correo ↗", ar:"إرسال عبر البريد ↗", fr:"Envoyer par E-mail ↗", ja:"メールで送信 ↗", ko:"이메일로 보내기 ↗"},
+    tWeb: {id:"Proyek Web", en:"Web Project", zh:"网站项目", es:"Proyecto Web", ar:"مشروع ويب", fr:"Projet Web", ja:"Web制作", ko:"웹 프로젝트"},
+    tUi: {id:"UI/UX Design", en:"UI/UX Design", zh:"UI/UX 设计", es:"Diseño UI/UX", ar:"تصميم UI/UX", fr:"Design UI/UX", ja:"UI/UXデザイン", ko:"UI/UX 디자인"},
+    tCollab: {id:"Kolaborasi", en:"Collaboration", zh:"创意合作", es:"Colaboración", ar:"تعاون", fr:"Collaboration", ja:"コラボ", ko:"협업"}
   };
   function lang(){ return (window.ZK && ZK.lang) || "id"; }
   function word(k){ var d = DICT[k]; return d ? (d[lang()] || d.id) : ""; }
@@ -1926,6 +2283,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     [].forEach.call(root.querySelectorAll("[data-ka]"), function(el){
       var t = word(el.getAttribute("data-ka")); if (!t) return;
       if (el.tagName === "IMG") el.alt = t;
+      else if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") el.placeholder = t;
       else el.setAttribute("aria-label", t);
     });
     requestAnimationFrame(function(){ if (root.isConnected) fitTicker(root); });
@@ -2192,10 +2550,74 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     }, 200);
   }
 
+  function initComposer(root) {
+    var copyBtn = root.querySelector("#copyEmailBtn");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function() {
+        var email = "zikriganteng2023@gmail.com";
+        var lbl = copyBtn.querySelector("span");
+        function done() {
+          copyBtn.classList.add("is-copied");
+          if (lbl) lbl.textContent = word("copied") || "Tersalin!";
+          setTimeout(function() {
+            copyBtn.classList.remove("is-copied");
+            if (lbl) lbl.textContent = word("copyMail") || "Salin Email";
+          }, 2200);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).then(done).catch(done);
+        } else {
+          done();
+        }
+      });
+    }
+    var comp = root.querySelector(".pr-composer");
+    if (!comp) return;
+    var activeTopic = "Proyek Web";
+    var pills = comp.querySelectorAll(".prc-topic");
+    [].forEach.call(pills, function(p) {
+      p.addEventListener("click", function() {
+        [].forEach.call(pills, function(x) { x.classList.remove("on"); x.setAttribute("aria-pressed", "false"); });
+        p.classList.add("on");
+        p.setAttribute("aria-pressed", "true");
+        activeTopic = p.textContent.trim();
+      });
+    });
+    var nameIn = comp.querySelector("#prcName");
+    var msgIn = comp.querySelector("#prcMsg");
+    var waBtn = comp.querySelector("#prcWaBtn");
+    var mailBtn = comp.querySelector("#prcMailBtn");
+    function buildMessage() {
+      var nm = (nameIn && nameIn.value.trim()) ? nameIn.value.trim() : "";
+      var ms = (msgIn && msgIn.value.trim()) ? msgIn.value.trim() : "";
+      var greeting = "Halo Zikri, saya " + (nm || "pengunjung portofolio Anda") + ".";
+      var topicLine = "Topik: " + activeTopic + ".";
+      var bodyLine = ms ? ("Pesan: " + ms) : "Saya tertarik berdiskusi mengenai proyek / kolaborasi.";
+      return {
+        subject: "[" + activeTopic + "] " + (nm ? "Dari " + nm : "Pesan dari Portofolio"),
+        full: greeting + "\n" + topicLine + "\n" + bodyLine
+      };
+    }
+    if (waBtn) {
+      waBtn.addEventListener("click", function() {
+        var m = buildMessage();
+        var url = "https://wa.me/6281367381826?text=" + encodeURIComponent(m.full);
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+    }
+    if (mailBtn) {
+      mailBtn.addEventListener("click", function() {
+        var m = buildMessage();
+        window.location.href = "mailto:zikriganteng2023@gmail.com?subject=" + encodeURIComponent(m.subject) + "&body=" + encodeURIComponent(m.full);
+      });
+    }
+  }
+
   function init(root){
     cur = root; tpx = tpy = px = py = 0; mx = my = -9999;
     tr(root); tick(root);
     initPass3D(root);
+    initComposer(root);
     var iv = setInterval(function(){ if (!root.isConnected) { clearInterval(iv); return; } tick(root); }, 1000);
   }
   new MutationObserver(function(){
@@ -2252,16 +2674,30 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       A + '<rect width="60" height="80" fill="#e0463a"/><circle cx="30" cy="38" r="17" fill="none" stroke="#141414" stroke-width="1.2"/><circle cx="30" cy="38" r="10" fill="none" stroke="#141414" stroke-width="1.2"/><circle cx="30" cy="38" r="4" fill="#141414"/><path d="M30 12V64M4 38H56" stroke="#141414" stroke-width=".6" opacity=".6"/></svg>',
       A + '<rect width="60" height="80" fill="#efe6d2"/><ellipse cx="32" cy="38" rx="6" ry="15" transform="rotate(35 32 38)" fill="#141414"/><path d="M38 28C46 18 50 14 54 12" stroke="#e8923f" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M10 64L26 50M14 70L30 56" stroke="#e8923f" stroke-width="1.2" stroke-linecap="round"/></svg>'
     ];
+    var NAMES = ['Jiwoo', 'Carmen', 'Yuha', 'Stella', 'Juun', 'A-na', 'Ian', 'Ye-on'];
     function tl(n) {
-      var NAMES = ['Jiwoo', 'Carmen', 'Yuha', 'Stella', 'Juun', 'A-na', 'Ian', 'Ye-on'], nm = NAMES[n - 1], ph = GAL_PHOTOS[n - 1];
+      var nm = NAMES[n - 1], ph = GAL_PHOTOS[n - 1];
       var face = ph ? '<img class="art" src="' + (GAL_THUMBS[n - 1] || ph) + '" alt="' + nm + '" decoding="async" draggable="false">' : art[n - 1];
       var fb = ph ? '' : ' data-src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(art[n - 1].replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" ')) + '"';
       return '<div class="gk tl"' + fb + '>' + face + '<span class="cap">' + nm + '</span></div>';
     }
+    var gridItems = NAMES.map(function(nm, idx) {
+      var ph = GAL_PHOTOS[idx], th = GAL_THUMBS[idx] || ph;
+      return '<button type="button" class="ggrid-card" data-gi="' + idx + '" aria-label="Buka potret ' + nm + ' (' + galPad(idx + 1) + ')">' +
+        '<div class="ggrid-img"><img src="' + th + '" alt="' + nm + '" loading="lazy" decoding="async"></div>' +
+        '<div class="ggrid-meta"><span class="ggrid-no">' + galPad(idx + 1) + '</span><strong class="ggrid-nm">' + nm + '</strong><span class="ggrid-ar" aria-hidden="true">&#8599;</span></div>' +
+      '</button>';
+    }).join('');
     return '<div class="gstage" aria-label="Frame"><div class="gtitle" aria-hidden="true" data-t="FRAME"><span>FRAME</span></div><div class="gvf" aria-hidden="true"><i></i><i></i><i></i><i></i></div>' +
       '<img class="gport" src="' + GAL_HERO + '" alt="Potret M. Zikri Al-Bukhori" draggable="false">' +
       tl(1) + tl(2) + tl(3) + tl(4) + tl(5) + tl(6) + tl(7) + tl(8) +
-      '<div class="gidx" aria-hidden="true"><b>01</b><i>/</i><span>08</span></div></div>';
+      '<div class="gidx">' +
+        '<button type="button" class="gidx-btn" data-gact="prev" aria-label="Foto sebelumnya">&#8592;</button>' +
+        '<div class="gidx-info"><b>01</b><i>/</i><span>08</span><em class="gidx-nm">Jiwoo</em></div>' +
+        '<button type="button" class="gidx-btn" data-gact="next" aria-label="Foto berikutnya">&#8594;</button>' +
+        '<button type="button" class="gidx-btn gidx-zoom" data-gact="zoom" aria-label="Perbesar foto aktif">&#8599;</button>' +
+      '</div></div>' +
+      '<div class="ggrid" aria-label="Grid Galeri Editorial">' + gridItems + '</div>';
   }
   var stage = document.getElementById('stage'),
       wheel = document.getElementById('wheel'),
@@ -2280,6 +2716,22 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       R = 0,
       timer = null,
       moved = false;
+
+  // Inject Option 1 Custom Mascot Playing Card Back (.cback) into each card for 3D Cardistry Deal & Flip
+  var CBACK_HTML =
+    '<div class="cback" aria-hidden="true">' +
+      '<div class="cback-glare"></div>' +
+      '<div class="cback-inner">' +
+        '<span class="cb-corner tl"><b>Z</b><i>&#9830;</i></span>' +
+        '<span class="cb-corner br"><b>Z</b><i>&#9830;</i></span>' +
+        '<div class="cb-art">' +
+          '<img class="cb-mascot top" src="assets/images/mascot-head.webp" alt="" draggable="false" decoding="async">' +
+          '<span class="cb-word">Zikri</span>' +
+          '<img class="cb-mascot bot" src="assets/images/mascot-head.webp" alt="" draggable="false" decoding="async">' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  cards.forEach(function(c){ c.insertAdjacentHTML('beforeend', CBACK_HTML); });
 
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) {
@@ -2322,7 +2774,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     R = isMob ? w * 2.25 : w * 1.75; // Radius lengkung proporsional
 
     var stageH = stage.clientHeight || (window.innerHeight - (document.querySelector('.hd') ? document.querySelector('.hd').offsetHeight : 180));
-    var cyM = Math.max(h * 0.54 + 8, Math.min(stageH * 0.56, stageH - h * 0.54 - 150));
+    var cyM = Math.max(h * 0.56 + 14, Math.min(stageH * 0.50, stageH - h * 0.52 - 58));
     var oy = isMob ? Math.round(cyM + R) : Math.round(h * 0.64 + R);
     wheel.style.top = oy + 'px';
     stage.style.minHeight = Math.round(isMob ? stageH : (oy - R * 0.3)) + 'px';
@@ -2338,80 +2790,181 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     var rInner = r * 0.72;
     var rText  = r * 0.84;
 
+    var ticks = [];
+    for (var ti = 0; ti < 56; ti++) {
+      var ang = (ti * 360 / 56) * Math.PI / 180;
+      var isMaj = (ti % 8 === 0);
+      var r1 = rOuter - (isMaj ? 10 : 5);
+      var r2 = rOuter - 1.5;
+      var x1 = (Math.sin(ang) * r1).toFixed(1), y1 = (-Math.cos(ang) * r1).toFixed(1);
+      var x2 = (Math.sin(ang) * r2).toFixed(1), y2 = (-Math.cos(ang) * r2).toFixed(1);
+      ticks.push('<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="var(--ring)" stroke-width="' + (isMaj ? '1.6' : '0.9') + '" opacity="' + (isMaj ? '0.85' : '0.42') + '"/>');
+      if (isMaj) {
+        var xd = (Math.sin(ang) * (rInner + 6)).toFixed(1), yd = (-Math.cos(ang) * (rInner + 6)).toFixed(1);
+        ticks.push('<circle cx="' + xd + '" cy="' + yd + '" r="1.7" fill="var(--ring)" opacity="0.65"/>');
+      }
+    }
+
     ring.innerHTML = [
       '<defs>',
         '<path id="rp" d="M 0,' + (-rText) + ' A ' + rText + ' ' + rText + ' 0 1 1 0,' + rText + ' A ' + rText + ' ' + rText + ' 0 1 1 0,' + (-rText) + '"/>',
       '</defs>',
       '<circle r="' + rOuter + '" fill="var(--disc)"/>',
+      '<circle r="' + (rOuter - 1.5) + '" fill="none" stroke="var(--ring)" stroke-width="0.9" opacity="0.45"/>',
+      '<circle r="' + rInner + '" fill="none" stroke="var(--ring)" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.5"/>',
+      '<g>' + ticks.join('') + '</g>',
       '<text style="font-size: ' + (isMob ? 9 : 10) + 'px; font-weight: 700; letter-spacing: 0.16em; fill: var(--ring); font-family: inherit;">',
         '<textPath href="#rp" textLength="' + (Math.PI * 2 * rText * 0.98) + '">PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO •</textPath>',
       '</text>'
     ].join('');
 
-    mk.style.top = (-r + (isMob ? r * 0.22 : r * 0.3)) + 'px';
+    var rOuter = r * 0.96;
+    var rInner = r * 0.72;
+    var rText  = r * 0.84;
+
+    mk.style.top = (-r + (isMob ? r * 0.19 : r * 0.3)) + 'px';
     place();
   }
 
-  // ===== Masuk sinematik: tumpukan kartu menyebar jadi roda (setelah intro) =====
-  var E = { on: false, t: 0, t0: 0, raf: 0, ui: [].slice.call(document.querySelectorAll('.top-row, .meta, .arr')) };
+  // ===== 3D Cardistry Masterpiece: Vertical Spring, 360° Orbit, Snap-Flip & Riffle Wave =====
+  var E = { on: false, t: 0, t0: 0, raf: 0, ui: [].slice.call(document.querySelectorAll('.top-row, .meta, .arr')), landed: false };
+  var flipDeg = cards.map(function(){ return 0; }),
+      tFlipDeg = cards.map(function(){ return 0; }),
+      vFlipDeg = cards.map(function(){ return 0; }),
+      riffleY = cards.map(function(){ return 0; }),
+      vRiffleY = cards.map(function(){ return 0; }),
+      riffleZ = cards.map(function(){ return 0; }),
+      vRiffleZ = cards.map(function(){ return 0; });
+
   function eClamp(x) { return Math.max(0, Math.min(1, x)); }
   function eOut(x) { return 1 - Math.pow(1 - x, 4); }
-  function eBack(x) { return 1 + 2 * Math.pow(x - 1, 3) + Math.pow(x - 1, 2); }
-  function eRaw(ad) { return eClamp((E.t - (0.5 + ad * 0.12)) / 1.0); }
-  function entrOp(ad) { return ad < .5 ? eClamp(E.t / .5) : eClamp(eRaw(ad) * 2.2); }
+  function eInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function eBack(x) { return 1 + 2.1 * Math.pow(x - 1, 3) + 1.1 * Math.pow(x - 1, 2); }
+  function eRaw(ad) { return eClamp((E.t - (0.38 + ad * 0.11)) / 1.05); }
+  function entrOp(ad) { return eClamp((E.t - ad * 0.04) / 0.35); }
+
   if (!reduce && document.documentElement.classList.contains('intro-on')) {
     E.on = true;
+    cards.forEach(function(c){ c.classList.add('face-down'); });
     stage.style.transition = 'opacity .35s ease';
-    E.ui.forEach(function(el){ el.style.transition = 'opacity .8s ease 1.9s'; });
+    E.ui.forEach(function(el){ el.style.transition = 'opacity .55s ease .45s'; });
     document.addEventListener('introdone', entrStart, { once: true });
   }
   function entrStart() {
     if (!E.on || E.raf) return;
-    E.t0 = performance.now(); E.t = 0;
-    cards.forEach(function(c){ c.style.transition = 'none'; });
-    stage.style.transformOrigin = '50% 40%';
-    E.vig = document.createElement('div');
-    E.vig.setAttribute('aria-hidden', 'true');
-    E.vig.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.9;background:radial-gradient(ellipse 75% 70% at 50% 46%,transparent 38%,rgba(6,6,8,.78) 100%)';
-    document.body.appendChild(E.vig);
-    E.str = document.createElement('div');
-    E.str.setAttribute('aria-hidden', 'true');
-    E.str.style.cssText = 'position:fixed;left:-30%;top:46%;width:30%;height:2px;z-index:61;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);box-shadow:0 0 24px 6px rgba(255,255,255,.45)';
-    document.body.appendChild(E.str);
+    E.t0 = performance.now(); E.t = 0; E.landed = false;
+    cards.forEach(function(c){ c.style.transition = 'none'; c.classList.add('face-down'); });
+    stage.style.transformOrigin = '50% 45%';
     document.addEventListener('pointerdown', entrSkip, true);
     document.addEventListener('keydown', entrSkip, true);
     E.raf = requestAnimationFrame(entrFrame);
   }
-  function entrSkip(e) { if (e.repeat || performance.now() - E.t0 < 700) return; entrEnd(); }
+  function entrSkip(e) { if (e.repeat || performance.now() - E.t0 < 750) return; entrEnd(); }
   function entrFrame(now) {
     E.t = (now - E.t0) / 1000;
     place();
-    ring.style.opacity = eOut(eClamp((E.t - .2) / 1.4)).toFixed(3);
-    mk.style.opacity = eClamp((E.t - 1.9) / .6).toFixed(3);
-    stage.style.scale = (1 + .09 * (1 - eOut(eClamp(E.t / 3)))).toFixed(4);
-    if (E.vig) E.vig.style.opacity = (.9 * (1 - eOut(eClamp(E.t / 2.8)))).toFixed(3);
-    if (E.str) { var s2 = eClamp((E.t - 1.75) / 1.1); E.str.style.left = (-30 + 160 * (s2 * s2 * (3 - 2 * s2))).toFixed(1) + '%'; E.str.style.opacity = (Math.sin(Math.PI * s2) * .9).toFixed(3); }
-    var on = cards[activeC], sw = eClamp((E.t - 1.85) / 1.0);
-    if (on && sw > 0 && sw < 1) { on.style.setProperty('--mx', (-30 + 160 * eOut(sw)).toFixed(1) + '%'); on.style.setProperty('--my', '15%'); }
-    if (E.t >= 3.0) entrEnd(); else E.raf = requestAnimationFrame(entrFrame);
+    ring.style.opacity = eOut(eClamp((E.t - .15) / 1.35)).toFixed(3);
+    mk.style.opacity = eClamp((E.t - 1.95) / .55).toFixed(3);
+    stage.style.scale = (1 + .06 * (1 - eOut(eClamp(E.t / 2.6)))).toFixed(4);
+
+    // Trigger landing shockwave & buddy jump when Hero "Me" card snaps into place
+    if (!E.landed && E.t >= 2.08) {
+      E.landed = true;
+      if (window.__zkBgPulse) window.__zkBgPulse(1);
+      if (window.__zkBuddyBounce) window.__zkBuddyBounce(-9.5);
+      // Mexican riffle wave outward from center card to neighbors
+      triggerRiffleWave(activeC >= 0 ? activeC : 2, 26);
+    }
+
+    var on = cards[activeC], sw = eClamp((E.t - 2.05) / 0.85);
+    if (on && sw > 0 && sw < 1) { on.style.setProperty('--mx', (-20 + 140 * eOut(sw)).toFixed(1) + '%'); on.style.setProperty('--my', '18%'); }
+    if (E.t >= 2.95) entrEnd(); else E.raf = requestAnimationFrame(entrFrame);
   }
   function entrEnd() {
     if (!E.on) return;
     E.on = false; cancelAnimationFrame(E.raf); E.raf = 0;
     document.removeEventListener('pointerdown', entrSkip, true);
     document.removeEventListener('keydown', entrSkip, true);
-    cards.forEach(function(c){ c.style.transition = ''; });
+    cards.forEach(function(c){
+      c.style.transition = '';
+      c.classList.remove('face-down');
+    });
     ring.style.opacity = ''; mk.style.opacity = '';
     var on = cards[activeC]; if (on) { on.style.removeProperty('--mx'); on.style.removeProperty('--my'); }
     stage.style.transition = ''; stage.style.scale = ''; stage.style.transformOrigin = '';
-    if (E.vig) { E.vig.remove(); E.vig = null; }
-    if (E.str) { E.str.remove(); E.str = null; }
-    E.ui.forEach(function(el){ el.style.transition = 'opacity .3s ease'; });
-    setTimeout(function(){ E.ui.forEach(function(el){ el.style.transition = ''; }); }, 450);
+    E.ui.forEach(function(el){ el.style.transition = 'opacity .45s ease, transform .55s cubic-bezier(.22,1,.36,1)'; });
+    setTimeout(function(){ E.ui.forEach(function(el){ el.style.transition = ''; }); }, 550);
     place();
   }
 
-  var farC = [], zC = [], activeC = -1, opC = [];
+  function triggerRiffleWave(originIdx, power) {
+    if (reduce) return;
+    for (var i = 0; i < n; i++) {
+      var dist = i - originIdx;
+      dist = ((dist + n / 2) % n + n) % n - n / 2;
+      var ad = Math.abs(dist);
+      if (ad > 0 && ad <= 3.5) {
+        (function(idx, d, absD){
+          setTimeout(function(){
+            var fall = Math.pow(0.68, absD);
+            vRiffleY[idx] += (power || 22) * fall;
+            vRiffleZ[idx] += (d > 0 ? 1 : -1) * 5.5 * fall;
+            kickTilt();
+          }, Math.round(absD * 55));
+        })(i, dist, ad);
+      }
+    }
+  }
+
+  var farC = [], zC = [], activeC = -1, opC = [], lastPos = pos;
+  var tiltX = cards.map(function(){ return 0; }),
+      tiltY = cards.map(function(){ return 0; }),
+      tTiltX = cards.map(function(){ return 0; }),
+      tTiltY = cards.map(function(){ return 0; }),
+      vTiltX = cards.map(function(){ return 0; }),
+      vTiltY = cards.map(function(){ return 0; }),
+      tiltRaf = 0;
+
+  function stepCardTilt() {
+    var active = false;
+    for (var i = 0; i < n; i++) {
+      var dx = tTiltX[i] - tiltX[i], dy = tTiltY[i] - tiltY[i];
+      vTiltX[i] = (vTiltX[i] + dx * 0.16) * 0.74;
+      vTiltY[i] = (vTiltY[i] + dy * 0.16) * 0.74;
+      tiltX[i] += vTiltX[i];
+      tiltY[i] += vTiltY[i];
+
+      // 3D Flip physics (for right-click / peek trick or riffle)
+      var df = tFlipDeg[i] - flipDeg[i];
+      vFlipDeg[i] = (vFlipDeg[i] + df * 0.15) * 0.75;
+      flipDeg[i] += vFlipDeg[i];
+
+      // Riffle wave bounce physics
+      vRiffleY[i] = (vRiffleY[i] - riffleY[i] * 0.22) * 0.74;
+      riffleY[i] += vRiffleY[i];
+      vRiffleZ[i] = (vRiffleZ[i] - riffleZ[i] * 0.22) * 0.74;
+      riffleZ[i] += vRiffleZ[i];
+
+      if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01 || Math.abs(vTiltX[i]) > 0.01 || Math.abs(vTiltY[i]) > 0.01 ||
+          Math.abs(df) > 0.1 || Math.abs(vFlipDeg[i]) > 0.1 ||
+          Math.abs(riffleY[i]) > 0.05 || Math.abs(vRiffleY[i]) > 0.05 || Math.abs(riffleZ[i]) > 0.05) {
+        active = true;
+      } else {
+        tiltX[i] = tTiltX[i];
+        tiltY[i] = tTiltY[i];
+        flipDeg[i] = tFlipDeg[i];
+        riffleY[i] = 0;
+        riffleZ[i] = 0;
+      }
+    }
+    place();
+    if (active) tiltRaf = requestAnimationFrame(stepCardTilt);
+    else tiltRaf = 0;
+  }
+  function kickTilt() {
+    if (!tiltRaf && !reduce) tiltRaf = requestAnimationFrame(stepCardTilt);
+  }
+
   function place() {
     var isMob = window.innerWidth <= 700;
     for (var i = 0; i < n; i++) {
@@ -2431,14 +2984,63 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       var absD = Math.abs(d);
       var s = 1 + (isMob ? 0.08 : 0.09) * Math.max(0, 1 - absD * (isMob ? 0.8 : 0.7));
       var fan = 1, arr = 1, toss = 0, liftE = 0, arcY = 0;
+      var cardFlipY = flipDeg[i] || 0, cardPitchX = 0, orbitSpin = 0;
+
       if (E.on) {
+        // Stage 1: Vertical Card Spring from bottom (0.0s -> 0.85s)
+        var springOrder = (n - 1 - i) * 0.055;
+        var spP = eOut(eClamp((E.t - springOrder) / 0.78));
+        arr = spP;
+
+        // Stage 2: 360° Mid-Air Tornado Orbit & Ribbon Spread (0.2s -> 1.75s)
+        var orbP = eInOut(eClamp((E.t - 0.12 - springOrder * 0.6) / 1.52));
+        orbitSpin = (1 - orbP) * -185; // Sweeps 185 deg around the wheel into position
         var rw = eRaw(absD);
-        fan = eBack(rw); arr = eOut(eClamp(E.t / .9));
-        toss = (d > 0 ? 1 : d < 0 ? -1 : 0) * 11 * Math.pow(1 - rw, 2);
-        if (absD > .5) arcY = Math.sin(Math.PI * rw) * lastW * .09;
-        if (absD < .5) liftE = Math.sin(Math.PI * eClamp((E.t - 1.85) / 1.0)) * lastW * .035;
+        fan = eBack(rw);
+
+        // S-Curve aerial spring height
+        var springArc = Math.sin(Math.PI * eClamp((E.t - springOrder) / 1.15)) * lastW * 0.36;
+        arcY = springArc + (absD > 0.5 ? Math.sin(Math.PI * rw) * lastW * 0.08 : 0);
+
+        // Stage 3: Mexican Wave 3D Snap-Flip (Face-down 180° -> Face-up 0°)
+        // Outer cards flip first, culminating in the center "Me" card hero double-flip!
+        var flipStart = absD < 0.5 ? 1.38 : (0.92 + (3 - Math.min(3, absD)) * 0.14 + (d < 0 ? 0 : 0.05));
+        var flipDur = absD < 0.5 ? 0.72 : 0.56;
+        var flipP = eInOut(eClamp((E.t - flipStart) / flipDur));
+        var startDeg = absD < 0.5 ? 360 : 180; // Center card does a full 360° showstopper flip, others 180° from back
+        cardFlipY = (1 - flipP) * 180 + (absD < 0.5 ? (1 - flipP) * 180 : 0);
+
+        // Mid-flip jump & aerodynamic pitch
+        var flipArc = Math.sin(Math.PI * flipP);
+        liftE = flipArc * lastW * (absD < 0.5 ? 0.24 : 0.13);
+        cardPitchX = flipArc * (absD < 0.5 ? -18 : -11);
+        toss = (d > 0 ? 1 : d < 0 ? -1 : 0) * 14 * Math.pow(1 - rw, 2) + (1 - orbP) * -18;
+
+        // Glare sweep across the card back during flip
+        c.style.setProperty('--cb-gx', (-70 + flipP * 160).toFixed(1) + '%');
       }
-      c.style.transform = 'rotate(' + (d * step * fan + lean) + 'deg) translateY(' + (-R - (lift[i] || 0) - liftE - arcY + (1 - arr) * lastW * .3) + 'px) scale(' + (s * (E.on ? (.9 + .1 * arr) * (.95 + .05 * Math.min(1, fan)) : 1)).toFixed(3) + ')' + (toss ? ' rotate(' + toss.toFixed(2) + 'deg)' : '');
+
+      // Toggle face-down class whenever total Y rotation shows the back of the card (> 90 deg)
+      var totalY = (tiltY[i] || 0) + cardFlipY;
+      var normY = ((totalY % 360) + 360) % 360;
+      var isBack = normY > 90 && normY < 270;
+      c.classList.toggle('face-down', isBack);
+      // Mirror horizontally when showing the back so the emblem isn't backwards, and keep front un-mirrored
+      var renderY = isBack ? (totalY - 180) : totalY;
+
+      var rx = (tiltX[i] || 0) + cardPitchX;
+      var ry = renderY;
+      var rz = (riffleZ[i] || 0);
+      var has3D = Math.abs(rx) > 0.02 || Math.abs(ry) > 0.02 || Math.abs(rz) > 0.02;
+      var tiltStr = has3D
+        ? ' perspective(980px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)' + (Math.abs(rz) > 0.02 ? ' rotateZ(' + rz.toFixed(2) + 'deg)' : '')
+        : '';
+
+      var totalYShift = -R - (lift[i] || 0) - (riffleY[i] || 0) - liftE - arcY + (1 - arr) * lastW * 0.55;
+      var totalRot = d * step * fan + lean + orbitSpin;
+      var totalScale = s * (E.on ? (0.84 + 0.16 * arr) * (0.94 + 0.06 * Math.min(1, fan)) : 1);
+
+      c.style.transform = 'rotate(' + totalRot.toFixed(2) + 'deg) translateY(' + totalYShift.toFixed(1) + 'px) scale(' + totalScale.toFixed(3) + ')' + (toss ? ' rotate(' + toss.toFixed(2) + 'deg)' : '') + tiltStr;
 
       // Kartu muncul mulus saat berputar
       var op = Math.max(0, Math.min(1, 1 - Math.max(0, absD - (isMob ? 1.4 : 1.5)) * (isMob ? 0.52 : 0.44)));
@@ -2460,11 +3062,32 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     ring.style.transform = 'rotate(' + (-pos * step * 0.6 + (E.on ? (1 - eOut(eClamp(E.t / 2.4))) * -110 : 0)) + 'deg) scale(' + (E.on ? (.82 + .18 * eOut(eClamp(E.t / 1.8))).toFixed(4) : 1) + ')';
     var activeIdx = ((Math.round(pos) % n) + n) % n;
     if (activeIdx !== activeC) {
+      var prevActive = activeC;
+      var dir = pos >= lastPos ? 1 : -1;
       if (activeC >= 0) cards[activeC].classList.remove('on');
       cards[activeIdx].classList.add('on');
       activeC = activeIdx;
-      nm.textContent = cards[activeIdx].getAttribute('data-n');
+      var rawName = cards[activeIdx].getAttribute('data-n') || '';
+      var curLang = (window.ZK && ZK.lang) || 'id';
+      var dispName = (window.ZK && ZK.t && ZK.t(rawName, curLang)) || rawName;
+      nm.textContent = dispName;
+      if (window.__zkBuddyCardReact) window.__zkBuddyCardReact(activeIdx);
+      if (window.__zkBgSetCard) window.__zkBgSetCard(activeIdx, cards[activeIdx]);
+      if (prevActive >= 0 && window.__zkBgPulse) window.__zkBgPulse(dir);
+      if (prevActive >= 0 && !reduce && mk.animate) {
+        mk.animate([
+          { transform: 'translateX(-50%) translateY(' + (dir * 7) + 'px)', opacity: 0.25 },
+          { transform: 'translateX(-50%) translateY(0px)', opacity: 1 }
+        ], { duration: 280, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+      }
     }
+    if (window.__zkBuddyWheelLean && Math.abs(lean) > 0.05) {
+      window.__zkBuddyWheelLean(lean * 2.6);
+    }
+    if (window.__zkBgWheelSync) {
+      window.__zkBgWheelSync(pos, lean);
+    }
+    lastPos = pos;
   }
 
   function setPos(p) { pos = p; place(); }
@@ -2550,45 +3173,67 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
   };
 
   var PAGES = [
-    // 0: Story (bacaan) -- ringkas & profesional
+    // 0: Story (bacaan) -- 6 bab autentik perjalanan M. Zikri Al-Bukhori
     [
-      '<img src="' + STORY_PHOTO + '" alt="Potret dengan sorot cahaya merah">',
+      '<img src="' + STORY_PHOTO + '" alt="Potret M. Zikri Al-Bukhori dengan sorot cahaya merah">',
       [
         '<h2 class="st-h" data-t="h">Cerita Saya</h2>',
-        '<p class="st-sub" data-t="sub">Perjalanan dalam dunia web development &amp; desain antarmuka.</p>',
-        '<p class="st-lead" data-t="lead">Perjalanan singkat saya dalam mempelajari teknologi web, merancang antarmuka yang interaktif, dan terus mengasah kemampuan.</p>',
+        '<p class="st-sub" data-t="sub">Perjalanan bertumbuh, belajar, dan menemukan arah di dunia web development &amp; desain antarmuka.</p>',
+        '<p class="st-lead" data-t="lead">Dari masa kecil di Medan hingga terjun langsung ke dunia industri perangkat lunak — berikut adalah bab-bab nyata yang membentuk disiplin, rasa ingin tahu, dan karya saya hari ini.</p>',
         '<div class="st-wrap"><svg class="st-thread" aria-hidden="true"></svg><ol class="st-life" aria-label="Garis waktu cerita saya">' +
-          '<li class="st-ch" data-m="0.2"><div class="st-hd"><span class="st-n" aria-hidden="true">01</span><span class="st-when">Awal Mula</span></div><h3>Awal Minat</h3><p>Mulai mengenal dunia teknologi dan komputer sejak usia muda. Rasa penasaran terhadap bagaimana sebuah tampilan web dibuat mendorong saya untuk mulai belajar dasar-dasar pemrograman web secara otodidak.</p></li>' +
-          '<li class="st-ch" data-m="0.45"><div class="st-hd"><span class="st-n" aria-hidden="true">02</span><span class="st-when">Pembelajaran</span></div><h3>Eksplorasi Kode &amp; Desain</h3><p>Mendalami struktur HTML5, styling modern dengan CSS3 dan Tailwind, serta logika JavaScript. Di fase ini saya menyadari bahwa estetika visual dan performa kode harus berjalan seimbang.</p></li>' +
-          '<li class="st-ch" data-m="0.3"><div class="st-hd"><span class="st-n" aria-hidden="true">03</span><span class="st-when">Penerapan</span></div><h3>Proyek &amp; Praktik</h3><p>Mulai membangun berbagai antarmuka interaktif, landing page, dan komponen web yang responsif. Selalu menguji setiap karya di berbagai ukuran layar agar nyaman digunakan.</p></li>' +
-          '<li class="st-ch is-next" data-m="1.0"><div class="st-hd"><span class="st-n" aria-hidden="true">04</span><span class="st-when">Langkah Ke Depan</span></div><h3>Fokus Hari Ini</h3><p>Terus memperluas wawasan seputar ekosistem web modern, animasi mikro, dan UI/UX design. Terbuka untuk berkolaborasi dan berkontribusi dalam pembuatan produk digital yang berkualitas.</p></li>' +
+          '<li class="st-ch" data-m="0.18"><div class="st-hd"><span class="st-n" aria-hidden="true">01</span><span class="st-when" data-t="c1w">2011 · Medan</span></div><h3 data-t="c1t">Akar &amp; Pencapaian Awal</h3><p data-t="c1p1">Lahir pada tahun 2011 di Medan, Sumatera Utara, dan tumbuh dikelilingi kehangatan keluarga besar ayah maupun ibu sebagai cucu pertama dari kedua belah pihak.</p><p data-t="c1p2">Salah satu momen paling berkesan di masa kecil adalah meraih Juara 1 Lomba Tahfidz Tingkat Kota pada usia enam tahun — pelajaran pertama bahwa fokus dan ketekunan akan membuahkan hasil nyata.</p></li>' +
+          '<li class="st-ch" data-m="-0.32"><div class="st-hd"><span class="st-n" aria-hidden="true">02</span><span class="st-when" data-t="c2w">Masa Sekolah</span></div><h3 data-t="c2t">Fondasi Karakter &amp; Akademik</h3><p data-t="c2p1">Menempuh pendidikan dasar di MIS Aisyiyah Sumatera Utara dan melanjutkan jenjang menengah pertama di MTs Aisyiyah Sumatera Utara.</p><p data-t="c2p2">Fase ini membentuk kedisiplinan, daya juang untuk bangkit dari masa-masa sulit, persahabatan yang erat, serta ketertarikan awal terhadap cara kerja antarmuka digital.</p></li>' +
+          '<li class="st-ch" data-m="0.38"><div class="st-hd"><span class="st-n" aria-hidden="true">03</span><span class="st-when" data-t="c3w">Pendidikan Vokasi</span></div><h3 data-t="c3t">Melangkah ke Dunia Web di SMK Swasta Mandiri</h3><p data-t="c3p1">Melanjutkan pendidikan ke SMK Swasta Mandiri di Medan, tempat rasa penasaran berubah menjadi praktik teknis yang terarah.</p><p data-t="c3p2">Di sini saya mulai mendalami rekayasa web, belajar berpikir mandiri, berani bereksperimen, dan menemukan jalur yang ingin saya tekuni di bidang front-end development.</p></li>' +
+          '<li class="st-ch" data-m="-0.25"><div class="st-hd"><span class="st-n" aria-hidden="true">04</span><span class="st-when" data-t="c4w">Eksplorasi Mandiri</span></div><h3 data-t="c4t">Mendalami Kode, Animasi &amp; Desain UI</h3><p data-t="c4p1">Mengasah struktur HTML5 semantik, arsitektur CSS3 modern dan Tailwind CSS, logika JavaScript (ES6+), serta koreografi animasi dengan GSAP dan Anime.js.</p><p data-t="c4p2">Menyadari bahwa produk digital yang baik menuntut keseimbangan antara ketajaman estetika visual dan kode yang cepat, bersih, serta nyaman diakses di setiap layar.</p></li>' +
+          '<li class="st-ch is-now" data-m="0.45"><div class="st-hd"><span class="st-n" aria-hidden="true">05</span><span class="st-when" data-t="c5w">Tahun ke-2 SMK · Industri</span></div><h3 data-t="c5t">Praktik Kerja Lapangan (PKL) di DigitalCODE</h3><p data-t="c5p1">Saat ini berada di tahun kedua SMK dan tengah menjalani pengalaman Praktik Kerja Lapangan (PKL) pertama di perusahaan DigitalCODE.</p><p data-t="c5p2">Terjun ke lingkungan kerja nyata mempertajam alur kerja saya — menerjemahkan teori yang dipelajari di sekolah menjadi antarmuka web fungsional dengan standar produksi.</p></li>' +
+          '<li class="st-ch is-next" data-m="1.0"><div class="st-hd"><span class="st-n" aria-hidden="true">06</span><span class="st-when" data-t="c6w">Hari Ini &amp; Visi</span></div><h3 data-t="c6t">Fokus Saat Ini &amp; Langkah Berikutnya</h3><p data-t="c6p1">Merancang landing page responsif, sistem UI interaktif, dan pengalaman web modern dari Medan sembari terus memperdalam React, Vue, serta alur kerja berbasis AI.</p><p data-t="c6p2">Terbuka untuk proyek freelance, kolaborasi kreatif, dan kontribusi dalam membangun produk digital yang berkarakter.</p></li>' +
         '</ol></div>',
-        '<div class="st-end"><p><strong>Terus belajar, berinovasi, dan berkembang.</strong></p><p>Setiap baris kode adalah langkah untuk menjadi lebih baik.</p></div>'
+        '<div class="st-end"><p><strong data-t="e1">Terus belajar, berinovasi, dan berkembang.</strong></p><p data-t="e2">Setiap baris kode adalah langkah untuk menjadi lebih baik.</p>' +
+        '<div class="st-cta-row"><button type="button" class="st-cta-btn pri" data-goto="5" data-t="ctaProj">Lihat Proyek Unggulan &#8599;</button><button type="button" class="st-cta-btn sec" data-goto="6" data-t="ctaContact">Hubungi Saya &#8599;</button></div></div>'
       ].join('')
     ],
 
-    // 1: Music -- dikosongkan (hanya tombol Kembali)
-    ['<i class="mg"></i><svg class="mw" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mwl" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#e0463a" stop-opacity="0"/><stop offset=".25" stop-color="#e0463a" stop-opacity=".9"/><stop offset=".75" stop-color="#e0463a" stop-opacity=".55"/><stop offset="1" stop-color="#e0463a" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="url(#mwl)" vector-effect="non-scaling-stroke"><path class="ln" style="--i:0;opacity:0.35" stroke-width="1.6" d="M1250 600 C 1020 570, 860 550, 640 500 S 240 290, -60 330"/><path class="ln" style="--i:1;opacity:0.47" stroke-width="1" d="M1250 609 C 1020 579, 860 570, 640 520 S 240 324, -60 364"/><path class="ln" style="--i:2;opacity:0.59" stroke-width="1" d="M1250 618 C 1020 588, 860 590, 640 540 S 240 358, -60 398"/><path class="ln" style="--i:3;opacity:0.71" stroke-width="1.6" d="M1250 627 C 1020 597, 860 610, 640 560 S 240 392, -60 432"/><path class="ln" style="--i:4;opacity:0.35" stroke-width="1" d="M1250 636 C 1020 606, 860 630, 640 580 S 240 426, -60 466"/><path class="ln" style="--i:5;opacity:0.47" stroke-width="1" d="M1250 645 C 1020 615, 860 650, 640 600 S 240 460, -60 500"/><path class="ln" style="--i:6;opacity:0.59" stroke-width="1.6" d="M1250 654 C 1020 624, 860 670, 640 620 S 240 494, -60 534"/><path class="ln" style="--i:7;opacity:0.71" stroke-width="1" d="M1250 663 C 1020 633, 860 690, 640 640 S 240 528, -60 568"/><path class="ln" style="--i:8;opacity:0.35" stroke-width="1" d="M1250 672 C 1020 642, 860 710, 640 660 S 240 562, -60 602"/><path class="ln" style="--i:9;opacity:0.47" stroke-width="1.6" d="M1250 681 C 1020 651, 860 730, 640 680 S 240 596, -60 636"/><path class="ln" style="--i:10;opacity:0.59" stroke-width="1" d="M1250 690 C 1020 660, 860 750, 640 700 S 240 630, -60 670"/><path class="ln" style="--i:11;opacity:0.71" stroke-width="1" d="M1250 699 C 1020 669, 860 770, 640 720 S 240 664, -60 704"/><path class="ln" style="--i:12;opacity:0.35" stroke-width="1.6" d="M1250 708 C 1020 678, 860 790, 640 740 S 240 698, -60 738"/><path class="ln" style="--i:13;opacity:0.47" stroke-width="1" d="M1250 717 C 1020 687, 860 810, 640 760 S 240 732, -60 772"/></g></svg><i class="mn"></i><i class="dim"></i><span class="ghost" id="ghost" aria-hidden="true"></span><img class="cut" src="' + MUSIC_CUT + '" alt="M. Zikri bermain gitar"><i class="lamp"></i><i class="sweep"></i><canvas class="dust" aria-hidden="true"></canvas>', '<i class="cb t"></i><i class="cb b"></i><div class="me-top"><span class="me-k">Playlist · 06 lagu</span></div><h2 class="pt">Lagi sering<br><em>kuputar.</em></h2><p class="pl-sub">Enam lagu yang lagi nempel di kepala.</p><ol class="pl" id="plist"></ol>'],
+    // 1: Music -- Studio Synth + MP3 Turntable
+    ['<i class="mg"></i><svg class="mw" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mwl" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#e0463a" stop-opacity="0"/><stop offset=".25" stop-color="#e0463a" stop-opacity=".9"/><stop offset=".75" stop-color="#e0463a" stop-opacity=".55"/><stop offset="1" stop-color="#e0463a" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="url(#mwl)" vector-effect="non-scaling-stroke"><path class="ln" style="--i:0;opacity:0.35" stroke-width="1.6" d="M1250 600 C 1020 570, 860 550, 640 500 S 240 290, -60 330"/><path class="ln" style="--i:1;opacity:0.47" stroke-width="1" d="M1250 609 C 1020 579, 860 570, 640 520 S 240 324, -60 364"/><path class="ln" style="--i:2;opacity:0.59" stroke-width="1" d="M1250 618 C 1020 588, 860 590, 640 540 S 240 358, -60 398"/><path class="ln" style="--i:3;opacity:0.71" stroke-width="1.6" d="M1250 627 C 1020 597, 860 610, 640 560 S 240 392, -60 432"/><path class="ln" style="--i:4;opacity:0.35" stroke-width="1" d="M1250 636 C 1020 606, 860 630, 640 580 S 240 426, -60 466"/><path class="ln" style="--i:5;opacity:0.47" stroke-width="1" d="M1250 645 C 1020 615, 860 650, 640 600 S 240 460, -60 500"/><path class="ln" style="--i:6;opacity:0.59" stroke-width="1.6" d="M1250 654 C 1020 624, 860 670, 640 620 S 240 494, -60 534"/><path class="ln" style="--i:7;opacity:0.71" stroke-width="1" d="M1250 663 C 1020 633, 860 690, 640 640 S 240 528, -60 568"/><path class="ln" style="--i:8;opacity:0.35" stroke-width="1" d="M1250 672 C 1020 642, 860 710, 640 660 S 240 562, -60 602"/><path class="ln" style="--i:9;opacity:0.47" stroke-width="1.6" d="M1250 681 C 1020 651, 860 730, 640 680 S 240 596, -60 636"/><path class="ln" style="--i:10;opacity:0.59" stroke-width="1" d="M1250 690 C 1020 660, 860 750, 640 700 S 240 630, -60 670"/><path class="ln" style="--i:11;opacity:0.71" stroke-width="1" d="M1250 699 C 1020 669, 860 770, 640 720 S 240 664, -60 704"/><path class="ln" style="--i:12;opacity:0.35" stroke-width="1.6" d="M1250 708 C 1020 678, 860 790, 640 740 S 240 698, -60 738"/><path class="ln" style="--i:13;opacity:0.47" stroke-width="1" d="M1250 717 C 1020 687, 860 810, 640 760 S 240 732, -60 772"/></g></svg><i class="mn"></i><i class="dim"></i><span class="ghost" id="ghost" aria-hidden="true"></span><img class="cut" src="' + MUSIC_CUT + '" alt="M. Zikri bermain gitar"><i class="lamp"></i><i class="sweep"></i><canvas class="dust" aria-hidden="true"></canvas>', '<div class="me-top"><span class="me-k">Playlist · 06 lagu</span></div><h2 class="pt">Lagi sering<br><em>kuputar.</em></h2><p class="pl-sub">Enam lagu yang lagi nempel di kepala.</p><ol class="pl" id="plist"></ol>'],
 
     // 2: About (Zikri)
     [
       '<img src="' + PHOTO + '" alt="M. Zikri Al-Bukhori">',
       '<div class="me-top"><span class="me-k">Tentang saya</span></div>' +
       '<h2 class="pt">M. Zikri<br><em>Al-Bukhori</em></h2>' +
-      '<div class="me-bio"><p class="me-lead">Halo, saya <strong>M. Zikri Al-Bukhori</strong>, seorang <strong>Front-End Developer & UI Designer</strong> yang berdomisili di <strong>Medan, Sumatera Utara</strong>. Saya berfokus pada perancangan antarmuka web modern yang responsif, rapi, dan mudah digunakan.</p><p>Senang mengeksplorasi teknologi baru, merancang tata letak yang bersih, serta menerjemahkan ide kreatif menjadi kode yang solid dan interaktif.</p></div><blockquote class="me-q"><span>Prinsip saya:</span> Mengutamakan kualitas visual, performa kode, dan pengalaman pengguna yang optimal.</blockquote>' +
+      '<div class="me-bio"><p class="me-lead">Halo, saya <strong>M. Zikri Al-Bukhori</strong>, seorang <strong>Front-End Developer &amp; UI Designer</strong> yang berdomisili di <strong>Medan, Sumatera Utara</strong>. Saya berfokus pada perancangan antarmuka web modern yang responsif, rapi, dan mudah digunakan.</p><p>Saat ini saya menempuh pendidikan di <strong>SMK Swasta Mandiri</strong> dan menjalani praktik industri (PKL) di <strong>DigitalCODE</strong>, menerjemahkan ide kreatif menjadi kode yang solid, cepat, dan interaktif.</p></div><blockquote class="me-q"><span>Prinsip saya:</span> Mengutamakan kualitas visual, performa kode, dan pengalaman pengguna yang optimal.</blockquote>' +
       '<div class="me-f">' +
         '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></i><p><b>Fokus</b><span>Front-end development &amp; desain antarmuka</span></p></div>' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/><path d="M10 21h4"/></svg></i><p><b>Minat</b><span>Teknologi dan pengembangan diri</span></p></div>' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.2 2.7 3 6 3s6-1.8 6-3v-4.5"/></svg></i><p><b>Sekolah</b><span>SMK Swasta Mandiri</span></p></div>' +
+        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></i><p><b>Pengalaman Industri</b><span>PKL di DigitalCODE (Web &amp; UI)</span></p></div>' +
+        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.2 2.7 3 6 3s6-1.8 6-3v-4.5"/></svg></i><p><b>Pendidikan</b><span>SMK Swasta Mandiri — Medan</span></p></div>' +
         '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><p><b>Domisili</b><span>Medan, Sumatera Utara</span></p></div>' +
       '</div>' +
-      '<div class="me-b"><a href="mailto:zikriganteng2023@gmail.com" aria-label="Hubungi saya via email">Hubungi saya <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a></div>'
+      '<div class="me-cw"><p class="me-ck">Keahlian &amp; Teknologi Utama</p><ul class="me-chips" aria-label="Teknologi utama">' +
+        '<li><button type="button" class="me-chip" data-goto="4">HTML5 &amp; CSS3</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">JavaScript ES6+</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">Tailwind CSS</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">React &amp; Vue</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">GSAP &amp; Anime.js</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">UI/UX Design</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">Git &amp; GitHub</button></li>' +
+        '<li><button type="button" class="me-chip" data-goto="4">AI Workflow</button></li>' +
+      '</ul></div>' +
+      '<div class="me-b">' +
+        '<button type="button" class="me-btn-pri" data-goto="5">Lihat Proyek Unggulan <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></button>' +
+        '<button type="button" class="me-btn-sec" data-goto="6">Hubungi saya <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></button>' +
+      '</div>'
     ],
 
     // 3: Galeri Foto
     [
       '',
-      '<h2 class="pt">Frame</h2>' +
+      '<div class="ghead">' +
+        '<div class="ghead-l"><span class="me-k">Arsip Visual · 08 Potret</span><h2 class="pt">Frame</h2></div>' +
+        '<div class="gview-bar" role="group" aria-label="Mode tampilan galeri">' +
+          '<button type="button" class="gview-btn on" data-gview="ring" aria-pressed="true">Cincin 3D</button>' +
+          '<button type="button" class="gview-btn" data-gview="grid" aria-pressed="false">Grid Editorial</button>' +
+        '</div>' +
+      '</div>' +
       galScene() +
       (!GAL.length ? '' : '<p class="gal-k">' + galPad(GAL.length) + ' foto</p>' +
       '<div class="rail">' + GAL.map(function(src, i){
@@ -2606,10 +3251,10 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       SKR.ui
     ],
 
-    // 5: Proyek (desain baru)
+    // 5: Proyek (Studi kasus interaktif + Grid semua proyek)
     [
       '<div class="np-bg"></div>',
-      `<div class="nwrap"><i class="np-prog" id="npProg"></i><nav class="np-nav" id="npNav" role="tablist" aria-label="Pilih proyek"></nav><section class="np-top"><h1 class="np-name" id="npName" aria-live="polite"></h1><div class="np-info" id="npInfo"></div></section><button type="button" class="np-shot" id="npShot" aria-label="Lihat gambar ukuran penuh"><div class="np-frame" id="npFrame"><div class="np-view" id="npView"></div></div></button><section class="np-sec" id="npSec"><h3>Dilihat dari dekat</h3><div class="np-crops" id="npCrops"></div></section><section class="np-sec np-two"><div><h3>Warna yang dipakai</h3><div class="np-pal" id="npPal"></div></div><div><h3>Isi halaman</h3><dl class="np-rows" id="npRows"></dl></div></section><section class="np-more" id="npMore"></section><dialog class="np-dlg" id="npDlg"><button type="button" class="np-close" id="npClose">Tutup</button><img id="npBig" alt=""></dialog></div>`
+      `<div class="nwrap"><i class="np-prog" id="npProg"></i><div class="np-header-bar"><div class="np-kicker-wrap"><span class="me-k" id="npKicker">Karya Pilihan · 04 Studi Kasus</span></div><nav class="np-nav" id="npNav" role="tablist" aria-label="Pilih proyek"></nav></div><section class="np-top"><div class="np-title-col"><div class="np-meta-bar" id="npMetaBar"></div><h1 class="np-name" id="npName" aria-live="polite"></h1><div class="np-stack" id="npStack" aria-label="Teknologi proyek"></div></div><div class="np-info" id="npInfo"></div></section><button type="button" class="np-shot" id="npShot" aria-label="Lihat gambar ukuran penuh"><div class="np-frame" id="npFrame"><div class="np-browser-bar" aria-hidden="true"><span class="np-dots"><i></i><i></i><i></i></span><span class="np-url-pill" id="npUrlPill">v0-mono-ecommerce.vercel.app</span><span class="np-zoom-hint">Perbesar &#8599;</span></div><div class="np-view" id="npView"></div></div></button><section class="np-sec" id="npSec"><h3 id="npCloseTitle">Dilihat dari dekat</h3><div class="np-crops" id="npCrops"></div></section><section class="np-sec np-two"><div><h3 id="npPalTitle">Warna yang dipakai <small class="np-pal-hint">(Klik untuk salin HEX)</small></h3><div class="np-pal" id="npPal"></div></div><div><h3 id="npRowsTitle">Isi halaman</h3><dl class="np-rows" id="npRows"></dl></div></section><section class="np-sec np-all-sec"><div class="np-all-head"><h3 id="npAllTitle">Indeks Semua Proyek (04)</h3><p id="npAllSub">Bandingkan keempat proyek unggulan atau buka demo langsung.</p></div><div class="np-all-grid" id="npAllGrid"></div></section><section class="np-more" id="npMore"></section><dialog class="np-dlg" id="npDlg"><button type="button" class="np-close" id="npClose">Tutup</button><img id="npBig" alt=""></dialog></div>`
     ],
 
     // 6: Kontak — PAPER RIOT / Edisi 06
@@ -2632,7 +3277,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       `<div class="pr-paper">
         <div class="pr-grid">
           <div class="pr-l">
-            <div class="pr-meta pr-rev" style="--d:.34">
+            <div class="pr-meta pr-rev" style="--d:.2">
               <span class="pr-kick" data-kt="kicker">EDISI 06 — KONTAK</span>
               <span class="pr-place"><span data-kt="loc">MEDAN, INDONESIA — WIB</span><time class="pr-clock">11.40</time></span>
             </div>
@@ -2640,18 +3285,42 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
               <span class="pr-h1" data-kt="h1" data-kinetic>ADA PROYEK?</span>
               <span class="pr-h2" data-kt="h2">Mari bicara.</span>
             </h2>
-            <p class="pr-p pr-rev" style="--d:.52" data-kt="p">Freelance, kolaborasi, atau sekadar bertukar pikiran seputar web dan desain antarmuka — semuanya terbuka. Ceritakan idemu, sekecil apa pun.</p>
-            <div class="pr-cta pr-rev" style="--d:.64">
+            <p class="pr-p pr-rev" style="--d:.32" data-kt="p">Freelance, kolaborasi, atau sekadar bertukar pikiran seputar web dan desain antarmuka — semuanya terbuka. Ceritakan idemu, sekecil apa pun.</p>
+            <div class="pr-cta pr-rev" style="--d:.42">
               <a class="pr-mail wa-btn" href="https://wa.me/6281367381826?text=Halo%20Zikri,%20saya%20tertarik%20bekerja%20sama%20dengan%20Anda" target="_blank" rel="noopener noreferrer">
-                <span class="pr-mail-l"><small>RESPONS CEPAT</small><b>Chat Langsung via WhatsApp</b></span>
+                <span class="pr-mail-l"><small data-kt="fast">RESPONS CEPAT</small><b data-kt="waChat">Chat Langsung via WhatsApp</b></span>
                 <span class="pr-mail-ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
               </a>
-              <a class="pr-mail email-sub-btn" href="mailto:zikriganteng2023@gmail.com?subject=Proyek%20baru%20%E2%80%94%20dari%20portofolio">
-                <span class="pr-mail-l"><small data-kt="send">TULIS EMAIL</small><b>zikriganteng2023@gmail.com</b></span>
-                <span class="pr-mail-ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
-              </a>
+              <div class="pr-email-row">
+                <a class="pr-mail email-sub-btn" href="mailto:zikriganteng2023@gmail.com?subject=Proyek%20baru%20%E2%80%94%20dari%20portofolio">
+                  <span class="pr-mail-l"><small data-kt="send">TULIS EMAIL</small><b>zikriganteng2023@gmail.com</b></span>
+                  <span class="pr-mail-ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
+                </a>
+                <button type="button" class="pr-copy-btn" id="copyEmailBtn" aria-label="Salin alamat email">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span data-kt="copyMail">Salin Email</span>
+                </button>
+              </div>
             </div>
-            <blockquote class="pr-quote pr-rev" style="--d:.8">
+            <div class="pr-composer pr-rev" style="--d:.5">
+              <div class="prc-head">
+                <span class="prc-k" data-kt="compTitle">KIRIM PESAN CEPAT</span>
+                <div class="prc-topics" role="group" aria-label="Pilih topik diskusi">
+                  <button type="button" class="prc-topic on" aria-pressed="true" data-kt="tWeb">Proyek Web</button>
+                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tUi">UI/UX Design</button>
+                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tCollab">Kolaborasi</button>
+                </div>
+              </div>
+              <div class="prc-fields">
+                <input type="text" id="prcName" class="prc-input" placeholder="Nama Anda" data-ka="compName" aria-label="Nama Anda">
+                <input type="text" id="prcMsg" class="prc-input" placeholder="Ceritakan singkat proyek atau ide Anda..." data-ka="compMsg" aria-label="Pesan singkat Anda">
+              </div>
+              <div class="prc-actions">
+                <button type="button" class="prc-send wa" id="prcWaBtn" data-kt="compWa">Kirim ke WhatsApp &#8599;</button>
+                <button type="button" class="prc-send mail" id="prcMailBtn" data-kt="compMail">Kirim via Email &#8599;</button>
+              </div>
+            </div>
+            <blockquote class="pr-quote pr-rev" style="--d:.58">
               <p data-kt="quote">“Terlalu banyak ide, terlalu sedikit waktu. Mari mulai dari milikmu.”</p>
               <cite data-kt="attrib">— Zikri, Medan</cite>
             </blockquote>
@@ -2912,11 +3581,24 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
 
   var switching = false;
   window.zkGoPage = switchPage; // dipakai halaman Proyek (tombol "Hubungi saya")
+  window.zkJumpPage = function(targetIdx) {
+    targetIdx = ((targetIdx % n) + n) % n;
+    if (cur < 0) {
+      stop();
+      var base = Math.round(pos),
+          d = ((targetIdx - base + n / 2) % n + n) % n - n / 2;
+      if (d === 0 && Math.abs(pos - base) < 0.04) { openPage(targetIdx); return; }
+      animateTo(base + d, 0, function(){ openPage(targetIdx); });
+      return;
+    }
+    if (targetIdx === cur) return;
+    switchPage(targetIdx - cur);
+  };
   function switchPage(d) {
     if (cur < 0 || switching) return;
     switching = true;
     var i = ((cur + d) % n + n) % n;
-    pgb.style.transition = 'opacity .16s ease';
+    pgb.style.transition = 'opacity .14s ease';
     pgb.style.opacity = '0';
     setTimeout(function(){
       var base = Math.round(pos);
@@ -2925,11 +3607,11 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
       cur = i;
       pg.className = 'pg sw p' + i;
       pgb.innerHTML = pageHTML(i);
-      if (i === 5) { setTimeout(initProjectSpatialStage, 40); }
+      if (i === 5) { setTimeout(initProjectSpatialStage, 30); }
       pg.scrollTop = 0;
       pg.getBoundingClientRect(); // paksa reflow supaya animasi muncul berurutan jalan lagi
       pg.classList.add('open');
-      pgb.style.transition = 'opacity .28s ease';
+      pgb.style.transition = 'opacity .22s ease';
       pgb.style.opacity = '1';
       var bkBtn = pgb.querySelector('.bk');
       if (bkBtn) bkBtn.focus({ preventScroll: true });
@@ -2938,8 +3620,8 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
         pgb.style.opacity = '';
         pg.classList.remove('sw');
         switching = false;
-      }, 330);
-    }, 170);
+      }, 240);
+    }, 140);
   }
 
   /* ===== v75 FX: kartu pecah jadi serpihan kaca, lalu kembali utuh dengan mulus ===== */
@@ -3003,8 +3685,8 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     FX.busy = true;
     fxShards(c, false); fxHide(c);
     function go() { if (done) return; done = true; clearTimeout(FX.t); irisC = { x: innerWidth / 2, y: innerHeight / 2 }; openCore(i); irisC = null; }
-    FX.t = setTimeout(go, 800);
-    setTimeout(function(){ go(); h.remove(); FX.busy = false; }, 1500);
+    FX.t = setTimeout(go, 240);
+    setTimeout(function(){ go(); h.remove(); FX.busy = false; }, 820);
     h.onclick = go; // ketuk = lewati ke halaman
   }
   function closePage() {
@@ -3014,7 +3696,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     FX.busy = true;
     fxShards(c, true); fxHide(c);
     irisC = { x: innerWidth / 2, y: innerHeight / 2 }; closeCore(); irisC = null;
-    setTimeout(function(){ fxShow(); h.remove(); FX.busy = false; c.focus({ preventScroll: true }); }, 1400);
+    setTimeout(function(){ fxShow(); h.remove(); FX.busy = false; c.focus({ preventScroll: true }); }, 750);
   }
 
   function openCore(i) {
@@ -3059,7 +3741,7 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     cur = -1;
   }
 
-  var hov = -1, tmr = [];
+  var hov = -1, lastRiffleHov = -1, lastRiffleTime = 0, tmr = [];
   function setFast(i, on) {
     clearTimeout(tmr[i]);
     if (on) cards[i].classList.add('press');
@@ -3074,7 +3756,18 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
 
   cards.forEach(function(c, i) {
     c.addEventListener('pointerenter', function(e){
-      if (e.pointerType !== 'mouse' || moved) return;
+      if (e.pointerType !== 'mouse' || moved || E.on) return;
+      var now = performance.now();
+      // Riffle Brush effect: when sweeping cursor across cards quickly, cards flutter like a real deck!
+      if (lastRiffleHov >= 0 && lastRiffleHov !== i && now - lastRiffleTime < 260) {
+        var sweepDir = i > lastRiffleHov ? 1 : -1;
+        vRiffleY[i] += 13;
+        vRiffleZ[i] += sweepDir * 4.2;
+        vRiffleY[lastRiffleHov] += 6;
+        kickTilt();
+      }
+      lastRiffleHov = i;
+      lastRiffleTime = now;
       hov = i;
       lift[i] = 22;
       setFast(i, true);
@@ -3083,8 +3776,17 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     c.addEventListener('pointerleave', function(){
       if (hov === i) hov = -1;
       lift[i] = 0;
+      if (tFlipDeg[i] !== 0) { tFlipDeg[i] = 0; kickTilt(); }
       setFast(i, false);
       place();
+    });
+    // Right-click on any card to perform a 3D Cardistry Flip / Peek at its Playing Card Back!
+    c.addEventListener('contextmenu', function(e){
+      e.preventDefault();
+      if (E.on) return;
+      tFlipDeg[i] = tFlipDeg[i] === 0 ? 180 : 0;
+      vRiffleY[i] += 16;
+      kickTilt();
     });
     c.addEventListener('pointerdown', function(){
       lift[i] = 34;
@@ -3093,10 +3795,17 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     });
     c.addEventListener('click', function(){
       if (moved) return;
+      if (tFlipDeg[i] !== 0) {
+        tFlipDeg[i] = 0;
+        vRiffleY[i] += 12;
+        kickTilt();
+        return;
+      }
       stop();
       var base = Math.round(pos),
           d = ((i - base + n / 2) % n + n) % n - n / 2;
       if (d === 0 && Math.abs(pos - base) < 0.02) { openPage(i); return; }
+      triggerRiffleWave(i, 16);
       animateTo(base + d, 0, function(){ openPage(i); });
     });
   });
@@ -3108,6 +3817,11 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
     if (e.target.closest('[data-close]')) closePage();
     var g = e.target.closest('[data-go]');
     if (g) switchPage(parseInt(g.getAttribute('data-go'), 10));
+    var jmp = e.target.closest('[data-jump],[data-goto]');
+    if (jmp) {
+      var target = parseInt(jmp.getAttribute('data-jump') || jmp.getAttribute('data-goto'), 10);
+      if (!isNaN(target) && window.zkJumpPage) window.zkJumpPage(target);
+    }
   });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') closePage();
@@ -3182,6 +3896,152 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
   stage.addEventListener('pointerup', dragEnd);
   stage.addEventListener('pointercancel', dragEnd);
 
+  // Interactive spring, ripple wave & trampoline physics on PORTOFOLIO title letters (Desktop & Touch)
+  var titleEl = document.querySelector('.hd .title');
+  if (titleEl && !reduce) {
+    var lState = [], lRaf = 0, mxL = -9999, myL = -9999, lActive = false;
+    var dragIdx = -1, dragY0 = 0, dragMoved = false;
+
+    function getSt(i) {
+      return lState[i] || (lState[i] = { x: 0, y: 0, r: 0, sx: 1, sy: 1, vx: 0, vy: 0, vr: 0, vsx: 0, vsy: 0 });
+    }
+    function startLetters() {
+      if (!lRaf) lRaf = requestAnimationFrame(stepLetters);
+    }
+
+    // Gelombang kejut merambat ke huruf-huruf sekitar seperti tuts piano
+    window.__zkLetterImpulse = function(centerIdx, strength) {
+      var lets = titleEl.querySelectorAll('.t1 i');
+      for (var i = 0; i < lets.length; i++) {
+        var d = Math.abs(i - centerIdx);
+        if (d <= 4) {
+          (function(idx, dist){
+            setTimeout(function(){
+              var st = getSt(idx);
+              var falloff = Math.pow(0.56, dist);
+              st.vy += strength * falloff;
+              st.vsy -= 0.14 * falloff;
+              st.vsx += 0.10 * falloff;
+              st.vr += (idx < centerIdx ? -1 : idx > centerIdx ? 1 : 0) * 4.5 * falloff;
+              startLetters();
+            }, dist * 38);
+          })(i, d);
+        }
+      }
+    };
+
+    function stepLetters() {
+      var lets = titleEl.querySelectorAll('.t1 i');
+      var moving = false;
+      for (var i = 0; i < lets.length; i++) {
+        var el = lets[i];
+        var st = getSt(i);
+        var tx = 0, ty = 0, tr = 0, tsx = 1, tsy = 1;
+        if (dragIdx === i) {
+          ty = Math.max(-14, Math.min(34, myL - dragY0));
+          tsy = 1 - (ty / 140);
+          tsx = 1 + (ty / 200);
+        } else if (lActive) {
+          var rect = el.getBoundingClientRect();
+          var lcx = rect.left + rect.width * 0.5;
+          var lcy = rect.top + rect.height * 0.5;
+          var dx = mxL - lcx, dy = myL - lcy;
+          var dist = Math.hypot(dx, dy);
+          var rad = Math.max(95, rect.width * 1.85);
+          if (dist < rad) {
+            var pull = Math.pow(1 - dist / rad, 1.45);
+            tx = -(dx / (dist || 1)) * pull * 16;
+            ty = -pull * 24 - (dy / (dist || 1)) * pull * 8;
+            tr = -(dx / rad) * pull * 13;
+            tsy = 1 + pull * 0.09;
+            tsx = 1 - pull * 0.04;
+          }
+        }
+        st.vx = (st.vx + (tx - st.x) * 0.19) * 0.75;
+        st.vy = (st.vy + (ty - st.y) * 0.21) * 0.75;
+        st.vr = (st.vr + (tr - st.r) * 0.19) * 0.75;
+        st.vsx = (st.vsx + (tsx - st.sx) * 0.22) * 0.72;
+        st.vsy = (st.vsy + (tsy - st.sy) * 0.22) * 0.72;
+        st.x += st.vx; st.y += st.vy; st.r += st.vr;
+        st.sx += st.vsx; st.sy += st.vsy;
+
+        var activeMotion = Math.abs(st.x) > 0.05 || Math.abs(st.y) > 0.05 || Math.abs(st.r) > 0.05 ||
+                           Math.abs(st.sx - 1) > 0.003 || Math.abs(st.sy - 1) > 0.003 ||
+                           Math.abs(st.vx) > 0.05 || Math.abs(st.vy) > 0.05;
+        if (activeMotion) {
+          moving = true;
+          el.style.transform = 'translate3d(' + st.x.toFixed(2) + 'px,' + st.y.toFixed(2) + 'px,0) rotate(' + st.r.toFixed(2) + 'deg) scale(' + st.sx.toFixed(3) + ',' + st.sy.toFixed(3) + ')';
+          var hot = Math.hypot(st.x, st.y) > 3.5 || dragIdx === i;
+          el.classList.toggle('hot', hot);
+        } else if (el.style.transform) {
+          st.x = st.y = st.r = 0; st.sx = st.sy = 1;
+          el.style.transform = '';
+          el.classList.remove('hot');
+        }
+      }
+      if (moving || lActive || dragIdx >= 0) lRaf = requestAnimationFrame(stepLetters);
+      else lRaf = 0;
+    }
+
+    var hdEl = document.querySelector('.hd');
+    if (hdEl) {
+      hdEl.addEventListener('pointermove', function(e){
+        if (down) return;
+        mxL = e.clientX; myL = e.clientY;
+        if (dragIdx >= 0) {
+          if (Math.abs(myL - dragY0) > 6) dragMoved = true;
+          startLetters();
+          return;
+        }
+        var tr = titleEl.getBoundingClientRect();
+        var near = e.clientY >= tr.top - 45 && e.clientY <= tr.bottom + 45 && e.clientX >= tr.left - 45 && e.clientX <= tr.right + 45;
+        if (near) {
+          lActive = true;
+          startLetters();
+        } else if (lActive) {
+          lActive = false;
+        }
+      }, { passive: true });
+      hdEl.addEventListener('pointerleave', function(){
+        lActive = false;
+      });
+    }
+
+    // Klik huruf -> karakter melompat ke huruf tersebut; Tarik huruf ke bawah -> trampolin
+    titleEl.addEventListener('pointerdown', function(e){
+      var target = e.target.closest('.t1 i');
+      if (!target) return;
+      var lets = [].slice.call(titleEl.querySelectorAll('.t1 i'));
+      var idx = lets.indexOf(target);
+      if (idx < 0) return;
+      dragIdx = idx;
+      dragY0 = e.clientY;
+      myL = e.clientY;
+      dragMoved = false;
+      startLetters();
+    });
+    window.addEventListener('pointerup', function(){
+      if (dragIdx < 0) return;
+      var idx = dragIdx;
+      var st = getSt(idx);
+      var pulledY = st.y;
+      dragIdx = -1;
+      if (dragMoved && pulledY > 8) {
+        // Lepas tarikan trampolin -> pantulkan huruf ke atas & lontarkan buddy
+        st.vy = -pulledY * 0.65 - 6;
+        if (window.__zkLetterImpulse) window.__zkLetterImpulse(idx, -pulledY * 0.45);
+        if (window.__zkBuddySeatIdx && window.__zkBuddySeatIdx() === idx && window.__zkBuddyBounce) {
+          window.__zkBuddyBounce(-Math.min(14, 6 + pulledY * 0.35));
+        }
+        startLetters();
+      } else {
+        // Klik biasa pada huruf -> buddy melompat pindah ke huruf ini
+        if (window.__zkBuddyJump) window.__zkBuddyJump(idx, true);
+      }
+    });
+    window.addEventListener('pointercancel', function(){ dragIdx = -1; });
+  }
+
   // Pointer effects (desktop only): spotlight, depth parallax, card sheen that follows the cursor
   if (!reduce && window.matchMedia('(pointer: fine)').matches) {
     var rootEl = document.documentElement, fx = 0, fy = 0, fRaf = null;
@@ -3197,15 +4057,32 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
         rootEl.style.setProperty('--gy', fy + 'px');
       });
     }, { passive: true });
-    cards.forEach(function(c){
+    cards.forEach(function(c, idx){
       c.addEventListener('pointermove', function(e){
+        if (moved || down) return;
         var r = c.getBoundingClientRect();
-        c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-        c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        var nx = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+        var ny = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+        var cx = (nx - 0.5) * 2;
+        var cy = (ny - 0.5) * 2;
+        c.style.setProperty('--mx', (nx * 100).toFixed(1) + '%');
+        c.style.setProperty('--my', (ny * 100).toFixed(1) + '%');
+        c.style.setProperty('--cx', cx.toFixed(3));
+        c.style.setProperty('--cy', cy.toFixed(3));
+        c.classList.add('tilting');
+        tTiltX[idx] = -cy * 9.5;
+        tTiltY[idx] = cx * 11.5;
+        kickTilt();
       });
       c.addEventListener('pointerleave', function(){
         c.style.removeProperty('--mx');
         c.style.removeProperty('--my');
+        c.style.removeProperty('--cx');
+        c.style.removeProperty('--cy');
+        c.classList.remove('tilting');
+        tTiltX[idx] = 0;
+        tTiltY[idx] = 0;
+        kickTilt();
       });
     });
   }
@@ -3247,19 +4124,65 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
 
 
 /* ============================================================
-   Halaman Proyek (P5) - pemilih proyek, animasi nama, layar proyek
+   Halaman Proyek (P5) - Studi Kasus Interaktif, 3D Browser Stage & Indeks Proyek
    ============================================================ */
 var NP_DATA = [
- {id:"mono",r:"1711/919",name:"Mono",kind:"Hunian modular",a:"#c4622d",img:"assets/images/project-mono.webp",alt:"Halaman depan Mono: huruf besar menimpa foto bangunan baja karat di tepi air",
+ {id:"mono",num:"01",year:"2026",role:"Front-End & UI Design",domain:"v0-mono-ecommerce.vercel.app",stack:["HTML5","CSS3","Responsive UI","Editorial Typography"],r:"1711/919",name:"Mono",kind:"Hunian modular",a:"#c4622d",img:"assets/images/project-mono.webp",alt:"Halaman depan Mono: huruf besar menimpa foto bangunan baja karat di tepi air",
   t:["Landing page untuk produk hunian modular yang ringan dan tahan lama.","Nama merek dibuat sebesar layar dan ditimpa foto bangunannya, jadi orang langsung tahu ini tentang apa tanpa membaca. Menu dan tombol kontak sengaja dibuat kecil supaya tidak mengganggu."]},
- {id:"gigi",r:"1690/931",name:"GiGi",kind:"Minuman energi",a:"#7fc400",img:"assets/images/project-gigi.webp",alt:"Halaman depan GiGi: judul tebal, tombol daftar diskon, dan kaleng rasa lemon lime",
+ {id:"gigi",num:"02",year:"2026",role:"Front-End & UI Design",domain:"modern-gen-z-energy-drink-landi-six-eta.vercel.app",stack:["HTML5","Tailwind CSS","Conversion UI","Product Showcase"],r:"1690/931",name:"GiGi",kind:"Minuman energi",a:"#7fc400",img:"assets/images/project-gigi.webp",alt:"Halaman depan GiGi: judul tebal, tombol daftar diskon, dan kaleng rasa lemon lime",
   t:["Landing page minuman energi tanpa gula.","Latar dibuat putih bersih supaya warna hijau kaleng yang bicara. Judulnya tebal dan padat, tombol diskon ada di menu dan di bawah judul, dan empat keunggulan produk diringkas dalam satu baris."]},
- {id:"compute",r:"1707/921",name:"Compute",kind:"Layanan agen AI",a:"#ff4d8d",img:"assets/images/project-compute.webp",alt:"Halaman depan Compute: judul putih di latar gelap dengan pohon bercahaya merah muda",
+ {id:"compute",num:"03",year:"2026",role:"Front-End & UI Design",domain:"compute-the-platform-to-build-psi-tan.vercel.app",stack:["Modern CSS","Dark UI System","Interactive Layout","SaaS Landing"],r:"1707/921",name:"Compute",kind:"Layanan agen AI",a:"#ff4d8d",img:"assets/images/project-compute.webp",alt:"Halaman depan Compute: judul putih di latar gelap dengan pohon bercahaya merah muda",
   t:["Halaman depan untuk layanan agen AI yang berjalan di banyak mesin sekaligus.","Latar gelap dengan satu gambar pohon bercahaya di kanan. Judul besar di kiri, tiga angka performa di bawahnya, dan satu tombol putih yang jelas untuk mulai memakai layanan."]},
- {id:"sweet",r:"1901/922",name:"Sweet Heaven",kind:"Toko kue artisan",a:"#c9a227",img:"assets/images/project-sweet.jpg",alt:"Halaman depan Sweet Heaven: judul serif putih di latar krem dengan tombol emas",
+ {id:"sweet",num:"04",year:"2026",role:"Front-End & UI Design",domain:"trynvexa.github.io/toko-kue",stack:["HTML5","CSS3","JavaScript","E-Commerce Catalog"],r:"1901/922",name:"Sweet Heaven",kind:"Toko kue artisan",a:"#c9a227",img:"assets/images/project-sweet.jpg",alt:"Halaman depan Sweet Heaven: judul serif putih di latar krem dengan tombol emas",
   t:["Halaman depan toko kue artisan.","Warna krem dan emas, judul serif besar di tengah, dan hanya satu tombol menuju koleksi. Tidak ada elemen lain yang bersaing dengan judulnya."]}
 ];
-var NP_X = {"mono": {"crops": [{"x": 0.22, "y": 0, "w": 0.58, "h": 0.11, "cap": "Menu dan tombol kontak dibuat kecil supaya tidak menyaingi judul.", "wide": 1}, {"x": 0.22, "y": 0.2, "w": 0.6, "h": 0.68, "cap": "Bangunan baja karat di depan huruf yang dibuat raksasa."}, {"x": 0.34, "y": 0.76, "w": 0.32, "h": 0.17, "cap": "Satu kalimat utama di atas pantulan air."}], "rows": [["Menu", "Design, Gallery, Models, About"], ["Tombol", "Contact"], ["Kalimat utama", "Lightweight, durable and adventure-ready."]], "pal": ["#e9d7c3", "#b4572a", "#5a5c5c", "#1d2223", "#8d8c88"]}, "gigi": {"crops": [{"x": 0.04, "y": 0, "w": 0.94, "h": 0.1, "cap": "Menu dengan satu tombol diskon berwarna hijau.", "wide": 1}, {"x": 0.12, "y": 0.25, "w": 0.34, "h": 0.56, "cap": "Judul, deskripsi singkat, dan dua tombol dengan fungsi berbeda."}, {"x": 0.58, "y": 0.1, "w": 0.28, "h": 0.82, "cap": "Kaleng lemon lime jadi pusat perhatian di sisi kanan."}], "rows": [["Menu", "Home, Flavours, Creators, Distributors, Careers"], ["Tombol", "Get 25% Off, Sign Up & Save 25%, Explore Flavours"], ["Keunggulan", "Zero Sugar, 7+mg Caffeine, Natural Flavours, Vitamin B Rich"]], "pal": ["#b7fc08", "#fdfdf9", "#64b102", "#060606", "#ddded9"]}, "compute": {"crops": [{"x": 0, "y": 0, "w": 1, "h": 0.12, "cap": "Menu lengkap dengan Sign in dan tombol putih Deploy agent.", "wide": 1}, {"x": 0.03, "y": 0.28, "w": 0.6, "h": 0.35, "cap": "Judul besar, dengan kata terakhir diberi warna gradasi."}, {"x": 0.03, "y": 0.74, "w": 0.42, "h": 0.2, "cap": "Tiga angka performa di bagian bawah."}], "rows": [["Menu", "Capabilities, Process, Infra, Integrations, Security"], ["Tombol", "Sign in, Deploy agent"], ["Angka", "3500+ agen aktif, 99.7% uptime, kurang dari 50 ms"]], "pal": ["#000000", "#d94f87", "#cdc2fc", "#2e0a1a", "#fefefe"]}, "sweet": {"crops": [{"x": 0.08, "y": 0.04, "w": 0.86, "h": 0.12, "cap": "Menu berhuruf kapital renggang dan tombol Order Now berwarna emas.", "wide": 1}, {"x": 0.18, "y": 0.24, "w": 0.64, "h": 0.45, "cap": "Judul serif putih besar dan satu tombol menuju koleksi."}, {"x": 0.08, "y": 0.05, "w": 0.18, "h": 0.1, "cap": "Logo dua warna, cokelat dan emas."}], "rows": [["Menu", "Home, Philosophy, Menu, Questions, Contact"], ["Tombol", "Order Now, Discover Collection"]], "pal": ["#e8dacd", "#fef7ef", "#caab52", "#8b6145", "#a28e83"]}};
+var NP_X = {"mono": {"crops": [{"x": 0.22, "y": 0, "w": 0.58, "h": 0.11, "cap": "Menu dan tombol kontak dibuat kecil supaya tidak menyaingi judul.", "wide": 1}, {"x": 0.22, "y": 0.2, "w": 0.6, "h": 0.68, "cap": "Bangunan baja karat di depan huruf yang dibuat raksasa."}, {"x": 0.34, "y": 0.76, "w": 0.32, "h": 0.17, "cap": "Satu kalimat utama di atas pantulan air."}], "rows": [["Menu", "Design, Gallery, Models, About"], ["Tombol", "Contact"], ["Kalimat utama", "Lightweight, durable and adventure-ready."], ["Fokus Desain", "Tipografi monumental, kontras material baja & air, navigasi minimalis"]], "pal": ["#e9d7c3", "#b4572a", "#5a5c5c", "#1d2223", "#8d8c88"]}, "gigi": {"crops": [{"x": 0.04, "y": 0, "w": 0.94, "h": 0.1, "cap": "Menu dengan satu tombol diskon berwarna hijau.", "wide": 1}, {"x": 0.12, "y": 0.25, "w": 0.34, "h": 0.56, "cap": "Judul, deskripsi singkat, dan dua tombol dengan fungsi berbeda."}, {"x": 0.58, "y": 0.1, "w": 0.28, "h": 0.82, "cap": "Kaleng lemon lime jadi pusat perhatian di sisi kanan."}], "rows": [["Menu", "Home, Flavours, Creators, Distributors, Careers"], ["Tombol", "Get 25% Off, Sign Up & Save 25%, Explore Flavours"], ["Keunggulan", "Zero Sugar, 7+mg Caffeine, Natural Flavours, Vitamin B Rich"], ["Fokus Desain", "Hierarki konversi tinggi, aksen neon segar di atas kanvas putih bersih"]], "pal": ["#b7fc08", "#fdfdf9", "#64b102", "#060606", "#ddded9"]}, "compute": {"crops": [{"x": 0, "y": 0, "w": 1, "h": 0.12, "cap": "Menu lengkap dengan Sign in dan tombol putih Deploy agent.", "wide": 1}, {"x": 0.03, "y": 0.28, "w": 0.6, "h": 0.35, "cap": "Judul besar, dengan kata terakhir diberi warna gradasi."}, {"x": 0.03, "y": 0.74, "w": 0.42, "h": 0.2, "cap": "Tiga angka performa di bagian bawah."}], "rows": [["Menu", "Capabilities, Process, Infra, Integrations, Security"], ["Tombol", "Sign in, Deploy agent"], ["Angka", "3500+ agen aktif, 99.7% uptime, kurang dari 50 ms"], ["Fokus Desain", "Atmosfer dark-mode teknis, metrik performa real-time, CTA kontras tinggi"]], "pal": ["#000000", "#d94f87", "#cdc2fc", "#2e0a1a", "#fefefe"]}, "sweet": {"crops": [{"x": 0.08, "y": 0.04, "w": 0.86, "h": 0.12, "cap": "Menu berhuruf kapital renggang dan tombol Order Now berwarna emas.", "wide": 1}, {"x": 0.18, "y": 0.24, "w": 0.64, "h": 0.45, "cap": "Judul serif putih besar dan satu tombol menuju koleksi."}, {"x": 0.08, "y": 0.05, "w": 0.18, "h": 0.1, "cap": "Logo dua warna, cokelat dan emas."}], "rows": [["Menu", "Home, Philosophy, Menu, Questions, Contact"], ["Tombol", "Order Now, Discover Collection"], ["Fokus Desain", "Editorial hangat bernuansa krem & emas, tipografi serif klasik yang elegan"]], "pal": ["#e8dacd", "#fef7ef", "#caab52", "#8b6145", "#a28e83"]}};
+var NP_I18N = {
+  en: {
+    kicker: "Selected Works · 04 Case Studies",
+    visit: "Live Demo",
+    nextLbl: "Next:",
+    closeTitle: "Closer Inspection",
+    palTitle: "Color System",
+    palHint: "(Click swatch to copy HEX)",
+    rowsTitle: "Architecture & Specs",
+    allTitle: "All Projects Index (04)",
+    allSub: "Compare all four featured projects or launch their live demos directly.",
+    moreNext: "Next Project",
+    moreQ: "Have a page or product that needs a redesign?",
+    moreCta: "Let's Talk",
+    closeBtn: "Close",
+    inspectBtn: "Read Case Study",
+    zoomHint: "Expand ↗",
+    copied: "Copied!",
+    projects: {
+      mono: {
+        kind: "Modular Housing",
+        t: ["Landing page for a lightweight, durable modular housing concept.", "The brand name spans the full viewport behind the architectural photography so visitors grasp the scale immediately. Navigation and contact triggers stay understated to preserve visual calm."],
+        crops: ["Compact navigation and contact button that never compete with the hero title.", "Weathered steel structure layered in front of monumental display typography.", "A single positioning statement anchored above the water reflection."],
+        rows: [["Navigation", "Design, Gallery, Models, About"], ["Action", "Contact"], ["Key Copy", "Lightweight, durable and adventure-ready."], ["Design Focus", "Monumental typography, steel & water material contrast, minimal chrome"]]
+      },
+      gigi: {
+        kind: "Energy Drink",
+        t: ["High-energy landing page for a zero-sugar Gen-Z energy drink.", "A crisp white canvas lets the electric lime can command attention. Bold condensed typography, dual conversion triggers, and a four-pillar benefit strip drive immediate action."],
+        crops: ["Top bar featuring a high-contrast green discount CTA.", "Punchy headline, concise copy, and dual primary/secondary action buttons.", "The lemon-lime can positioned as the unmistakable visual anchor on the right."],
+        rows: [["Navigation", "Home, Flavours, Creators, Distributors, Careers"], ["Actions", "Get 25% Off, Sign Up & Save 25%, Explore Flavours"], ["Highlights", "Zero Sugar, 7+mg Caffeine, Natural Flavours, Vitamin B Rich"], ["Design Focus", "High-conversion hierarchy, fresh neon accents on a clean white stage"]]
+      },
+      compute: {
+        kind: "AI Agent Platform",
+        t: ["Front page for a distributed AI agent execution platform.", "Deep obsidian background paired with a glowing neural tree on the right, left-aligned display headline, three live performance metrics, and a crisp white deployment CTA."],
+        crops: ["Full product navigation with Sign in and a high-contrast white Deploy agent CTA.", "Large display headline with a gradient-accented terminal word.", "Three key infrastructure performance metrics anchored below the fold."],
+        rows: [["Navigation", "Capabilities, Process, Infra, Integrations, Security"], ["Actions", "Sign in, Deploy agent"], ["Metrics", "3500+ active agents, 99.7% uptime, < 50 ms latency"], ["Design Focus", "Technical dark-mode atmosphere, real-time telemetry, clear CTA hierarchy"]]
+      },
+      sweet: {
+        kind: "Artisan Bakery",
+        t: ["Editorial storefront for an artisan cake and pastry studio.", "Warm cream and gold palette, centered classic serif headline, and a single focused call-to-action leading into the curated pastry collection."],
+        crops: ["Wide-tracked uppercase navigation paired with a golden Order Now button.", "Large white serif headline with a single focused collection trigger.", "Two-tone chocolate and gold brand mark."],
+        rows: [["Navigation", "Home, Philosophy, Menu, Questions, Contact"], ["Actions", "Order Now, Discover Collection"], ["Design Focus", "Warm cream & gold editorial palette, timeless serif typography"]]
+      }
+    }
+  }
+};
 var NP_URL = {mono:'https://v0-mono-ecommerce.vercel.app/', gigi:'https://modern-gen-z-energy-drink-landi-six-eta.vercel.app/', compute:'https://compute-the-platform-to-build-psi-tan.vercel.app/', sweet:'https://trynvexa.github.io/toko-kue/'};
 var npIdx = 0;
 function initProjectSpatialStage() {
@@ -3268,51 +4191,139 @@ function initProjectSpatialStage() {
   var $ = function(id){ return root.querySelector('#' + id); };
   var nav = $('npNav'), view = $('npView'), nameEl = $('npName'), info = $('npInfo'), shot = $('npShot'), frame = $('npFrame'), dlg = $('npDlg');
   if (!nav || !view || !nameEl) return;
+  nav.innerHTML = ''; view.innerHTML = '';
   var cur = -1, z = 1;
   var motionOK = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  function getLang() { return (window.ZK && ZK.lang) || 'id'; }
+  function trText(idStr) {
+    var l = getLang();
+    if (l === 'id') return idStr;
+    return (window.ZK && ZK.t && ZK.t(idStr, l)) || idStr;
+  }
 
   NP_DATA.forEach(function(p, i) {
-    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = p.name;
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
+    b.innerHTML = '<span class="np-tab-no">' + p.num + '</span><span>' + p.name + '</span>';
     b.onclick = function(){ go(i); }; nav.appendChild(b);
     var m = document.createElement('img'); m.src = p.img; m.alt = p.alt; m.decoding = 'async'; view.appendChild(m);
   });
 
-  function watch() { [].forEach.call(root.querySelectorAll('.np-rv:not(.in), .np-pal:not(.in)'), function(el){ if (el.getBoundingClientRect().top < innerHeight * .9) el.classList.add('in'); }); }
-  function cropEl(c, p) {
+  function watch() { [].forEach.call(root.querySelectorAll('.np-rv:not(.in), .np-pal:not(.in)'), function(el){ if (el.getBoundingClientRect().top < innerHeight * .95) el.classList.add('in'); }); }
+  function cropEl(c, p, capText) {
     var rr = p.r.split('/'), W = +rr[0], H = +rr[1];
     var f = document.createElement('figure'); f.className = 'np-cw' + (c.wide ? ' np-wide' : '');
-    f.innerHTML = '<div class="np-crop np-rv" style="aspect-ratio:' + (c.w * W) + '/' + (c.h * H) + '"><img alt="" decoding="async" src="' + p.img + '" style="width:' + (100 / c.w) + '%;left:' + (-c.x / c.w * 100) + '%;top:' + (-c.y / c.h * 100) + '%"></div><figcaption>' + c.cap + '</figcaption>';
+    f.innerHTML = '<div class="np-crop np-rv" style="aspect-ratio:' + (c.w * W) + '/' + (c.h * H) + '"><img alt="" decoding="async" src="' + p.img + '" style="width:' + (100 / c.w) + '%;left:' + (-c.x / c.w * 100) + '%;top:' + (-c.y / c.h * 100) + '%"></div><figcaption>' + capText + '</figcaption>';
     return f;
   }
+  function buildAllGrid() {
+    var grid = $('npAllGrid');
+    if (!grid) return;
+    var l = getLang(), enP = (l !== 'id' && NP_I18N.en) ? NP_I18N.en.projects : null;
+    var visitLbl = (l !== 'id' && NP_I18N.en) ? trText(NP_I18N.en.visit) : 'Lihat situs';
+    var inspectLbl = (l !== 'id' && NP_I18N.en) ? NP_I18N.en.inspectBtn : 'Baca Studi Kasus';
+    grid.innerHTML = NP_DATA.map(function(item, idx) {
+      var pOv = enP && enP[item.id];
+      var kindTxt = pOv ? pOv.kind : trText(item.kind);
+      var descTxt = pOv ? pOv.t[0] : item.t[0];
+      var activeCls = idx === cur ? ' is-current' : '';
+      return '<article class="np-all-card' + activeCls + '" style="--ca:' + item.a + '">' +
+        '<div class="np-all-thumb" data-pick="' + idx + '">' +
+          '<img src="' + item.img + '" alt="' + item.name + '" loading="lazy" decoding="async">' +
+          '<span class="np-all-no">' + item.num + '</span>' +
+        '</div>' +
+        '<div class="np-all-body">' +
+          '<div class="np-all-meta"><span>' + kindTxt + '</span><i>&bull;</i><span>' + item.year + '</span></div>' +
+          '<h4>' + item.name + '</h4>' +
+          '<p>' + descTxt + '</p>' +
+          '<div class="np-all-tags">' + item.stack.map(function(s){ return '<span>' + s + '</span>'; }).join('') + '</div>' +
+          '<div class="np-all-acts">' +
+            '<button type="button" class="np-all-pick" data-pick="' + idx + '">' + inspectLbl + '</button>' +
+            '<a class="np-all-live" href="' + NP_URL[item.id] + '" target="_blank" rel="noopener noreferrer">' + visitLbl + ' &#8599;</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+    [].forEach.call(grid.querySelectorAll('[data-pick]'), function(el) {
+      el.onclick = function() {
+        var idx = parseInt(el.getAttribute('data-pick'), 10);
+        if (!isNaN(idx)) {
+          go(idx);
+          root.scrollTo({ top: 0, behavior: motionOK ? 'smooth' : 'auto' });
+        }
+      };
+    });
+  }
   function build(p, nx) {
+    var l = getLang(), i18n = l !== 'id' ? NP_I18N.en : null, pOv = i18n && i18n.projects[p.id];
     var x = NP_X[p.id], box = $('npCrops'); box.innerHTML = '';
-    x.crops.forEach(function(c){ box.appendChild(cropEl(c, p)); });
-    $('npPal').classList.remove('in');
-    $('npPal').innerHTML = x.pal.map(function(c, k){ return '<div><i style="--k:' + k + ';background:' + c + '"></i><span>' + c.toUpperCase() + '</span></div>'; }).join('');
-    $('npRows').innerHTML = x.rows.map(function(r){ return '<div><dt>' + r[0] + '</dt><dd>' + r[1].replace(/&/g, '&amp;') + '</dd></div>'; }).join('');
+    x.crops.forEach(function(c, idx){
+      var cap = (pOv && pOv.crops && pOv.crops[idx]) ? pOv.crops[idx] : c.cap;
+      box.appendChild(cropEl(c, p, cap));
+    });
+    if ($('npKicker')) $('npKicker').textContent = i18n ? i18n.kicker : 'Karya Pilihan · 04 Studi Kasus';
+    if ($('npCloseTitle')) $('npCloseTitle').textContent = i18n ? i18n.closeTitle : 'Dilihat dari dekat';
+    if ($('npPalTitle')) $('npPalTitle').innerHTML = (i18n ? i18n.palTitle : 'Warna yang dipakai') + ' <small class="np-pal-hint">' + (i18n ? i18n.palHint : '(Klik untuk salin HEX)') + '</small>';
+    if ($('npRowsTitle')) $('npRowsTitle').textContent = i18n ? i18n.rowsTitle : 'Isi halaman & spesifikasi';
+    if ($('npAllTitle')) $('npAllTitle').textContent = i18n ? i18n.allTitle : 'Indeks Semua Proyek (04)';
+    if ($('npAllSub')) $('npAllSub').textContent = i18n ? i18n.allSub : 'Bandingkan keempat proyek unggulan atau buka demo langsung.';
+    if ($('npClose')) $('npClose').textContent = i18n ? i18n.closeBtn : 'Tutup';
+
+    var palBox = $('npPal');
+    palBox.classList.remove('in');
+    palBox.innerHTML = x.pal.map(function(c, k){
+      return '<button type="button" class="np-sw-btn" data-hex="' + c.toUpperCase() + '" aria-label="Salin warna ' + c.toUpperCase() + '"><i style="--k:' + k + ';background:' + c + '"></i><span>' + c.toUpperCase() + '</span></button>';
+    }).join('');
+    [].forEach.call(palBox.querySelectorAll('.np-sw-btn'), function(btn){
+      btn.onclick = function(){
+        var hex = btn.getAttribute('data-hex');
+        var sp = btn.querySelector('span');
+        var copiedTxt = i18n ? i18n.copied : 'Tersalin!';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(hex).catch(function(){});
+        }
+        if (sp) {
+          sp.textContent = copiedTxt;
+          btn.classList.add('copied');
+          setTimeout(function(){ sp.textContent = hex; btn.classList.remove('copied'); }, 1400);
+        }
+      };
+    });
+
+    var rowsData = (pOv && pOv.rows) ? pOv.rows : x.rows;
+    $('npRows').innerHTML = rowsData.map(function(r){ return '<div><dt>' + r[0] + '</dt><dd>' + r[1].replace(/&/g, '&amp;') + '</dd></div>'; }).join('');
     var mo = $('npMore');
-    mo.innerHTML = '<div><small>Proyek berikutnya</small><button type="button" class="np-nx2">' + nx.name + ' <span aria-hidden="true">\u2192</span></button></div><div class="np-cta-w"><p>Punya halaman yang perlu dirombak?</p><button type="button" class="np-cta">Hubungi saya</button></div>';
+    var nextProjectLbl = i18n ? i18n.moreNext : 'Proyek berikutnya';
+    var moreQ = i18n ? i18n.moreQ : 'Punya halaman yang perlu dirombak?';
+    var moreCta = i18n ? i18n.moreCta : 'Hubungi saya';
+    mo.innerHTML = '<div><small>' + nextProjectLbl + '</small><button type="button" class="np-nx2">' + nx.name + ' <span aria-hidden="true">\u2192</span></button></div><div class="np-cta-w"><p>' + moreQ + '</p><button type="button" class="np-cta">' + moreCta + '</button></div>';
     mo.querySelector('.np-nx2').onclick = function(){ go(cur + 1); root.scrollTo({ top: 0, behavior: motionOK ? 'smooth' : 'auto' }); };
-    mo.querySelector('.np-cta').onclick = function(){ if (window.zkGoPage) window.zkGoPage(1); else { var n = root.querySelector('.pnav [data-go="1"]'); if (n) n.click(); } };
+    mo.querySelector('.np-cta').onclick = function(){ if (window.zkJumpPage) window.zkJumpPage(6); else if (window.zkGoPage) window.zkGoPage(1); };
+    buildAllGrid();
     setTimeout(watch, 80);
   }
   function fit() {
     if (!nameEl.isConnected) return;
-    nameEl.style.fontSize = '100px';
-    var mx = 1;
-    [].forEach.call(nameEl.children, function(w){ mx = Math.max(mx, w.getBoundingClientRect().width); });
-    var avail = nameEl.clientWidth || 300;
-    nameEl.style.fontSize = Math.min(avail / mx * 100, window.innerWidth < 860 ? 110 : 200) + 'px';
+    nameEl.style.removeProperty('font-size');
   }
-  function go(i) {
+  function go(i, force) {
     i = (i + NP_DATA.length) % NP_DATA.length;
-    if (i === cur) return;
+    if (i === cur && !force) return;
     cur = npIdx = i;
     var p = NP_DATA[cur], nx = NP_DATA[(cur + 1) % NP_DATA.length];
+    var l = getLang(), i18n = l !== 'id' ? NP_I18N.en : null, pOv = i18n && i18n.projects[p.id];
     root.style.setProperty('--a', p.a);
     [].forEach.call(nav.children, function(b, k){ b.setAttribute('aria-selected', k === cur); });
     view.style.aspectRatio = p.r;
-    var m = view.children[cur]; m.style.zIndex = ++z; m.classList.remove('enter'); void m.offsetWidth; m.classList.add('enter');
+    [].forEach.call(view.children, function(imgEl, idx){
+      var isAct = idx === cur;
+      imgEl.classList.toggle('is-active', isAct);
+      if (isAct) {
+        imgEl.style.zIndex = ++z;
+        imgEl.classList.remove('enter');
+        void imgEl.offsetWidth;
+        imgEl.classList.add('enter');
+      }
+    });
     var h = '', k = 0;
     p.name.split(' ').forEach(function(w){
       h += '<span class="np-w">';
@@ -3320,19 +4331,50 @@ function initProjectSpatialStage() {
       h += '</span>';
     });
     nameEl.innerHTML = h; nameEl.setAttribute('aria-label', p.name);
-    info.innerHTML = '<h2>' + p.kind + '</h2><p>' + p.t[0] + '</p><p>' + p.t[1] + '</p><a class="np-visit" href="' + NP_URL[p.id] + '" target="_blank" rel="noopener noreferrer">Lihat situs <span aria-hidden="true">\u2197</span></a><button type="button" class="np-next" id="npNx">Berikutnya: ' + nx.name + '</button>';
+    var metaBar = $('npMetaBar');
+    if (metaBar) {
+      metaBar.innerHTML = '<span class="np-badge-num">' + p.num + ' / 04</span><span class="np-badge-role">' + p.role + '</span><span class="np-badge-yr">' + p.year + '</span>';
+    }
+    var stackEl = $('npStack');
+    if (stackEl) {
+      stackEl.innerHTML = p.stack.map(function(s){ return '<span class="np-chip">' + s + '</span>'; }).join('');
+    }
+    var urlPill = $('npUrlPill');
+    if (urlPill) urlPill.textContent = p.domain;
+    var kindTxt = pOv ? pOv.kind : trText(p.kind);
+    var t0 = pOv ? pOv.t[0] : p.t[0];
+    var t1 = pOv ? pOv.t[1] : p.t[1];
+    var visitTxt = i18n ? trText(i18n.visit) : 'Lihat situs';
+    var nextTxt = i18n ? i18n.nextLbl : 'Berikutnya:';
+    info.innerHTML = '<h2>' + kindTxt + '</h2><p>' + t0 + '</p><p>' + t1 + '</p><div class="np-act-row"><a class="np-visit" href="' + NP_URL[p.id] + '" target="_blank" rel="noopener noreferrer">' + visitTxt + ' <span aria-hidden="true">\u2197</span></a><button type="button" class="np-next" id="npNx">' + nextTxt + ' ' + nx.name + ' \u2192</button></div>';
     $('npNx').onclick = function(){ go(cur + 1); };
     $('npBig').src = p.img; $('npBig').alt = p.alt;
     build(p, nx);
     fit();
   }
-  go(npIdx);
+  go(npIdx, true);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  setTimeout(fit, 500);
-  if (!window.__npResize) { window.__npResize = true; window.addEventListener('resize', function(){ var r = document.querySelector('.pg.p5 #npName'); if (r) { r.style.fontSize = '100px'; var mx = 1; [].forEach.call(r.children, function(w){ mx = Math.max(mx, w.getBoundingClientRect().width); }); r.style.fontSize = Math.min((r.clientWidth || 300) / mx * 100, window.innerWidth < 860 ? 110 : 200) + 'px'; } }); }
+  setTimeout(fit, 350);
+  if (!window.__npResize) {
+    window.__npResize = true;
+    window.addEventListener('zk-lang', function(){
+      if (document.querySelector('.pg.p5')) initProjectSpatialStage();
+    });
+  }
 
   if (motionOK && matchMedia('(pointer: fine)').matches) {
-    shot.onpointerleave = function(){ frame.style.setProperty('--ry', '0deg'); frame.style.setProperty('--rx', '0deg'); };
+    shot.onpointermove = function(e){
+      var rect = shot.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      var nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      var ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      frame.style.setProperty('--ry', (nx * 4.5).toFixed(2) + 'deg');
+      frame.style.setProperty('--rx', (-ny * 3.5).toFixed(2) + 'deg');
+    };
+    shot.onpointerleave = function(){
+      frame.style.setProperty('--ry', '0deg');
+      frame.style.setProperty('--rx', '0deg');
+    };
   }
   var tk = 0;
   var sc = function(){
@@ -3340,7 +4382,7 @@ function initProjectSpatialStage() {
     var h = root.scrollHeight - root.clientHeight, pr = $('npProg');
     watch();
     if (pr) pr.style.setProperty('--pr', h > 0 ? (root.scrollTop / h).toFixed(4) : 0);
-    if (motionOK) { var r = shot.getBoundingClientRect(), t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * .9))); frame.style.setProperty('--sc', (.93 + .07 * t).toFixed(3)); }
+    if (motionOK) { var r = shot.getBoundingClientRect(), t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * .9))); frame.style.setProperty('--sc', (.95 + .05 * t).toFixed(3)); }
   };
   root.onscroll = function(){ if (!tk) tk = requestAnimationFrame(sc); };
   sc();
@@ -3402,77 +4444,20 @@ function initProjectSpatialStage() {
 
 /* ============================================== */
 
-/* v224: lapisan animasi dramatis (tidak menyentuh kode lama) */
+/* Indikator progres scroll halaman detail (#zkBar) */
 (function(){
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var pg = document.getElementById('pg'), pgb = document.getElementById('pgb');
-  if (!pg || !pgb || !pg.animate) return;
-  var EASE = 'cubic-bezier(.7,0,.2,1)';
-
-  /* 1. Sapuan diagonal merah + hitam saat pindah halaman */
-  var sl = document.createElement('div'); sl.id = 'zkSlash'; sl.setAttribute('aria-hidden', 'true');
-  sl.innerHTML = '<i class="a"></i><i class="b"></i>'; document.body.appendChild(sl);
-  var A = sl.firstChild, B = sl.lastChild, busy = false, covered = false, swapped = false, tm;
-  function poly(L, R) { return 'polygon(' + (L + 14) + '% 0,' + (R + 14) + '% 0,' + R + '% 100%,' + L + '% 100%)'; }
-  function run(el, a, b, delay, dur) { return el.animate({ clipPath: [a, b] }, { duration: dur, delay: delay, easing: EASE, fill: 'forwards' }).finished; }
-  function cover() {
-    if (busy) return; busy = true; covered = swapped = false; sl.style.visibility = 'visible';
-    Promise.all([run(A, poly(-30, -30), poly(-30, 130), 0, 300), run(B, poly(-30, -30), poly(-30, 130), 90, 300)])
-      .then(function(){ covered = true; leave(); });
-    tm = setTimeout(function(){ swapped = true; leave(); }, 1100);
-  }
-  function leave() {
-    if (!covered || !swapped) return; covered = swapped = false; clearTimeout(tm);
-    Promise.all([run(B, poly(-30, 130), poly(130, 130), 0, 520), run(A, poly(-30, 130), poly(130, 130), 120, 520)])
-      .then(function(){ sl.style.visibility = 'hidden'; A.getAnimations().concat(B.getAnimations()).forEach(function(x){ x.cancel(); }); busy = false; });
-  }
-  new MutationObserver(function(){ if (pgb.style.opacity === '0') cover(); }).observe(pgb, { attributes: true, attributeFilter: ['style'] });
-  new MutationObserver(function(){ if (pg.classList.contains('sw')) { swapped = true; setTimeout(leave, 120); } }).observe(pg, { attributes: true, attributeFilter: ['class'] });
-
-  /* 2. Percikan + pantulan saat ketuk tombol atau kartu */
-  var SEL = 'button,a,.card,.gc,.tile-item,[role=button],[role=tab],[data-go]', live = 0;
-  function burst(x, y) {
-    if (live > 5) return; live++;
-    var d = document.createElement('i'); d.className = 'zkb'; d.style.left = x + 'px'; d.style.top = y + 'px';
-    document.body.appendChild(d);
-    var a = d.animate([
-      { transform: 'translate(-50%,-50%) scale(.2) rotate(0deg)', opacity: 1 },
-      { opacity: .9, offset: .4 },
-      { transform: 'translate(-50%,-50%) scale(1.3) rotate(45deg)', opacity: 0 }
-    ], { duration: 640, easing: 'cubic-bezier(.16,1,.3,1)' });
-    a.onfinish = function(){ d.remove(); live--; };
-  }
-  document.addEventListener('pointerdown', function(e){
-    if (e.button > 0) return;
-    var t = e.target.closest && e.target.closest(SEL); if (!t) return;
-    burst(e.clientX, e.clientY);
-    try { t.animate([{ scale: 1 }, { scale: .93, offset: .3 }, { scale: 1 }], { duration: 340, easing: 'cubic-bezier(.3,1.5,.5,1)' }); } catch (_) {}
-    if (e.pointerType === 'touch' && navigator.vibrate) { try { navigator.vibrate(8); } catch (_) {} }
-  }, { passive: true, capture: true });
-
-  /* 3. Garis progres scroll + reveal paragraf (wipe dari atas, sedikit miring) */
-  var bar = document.createElement('i'); bar.id = 'zkBar'; pg.appendChild(bar);
+  if (!pg || !pgb) return;
+  var bar = document.createElement('i'); bar.id = 'zkBar'; bar.setAttribute('aria-hidden', 'true'); pg.appendChild(bar);
   var tick = false;
-  function prog() { tick = false; var m = pg.scrollHeight - pg.clientHeight; bar.style.opacity = m > 40 ? 1 : 0; bar.style.transform = 'scaleX(' + (m > 40 ? Math.min(1, pg.scrollTop / m) : 0) + ')'; }
+  function prog() {
+    tick = false;
+    var m = pg.scrollHeight - pg.clientHeight;
+    bar.style.opacity = m > 40 ? 1 : 0;
+    bar.style.transform = 'scaleX(' + (m > 40 ? Math.min(1, pg.scrollTop / m) : 0) + ')';
+  }
   pg.addEventListener('scroll', function(){ if (!tick) { tick = true; requestAnimationFrame(prog); } }, { passive: true });
-  function show(el) {
-    el.style.opacity = '';
-    el.animate([
-      { opacity: 0, clipPath: 'inset(0 0 100% 0)', transform: 'translateY(38px) skewY(2.5deg)' },
-      { opacity: 1, clipPath: 'inset(0 0 0 0)', transform: 'none' }
-    ], { duration: 850, easing: 'cubic-bezier(.16,1,.3,1)' });
-  }
-  function initReveal() {
-    prog();
-    var els = [].slice.call(pgb.querySelectorAll('.pp,.pq,blockquote')).filter(function(el){
-      return getComputedStyle(el).animationName === 'none' && !el.closest('[class*="-rv"],.sk-rv,.np-rv') && el.getBoundingClientRect().top > innerHeight * .92;
-    });
-    if (!els.length) return;
-    var io = new IntersectionObserver(function(en){ en.forEach(function(x){ if (x.isIntersecting) { io.unobserve(x.target); show(x.target); } }); }, { root: pg, threshold: .12 });
-    els.forEach(function(el){ el.style.opacity = '0'; io.observe(el); });
-    setTimeout(function(){ els.forEach(function(el){ if (el.style.opacity === '0') { el.style.opacity = ''; } }); io.disconnect(); }, 20000);
-  }
-  new MutationObserver(function(){ clearTimeout(initReveal.t); initReveal.t = setTimeout(initReveal, 700); }).observe(pgb, { childList: true });
+  new MutationObserver(function(){ setTimeout(prog, 120); }).observe(pgb, { childList: true });
 })();
 
 /* ============================================== */
@@ -3484,4 +4469,319 @@ function initProjectSpatialStage() {
     try{stop?s.pauseAnimations():s.unpauseAnimations();}catch(e){}}
   document.addEventListener('visibilitychange',sync);document.addEventListener('introdone',function(){setTimeout(sync,600);});
   addEventListener('load',function(){var pg=document.getElementById('pg');if(pg&&window.MutationObserver)new MutationObserver(sync).observe(pg,{attributes:true,attributeFilter:['class']});sync();});
+})();
+
+/* ============================================================
+   Cinematic Hybrid Background (A + B) v2:
+   A. Dual-Depth Blurred Active-Card Photo Backdrop Crossfade
+   B. 5-Layer 3D Fluid Silk Light Drapes, Studio Sunbeams & Bokeh Dust
+   ============================================================ */
+(function(){
+  var cv = document.getElementById('bgField');
+  var slideA = document.getElementById('bgSlideA');
+  var slideB = document.getElementById('bgSlideB');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, dpr = 1, isMob = false;
+  var mx = 0.5, my = 0.35, smx = 0.5, smy = 0.35, vx = 0, vy = 0;
+  var wheelPos = 2, wheelLean = 0, sWheelPos = 2, sWheelLean = 0;
+  var waveBoost = 0;
+  var curSlide = 0, lastCardIdx = -1;
+  var mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+  // Warm editorial mood palettes per card (0: Story, 1: Music, 2: Me, 3: Frame, 4: Skill, 5: Proyek, 6: Kontak)
+  var PALETTES = [
+    { a: [224, 70, 58],   b: [185, 85, 62]  }, // 0: Story (Crimson & Warm Terracotta)
+    { a: [196, 86, 68],   b: [110, 128, 165] }, // 1: Music (Vinyl Dusk & Warm Coral)
+    { a: [216, 98, 72],   b: [165, 148, 120] }, // 2: Me (Editorial Amber & Sandstone)
+    { a: [175, 152, 128], b: [130, 145, 138] }, // 3: Frame (Gallery Silver & Warm Linen)
+    { a: [130, 162, 136], b: [204, 154, 108] }, // 4: Skill (Studio Sage & Warm Gold)
+    { a: [212, 112, 58],  b: [172, 132, 96]  }, // 5: Proyek (Burnt Sienna & Ochre)
+    { a: [138, 168, 142], b: [198, 142, 110] }  // 6: Kontak (Editorial Moss & Warm Clay)
+  ];
+  var curPal = { a: [216, 98, 72], b: [165, 148, 120] };
+  var tgtPal = PALETTES[2];
+
+  var FALLBACK_IMGS = [
+    'assets/images/story-portrait.webp',
+    'assets/images/music-portrait.webp',
+    'assets/images/profile-portrait.webp',
+    'assets/images/card-gallery.webp',
+    'assets/images/card-skills.webp',
+    'assets/images/card-projects.webp',
+    'assets/images/card-contact.webp'
+  ];
+
+  // Warm floating studio dust motes (lightweight count)
+  var motes = [];
+  for (var m = 0; m < 12; m++) {
+    motes.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: 1.2 + Math.random() * 2.2,
+      spX: (Math.random() - 0.5) * 0.00016,
+      spY: -0.0001 - Math.random() * 0.0002,
+      ph: Math.random() * Math.PI * 2,
+      dp: 0.45 + Math.random() * 0.75
+    });
+  }
+
+  function isDark() {
+    var t = document.documentElement.getAttribute('data-theme');
+    return t ? t === 'dark' : mqDark.matches;
+  }
+
+  // A. Switch blurred photo backdrop when active card changes
+  window.__zkBgSetCard = function(idx, cardEl) {
+    if (idx === lastCardIdx) return;
+    lastCardIdx = idx;
+    tgtPal = PALETTES[idx % PALETTES.length] || PALETTES[2];
+    document.documentElement.style.setProperty('--bg-acc', tgtPal.a.join(', '));
+    if (!slideA || !slideB) return;
+    var imgEl = cardEl && cardEl.querySelector('.portrait-img');
+    var src = (imgEl && imgEl.getAttribute('src')) || FALLBACK_IMGS[idx] || FALLBACK_IMGS[2];
+    var nextSlide = curSlide === 0 ? slideA : slideB;
+    var prevSlide = curSlide === 0 ? slideB : slideA;
+    curSlide = 1 - curSlide;
+    nextSlide.style.backgroundImage = 'url("' + src + '")';
+    nextSlide.classList.add('on');
+    prevSlide.classList.remove('on');
+  };
+
+  // Initialize first backdrop immediately
+  setTimeout(function(){
+    var activeCard = document.querySelector('.card.on') || document.querySelectorAll('.card')[2];
+    if (lastCardIdx < 0) window.__zkBgSetCard(2, activeCard);
+  }, 50);
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    isMob = W <= 700;
+    // Render background canvas at lightweight scale (0.65x mobile, 0.8x desktop) for instant 60fps
+    dpr = isMob ? 0.62 : 0.8;
+    cv.width = Math.round(W * dpr);
+    cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var lastBgFrame = 0;
+
+  window.addEventListener('pointermove', function(e){
+    var nmx = e.clientX / (W || 1);
+    var nmy = e.clientY / (H || 1);
+    var spd = Math.hypot(nmx - mx, nmy - my);
+    waveBoost = Math.min(1.6, waveBoost + spd * 2.2);
+    mx = nmx;
+    my = nmy;
+  }, { passive: true });
+
+  window.addEventListener('pointerdown', function(e){
+    mx = e.clientX / (W || 1);
+    my = e.clientY / (H || 1);
+    waveBoost = Math.min(1.6, waveBoost + 0.75);
+  }, { passive: true });
+
+  window.__zkBgWheelSync = function(pos, lean) {
+    wheelPos = pos;
+    wheelLean = lean || 0;
+  };
+  window.__zkBgPulse = function() {
+    waveBoost = Math.min(1.6, waveBoost + 0.9);
+  };
+
+  function drawSunbeams(t, dark, colA, colB) {
+    ctx.save();
+    ctx.globalCompositeOperation = dark ? 'screen' : 'soft-light';
+    for (var b = 0; b < 3; b++) {
+      var bx = W * (0.22 + b * 0.28 + Math.sin(t * 0.22 + b * 1.7) * 0.08 + (smx - 0.5) * -0.18);
+      var bw = W * (0.18 + b * 0.04);
+      var beamGrad = ctx.createLinearGradient(bx - bw, 0, bx + bw * 0.8, H * 0.95);
+      var cStr = (b % 2 === 0 ? colA : colB).join(',');
+      var aPeak = dark ? (0.075 + waveBoost * 0.03) : (0.22 + waveBoost * 0.06);
+      beamGrad.addColorStop(0, 'rgba(' + (dark ? cStr : '255, 253, 248') + ',' + aPeak.toFixed(3) + ')');
+      beamGrad.addColorStop(0.55, 'rgba(' + cStr + ',' + (aPeak * 0.45).toFixed(3) + ')');
+      beamGrad.addColorStop(1, 'rgba(' + cStr + ', 0)');
+
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(bx - bw * 0.55, -20);
+      ctx.lineTo(bx + bw * 0.55, -20);
+      ctx.lineTo(bx + bw * 1.45 + sWheelLean * 14, H + 20);
+      ctx.lineTo(bx - bw * 0.35 + sWheelLean * 14, H + 20);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawSilkRibbon(t, dark, layerIdx, colRgb, alphaBase) {
+    ctx.save();
+    ctx.beginPath();
+    var yBase = H * (0.20 + layerIdx * 0.22) + (smy - 0.5) * (layerIdx - 1) * -28;
+    var amp1 = (H * (0.075 + (layerIdx % 2) * 0.02)) * (1 + waveBoost * 0.38);
+    var amp2 = (H * 0.04) * (1 + Math.abs(sWheelLean) * 0.16);
+    var phase = t * (0.38 + layerIdx * 0.14) + layerIdx * 1.7 + sWheelPos * 0.48;
+    var stepX = Math.max(32, Math.round(W / (isMob ? 16 : 22)));
+    var pts = [];
+
+    for (var x = -40; x <= W + 40; x += stepX) {
+      var nx = x / (W || 1);
+      var distCursor = nx - smx;
+      var cursorPull = Math.exp(-distCursor * distCursor * 7) * ((smy - 0.45) * H * 0.14 + vy * H * 0.9);
+      var y = yBase +
+              Math.sin(nx * 3.2 + phase) * amp1 +
+              Math.cos(nx * 5.8 - phase * 0.75) * amp2 +
+              cursorPull;
+      pts.push([x, y]);
+    }
+
+    ctx.moveTo(-40, H + 40);
+    for (var p = 0; p < pts.length; p++) {
+      ctx.lineTo(pts[p][0], pts[p][1]);
+    }
+    ctx.lineTo(W + 40, H + 40);
+    ctx.closePath();
+
+    var grad = ctx.createLinearGradient(
+      W * (0.2 + (smx - 0.5) * 0.3),
+      yBase - amp1 * 1.7,
+      W * (0.8 - (smx - 0.5) * 0.3),
+      H
+    );
+    var cStr = colRgb[0] + ',' + colRgb[1] + ',' + colRgb[2];
+    if (dark) {
+      grad.addColorStop(0, 'rgba(' + cStr + ',' + (alphaBase * 1.45).toFixed(3) + ')');
+      grad.addColorStop(0.36, 'rgba(' + cStr + ',' + (alphaBase * 0.48).toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(16, 19, 18, 0)');
+    } else {
+      grad.addColorStop(0, 'rgba(255, 253, 248,' + (alphaBase * 2.05).toFixed(3) + ')');
+      grad.addColorStop(0.28, 'rgba(' + cStr + ',' + (alphaBase * 1.05).toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(238, 235, 226, 0)');
+    }
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Rim-light silk crest highlight along the top fold of the cloth
+    ctx.beginPath();
+    for (var k = 0; k < pts.length; k++) {
+      if (k === 0) ctx.moveTo(pts[k][0], pts[k][1]);
+      else ctx.lineTo(pts[k][0], pts[k][1]);
+    }
+    var rimGrad = ctx.createLinearGradient(0, 0, W, 0);
+    var rimPeak = Math.max(0.08, Math.min(0.92, smx + (layerIdx - 2) * 0.06));
+    var rimCol = dark ? cStr : '255, 255, 255';
+    var rimAlpha = dark ? (0.22 + waveBoost * 0.14) : (0.62 + waveBoost * 0.18);
+    rimGrad.addColorStop(0, 'rgba(' + rimCol + ', 0)');
+    rimGrad.addColorStop(Math.max(0.01, rimPeak - 0.34), 'rgba(' + rimCol + ',' + (rimAlpha * 0.38).toFixed(3) + ')');
+    rimGrad.addColorStop(rimPeak, 'rgba(' + rimCol + ',' + Math.min(0.95, rimAlpha).toFixed(3) + ')');
+    rimGrad.addColorStop(Math.min(0.99, rimPeak + 0.34), 'rgba(' + rimCol + ',' + (rimAlpha * 0.38).toFixed(3) + ')');
+    rimGrad.addColorStop(1, 'rgba(' + rimCol + ', 0)');
+    ctx.strokeStyle = rimGrad;
+    ctx.lineWidth = dark ? 1.7 : 2.3;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawDustMotes(t, dark, colA) {
+    ctx.save();
+    var cStr = colA.join(',');
+    for (var i = 0; i < motes.length; i++) {
+      var m = motes[i];
+      m.x += m.spX + Math.sin(t * 0.5 + m.ph) * 0.00012 - vx * 0.018 * m.dp;
+      m.y += m.spY - vy * 0.014 * m.dp;
+      if (m.y < -0.05) { m.y = 1.05; m.x = Math.random(); }
+      if (m.x < -0.05) m.x = 1.05;
+      if (m.x > 1.05) m.x = -0.05;
+
+      var px = m.x * W;
+      var py = m.y * H;
+      var twinkle = 0.45 + 0.55 * Math.sin(t * 1.4 + m.ph);
+      var al = (dark ? 0.24 : 0.34) * twinkle * m.dp;
+
+      ctx.beginPath();
+      ctx.arc(px, py, m.r * (1 + waveBoost * 0.25), 0, Math.PI * 2);
+      ctx.fillStyle = dark
+        ? 'rgba(' + cStr + ',' + al.toFixed(3) + ')'
+        : 'rgba(255, 252, 244,' + (al * 1.35).toFixed(3) + ')';
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function draw(now) {
+    var pg = document.getElementById('pg');
+    var hidden = document.hidden ||
+                 document.documentElement.classList.contains('intro-on') ||
+                 document.body.classList.contains('covered') ||
+                 document.body.classList.contains('busy') ||
+                 (pg && pg.classList.contains('open'));
+    if (hidden) {
+      requestAnimationFrame(draw);
+      return;
+    }
+    // Cap ambient background canvas to ~32fps on mobile / ~45fps on desktop so main thread stays 100% free for 60fps UI/card physics
+    if (now - lastBgFrame < (isMob ? 30 : 20)) {
+      requestAnimationFrame(draw);
+      return;
+    }
+    lastBgFrame = now;
+
+    var t = now * 0.001;
+    var dark = isDark();
+
+    var dx = mx - smx;
+    var dy = my - smy;
+    vx = vx * 0.82 + dx * 0.18;
+    vy = vy * 0.82 + dy * 0.18;
+    smx += dx * 0.075;
+    smy += dy * 0.075;
+    sWheelPos += (wheelPos - sWheelPos) * 0.085;
+    sWheelLean += (wheelLean - sWheelLean) * 0.14;
+    waveBoost *= 0.94;
+
+    for (var i = 0; i < 3; i++) {
+      curPal.a[i] += (tgtPal.a[i] - curPal.a[i]) * 0.045;
+      curPal.b[i] += (tgtPal.b[i] - curPal.b[i]) * 0.045;
+    }
+    var colA = [Math.round(curPal.a[0]), Math.round(curPal.a[1]), Math.round(curPal.a[2])];
+    var colB = [Math.round(curPal.b[0]), Math.round(curPal.b[1]), Math.round(curPal.b[2])];
+
+    ctx.clearRect(0, 0, W, H);
+
+    // 1. Soft Studio Spotlight following cursor & active card mood
+    var spotX = W * (0.5 + (smx - 0.5) * 0.62);
+    var spotY = H * (0.38 + (smy - 0.4) * 0.5);
+    var spotR = Math.max(W, H) * 0.68;
+    var spot = ctx.createRadialGradient(spotX, spotY, 10, spotX, spotY, spotR);
+    if (dark) {
+      spot.addColorStop(0, 'rgba(' + colA.join(',') + ', 0.18)');
+      spot.addColorStop(0.45, 'rgba(' + colB.join(',') + ', 0.075)');
+      spot.addColorStop(1, 'rgba(16, 19, 18, 0)');
+    } else {
+      spot.addColorStop(0, 'rgba(255, 255, 255, 0.64)');
+      spot.addColorStop(0.42, 'rgba(' + colA.join(',') + ', 0.14)');
+      spot.addColorStop(1, 'rgba(238, 235, 226, 0)');
+    }
+    ctx.fillStyle = spot;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Diagonal Studio Sunbeams (Desktop only to keep Mobile ultra-light)
+    if (!isMob) drawSunbeams(t, dark, colA, colB);
+
+    // 3. Flowing 3D Silk Light Drapes (3 layers on Desktop, 2 on Mobile for 60fps)
+    drawSilkRibbon(t, dark, 0, colB, dark ? 0.12 : 0.17);
+    drawSilkRibbon(t, dark, 1, colA, dark ? 0.16 : 0.22);
+    if (!isMob) drawSilkRibbon(t, dark, 2, colB, dark ? 0.12 : 0.16);
+
+    // 4. Warm Studio Bokeh Dust Motes
+    drawDustMotes(t, dark, colA);
+
+    if (!reduce) requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
 })();
