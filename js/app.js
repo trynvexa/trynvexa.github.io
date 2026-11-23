@@ -1897,32 +1897,21 @@ function mark(){
     np.classList.toggle("go",run);
     var kk=np.querySelector(".npk");
     if(kk)kk.textContent=run?"Sedang diputar":(cur>=0?"Dijeda":"Pemutar");
-    var sb=np.querySelector(".np-synth");
-    if(sb){
-      sb.classList.toggle("on",synthOn);
-      sb.setAttribute("aria-pressed",synthOn?"true":"false");
-      sb.querySelector("span").textContent=synthOn?"Aktif":"Bisu";
-    }
   }
   [].forEach.call(ol.children,function(li,i){var b=li.firstChild;
     if(i===cur)b.setAttribute("aria-current","true");else{b.removeAttribute("aria-current");b.style.removeProperty("--p");}
     b.classList.toggle("go",i===cur&&run);});
 }
 var ACC=[["#e0654f","#f59a72"],["#cf5f82","#ee93ad"],["#c9524f","#e98479"],["#3f8cc2","#76bde0"],["#c8832a","#e8ae55"],["#3f8f7b","#6dbfa8"]];
-var SV={pv:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg>',nx:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg>',pl:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',ps:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',sn:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07"/></svg>'};
+var SV={pv:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg>',nx:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg>',pl:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',ps:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>'};
 function accent(i){if(!pg)return;var a=ACC[i%ACC.length];pg.style.setProperty("--acc",a[0]);pg.style.setProperty("--acc2",a[1]);pg.classList.add("started");}
 function npBuild(){
   if(np&&np.parentNode)np.parentNode.removeChild(np);
   np=document.createElement("div");np.className="np";np.setAttribute("role","group");np.setAttribute("aria-label","Pemutar musik");
-  np.innerHTML='<div class="npr"><span class="npd" aria-hidden="true"></span><div class="npi"><div class="np-head-row"><span class="npk">Pemutar</span><button type="button" class="np-synth on" aria-pressed="true" aria-label="Suara Synth">'+SV.sn+'<b>Suara Synth:</b><span>Aktif</span></button></div><b class="npt">Pilih lagu</b><em class="npa">Ketuk satu lagu di playlist</em></div><div class="npc"><button type="button" class="npv pv" aria-label="Lagu sebelumnya">'+SV.pv+'</button><button type="button" class="npv npp" aria-label="Putar atau jeda"><span class="i1">'+SV.pl+'</span><span class="i2">'+SV.ps+'</span></button><button type="button" class="npv nx" aria-label="Lagu berikutnya">'+SV.nx+'</button></div></div><div class="npq"><span class="npm" aria-hidden="true">0:00</span><div class="npb" role="slider" tabindex="0" aria-label="Posisi lagu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><u></u></div><span class="npe" aria-hidden="true">0:00</span></div>';
+  np.innerHTML='<div class="npr"><span class="npd" aria-hidden="true"></span><div class="npi"><div class="np-head-row"><span class="npk">Pemutar</span></div><b class="npt">Pilih lagu</b><em class="npa">Ketuk satu lagu di playlist</em></div><div class="npc"><button type="button" class="npv pv" aria-label="Lagu sebelumnya">'+SV.pv+'</button><button type="button" class="npv npp" aria-label="Putar atau jeda"><span class="i1">'+SV.pl+'</span><span class="i2">'+SV.ps+'</span></button><button type="button" class="npv nx" aria-label="Lagu berikutnya">'+SV.nx+'</button></div></div><div class="npq"><span class="npm" aria-hidden="true">0:00</span><div class="npb" role="slider" tabindex="0" aria-label="Posisi lagu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><u></u></div><span class="npe" aria-hidden="true">0:00</span></div>';
   np.querySelector(".pv").addEventListener("click",function(){pick(cur<=0?TRACKS.length-1:cur-1);});
   np.querySelector(".nx").addEventListener("click",function(){pick((cur+1)%TRACKS.length);});
   np.querySelector(".npp").addEventListener("click",function(){pick(cur<0?0:cur);});
-  np.querySelector(".np-synth").addEventListener("click",function(){
-    synthOn=!synthOn;
-    syncSynth();
-    mark();
-  });
   var sk=np.querySelector(".npb"),drag=false;
   function seekTo(e){
     if(cur<0)return;
@@ -2817,10 +2806,6 @@ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
         '<textPath href="#rp" textLength="' + (Math.PI * 2 * rText * 0.98) + '">PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO •</textPath>',
       '</text>'
     ].join('');
-
-    var rOuter = r * 0.96;
-    var rInner = r * 0.72;
-    var rText  = r * 0.84;
 
     mk.style.top = (-r + (isMob ? r * 0.19 : r * 0.3)) + 'px';
     place();

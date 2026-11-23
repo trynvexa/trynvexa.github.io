@@ -5304,7 +5304,7 @@ body,
   color: #fff;
 }
 
-/* 6. Music Page (p1) Studio Synth Toggle & Track Genre Pill */
+/* 6. Music Page (p1) Track Genre Pill */
 .cb { display: none !important; }
 .np-head-row {
   display: flex;
@@ -5314,35 +5314,6 @@ body,
   margin-bottom: 5px;
 }
 .np-head-row .npk { margin-bottom: 0; }
-.np-synth {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(246, 239, 230, 0.88);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font: 600 9.5px/1.1 "Unbounded", system-ui, sans-serif;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-.np-synth svg {
-  width: 12px;
-  height: 12px;
-  flex: none;
-  fill: currentColor;
-}
-.np-synth[aria-pressed="true"] {
-  background: color-mix(in srgb, var(--acc) 28%, rgba(255, 255, 255, 0.1));
-  border-color: var(--acc2);
-  color: #fff;
-}
-.np-synth:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
 .tk-g {
   display: inline-block;
   margin-left: 8px;
