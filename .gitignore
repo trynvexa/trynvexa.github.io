@@ -1,0 +1,9 @@
+# Monolithic source and backups
+portfolio-v228.html
+*.bak
+temp-*
+.playwright-mcp/
+
+# OS metadata
+.DS_Store
+Thumbs.db
