@@ -1814,12 +1814,12 @@ window.SKR = (function(){
    Mendukung file MP3 (jika tersedia di assets/audio/) sekaligus Mode Studio Interaktif
    berbasis Web Audio API agar pemutar musik selalu berfungsi mulus tanpa error 404. */
 var TRACKS=[
-{t:"BAD",a:"ATEEZ",d:"2:36",g:"Dark R&B · 118 BPM",bpm:118,notes:[220,261.63,329.63,392],src:""},
-{t:"RUDE!",a:"Hearts2Hearts",d:"3:20",g:"Upbeat Pop · 126 BPM",bpm:126,notes:[261.63,329.63,392,493.88],src:""},
-{t:"REDRED",a:"CORTIS",d:"2:43",g:"Alt Hip-Hop · 110 BPM",bpm:110,notes:[196,233.08,293.66,349.23],src:""},
-{t:"Drip",a:"ATEEZ",d:"3:02",g:"Performance Trap · 135 BPM",bpm:135,notes:[185,220,277.18,329.63],src:""},
-{t:"BANG BANG BANG",a:"BIGBANG",d:"3:40",g:"Electro Anthem · 130 BPM",bpm:130,notes:[246.94,293.66,369.99,440],src:""},
-{t:"Bloody Paradise",a:"ENHYPEN",d:"2:11",g:"Dark Synth · 122 BPM",bpm:122,notes:[207.65,246.94,311.13,392],src:""}
+{t:"BAD",a:"ATEEZ",d:"2:36",g:"Dark R&B · 118 BPM",bpm:118,notes:[220,261.63,329.63,392],src:"assets/audio/lagu-1.mp3"},
+{t:"RUDE!",a:"Hearts2Hearts",d:"3:20",g:"Upbeat Pop · 126 BPM",bpm:126,notes:[261.63,329.63,392,493.88],src:"assets/audio/lagu-2.mp3"},
+{t:"REDRED",a:"CORTIS",d:"2:43",g:"Alt Hip-Hop · 110 BPM",bpm:110,notes:[196,233.08,293.66,349.23],src:"assets/audio/lagu-3.mp3"},
+{t:"Drip",a:"ATEEZ",d:"3:02",g:"Performance Trap · 135 BPM",bpm:135,notes:[185,220,277.18,329.63],src:"assets/audio/lagu-4.mp3"},
+{t:"BANG BANG BANG",a:"BIGBANG",d:"3:40",g:"Electro Anthem · 130 BPM",bpm:130,notes:[246.94,293.66,369.99,440],src:"assets/audio/lagu-5.mp3"},
+{t:"Bloody Paradise",a:"ENHYPEN",d:"2:11",g:"Dark Synth · 122 BPM",bpm:122,notes:[207.65,246.94,311.13,392],src:"assets/audio/lagu-6.mp3"}
 ];
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 var au=new Audio(),cur=-1,ol=null,pg=null,bg=null,sim=false,simT=0,raf=0,rot=0,vel=0,last=0,cv=null,cx=null,P=[],np=null;au.preload="none";
