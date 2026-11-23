@@ -157,27 +157,69 @@ window.__introLayout=function(sc,portrait,vw,vh){
       eyesStop();
       cancelAnimationFrame(cRaf);
       cnt.textContent = '100';
-      try {
-        var bl = document.querySelector('.hd .block'), hd = bl && bl.offsetParent;
-        if (bl && hd) {
-          var hr = hd.getBoundingClientRect(), bw = bl.offsetWidth, bh = bl.offsetHeight,
-              tr = (getComputedStyle(bl).translate || '').split(' ').map(parseFloat),
-              bx = hr.left + bl.offsetLeft - bw / 2 + (tr[0] || 0), by = hr.top + bl.offsetTop + (tr[1] || 0);
-          introEl.style.setProperty('--ct', Math.max(0, by) + 'px');
-          introEl.style.setProperty('--cl', Math.max(0, bx) + 'px');
-          introEl.style.setProperty('--cr', Math.max(0, innerWidth - bx - bw) + 'px');
-          introEl.style.setProperty('--cb', Math.max(0, innerHeight - by - bh) + 'px');
-          rootCls.add('intro-out');
-        }
-      } catch (e) {}
+
+      var bl = document.querySelector('.hd .block');
+      var br = bl ? bl.getBoundingClientRect() : null;
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var ct = 0, cl = 0, cr = 0, cb = 0;
+
+      if (br && br.width > 0 && br.height > 0) {
+        ct = Math.max(0, Math.round(br.top));
+        cl = Math.max(0, Math.round(br.left));
+        cr = Math.max(0, Math.round(vw - br.right));
+        cb = Math.max(0, Math.round(vh - br.bottom));
+        introEl.style.setProperty('--ct', ct + 'px');
+        introEl.style.setProperty('--cl', cl + 'px');
+        introEl.style.setProperty('--cr', cr + 'px');
+        introEl.style.setProperty('--cb', cb + 'px');
+        rootCls.add('intro-out');
+      }
+
       introEl.classList.add('out');
+
+      // Multi-stage choreographed morph from Fullscreen Intro -> Red Banner Block
+      if (br && introEl.animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var sc = document.getElementById('headSvg');
+        if (sc && sc.animate) {
+          var bCx = br.left + br.width * 0.5 - vw * 0.5;
+          var bCy = br.top + br.height * 0.5 - vh * 0.5;
+          sc.animate([
+            { transform: 'translate3d(0px, 0px, 0) scale(1)', opacity: 1, offset: 0 },
+            { transform: 'translate3d(' + (bCx * 0.25).toFixed(1) + 'px, ' + (bCy * 0.25).toFixed(1) + 'px, 0) scale(0.92)', opacity: 0.85, offset: 0.28 },
+            { transform: 'translate3d(' + (bCx * 0.65).toFixed(1) + 'px, ' + (bCy * 0.65).toFixed(1) + 'px, 0) scale(0.68)', opacity: 0, offset: 0.72 },
+            { transform: 'translate3d(' + bCx.toFixed(1) + 'px, ' + bCy.toFixed(1) + 'px, 0) scale(0.5)', opacity: 0, offset: 1 }
+          ], { duration: 760, easing: 'cubic-bezier(0.32, 0, 0.2, 1)', fill: 'forwards' });
+        }
+
+        // Stage 1 -> Stage 2 -> Stage 3 clip-path morph:
+        // 0%: Fullscreen (0 0 0 0)
+        // 42%: Horizontal squeeze into a full-height center red column
+        // 88%: Vertical fold into exact red banner bounds with a slight spring compress
+        // 100%: Exact red banner bounds
+        var sqT = Math.min(vh - 10, ct + 5), sqB = Math.min(vh - 10, cb + 5);
+        var sqL = Math.min(vw - 10, cl + 3), sqR = Math.min(vw - 10, cr + 3);
+        introEl.animate([
+          { clipPath: 'inset(0px 0px 0px 0px round 0px)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.65, 0, 0.22, 1)' },
+          { clipPath: 'inset(0px ' + cl + 'px 0px ' + cr + 'px round 0px)', opacity: 1, offset: 0.44, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          { clipPath: 'inset(' + sqT + 'px ' + sqR + 'px ' + sqB + 'px ' + sqL + 'px round 2px)', opacity: 1, offset: 0.86, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+          { clipPath: 'inset(' + ct + 'px ' + cr + 'px ' + cb + 'px ' + cl + 'px round 0px)', opacity: 1, offset: 0.94 },
+          { clipPath: 'inset(' + ct + 'px ' + cr + 'px ' + cb + 'px ' + cl + 'px round 0px)', opacity: 0, offset: 1 }
+        ], { duration: 1120, fill: 'forwards' });
+      }
+
+      // Reveal Home and trigger red block impact pulse right as the column locks into place
       setTimeout(function(){
         rootCls.remove('intro-on');
         rootCls.add('home-enter');
+        if (bl) {
+          bl.classList.add('morph-hit');
+          setTimeout(function(){ bl.classList.remove('morph-hit'); }, 1100);
+        }
         document.dispatchEvent(new Event('introdone'));
         setTimeout(function(){ rootCls.remove('home-enter'); }, 2200);
-      }, 450);
-      setTimeout(function(){ introEl.remove(); }, 1800);
+      }, 460);
+
+      setTimeout(function(){ introEl.remove(); }, 1350);
     };
     introEl.addEventListener('click', endIntro);
     document.addEventListener('keydown', function(e){
