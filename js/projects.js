@@ -555,6 +555,619 @@ var NP_URL = {
   compute: 'https://compute-the-platform-to-build-psi-tan.vercel.app/',
   sweet: 'https://trynvexa.github.io/toko-kue/'
 };
+
+/* ---------- 8-Language Localization for Zikri's Depot (p5) ---------- */
+var NP_DEPOT_I18N = {
+  id: {
+    word: 'PROYEK',
+    navHome: 'Beranda',
+    navTalk: 'Hubungi ↗',
+    logoAria: 'Kembali ke beranda',
+    homeAria: 'Kembali ke daftar kartu',
+    talkAria: 'Buka halaman Kontak',
+    pill: 'PILIH KONTAINER ↓',
+    eyebrow: 'ZIKRI’S DEPOT · 7 KONTAINER · 2026',
+    caseBtn: 'Detail Proyek',
+    demoBtn: 'Lihat Demo ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: 'Hubungi Saya ↗',
+    openSr: 'Buka kontainer',
+    closeModalAria: 'Tutup detail proyek',
+    modalLightboxHint: 'Buka Demo Langsung ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / HUNIAN MODULAR',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: 'Halaman depan hunian modular dengan tipografi monumental, kontras material baja-air, dan navigasi bersih.',
+        chips: ['HTML5', 'CSS3', 'Tipografi Editorial']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / MINUMAN ENERGI',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: 'Landing page minuman energi tanpa gula berkonversi tinggi dengan aksen neon tajam di kanvas putih.',
+        chips: ['Tailwind CSS', 'UI Konversi']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / AGEN AI',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: 'Antarmuka gelap platform agen AI terdistribusi dengan metrik langsung dan hirarki aksi kontras tinggi.',
+        chips: ['Sistem UI Gelap', 'Halaman SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / TOKO KUE',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: 'Etalase editorial toko kue artisan bernuansa krem dan emas dengan tipografi serif klasik yang hangat.',
+        chips: ['JavaScript', 'Katalog Daring']
+      },
+      process: {
+        label: ['PROSES'],
+        eb: '05 / CARA KERJA',
+        titleBefore: 'Cara saya ',
+        titleAccent: 'bekerja.',
+        body: 'Riset kebutuhan, merancang sistem visual, membangun kode responsif, menguji tiap detail, lalu merilis.',
+        chips: ['Riset', 'Desain UI', 'Kode Bersih', 'Rilis']
+      },
+      do: {
+        label: ['ARSIP', 'GITHUB'],
+        eb: '06 / ARSIP KODE',
+        titleBefore: 'Eksperimen & ',
+        titleAccent: 'kode.',
+        body: 'Kumpulan eksplorasi antarmuka, komponen interaktif, dan proyek web sumber terbuka sejak SMK hingga PKL DigitalCODE.',
+        chips: ['Open Source', 'Vanilla JS', 'UI Motion']
+      },
+      archive: {
+        label: ['AJAK', 'DISKUSI'],
+        eb: '07 / KOLABORASI',
+        titleBefore: 'Punya ',
+        titleAccent: 'ide?',
+        body: 'Terbuka untuk freelance, kolaborasi produk web, atau sekadar bertukar pikiran soal desain antarmuka.',
+        chips: []
+      }
+    }
+  },
+  en: {
+    word: 'PROJECTS',
+    navHome: 'Home',
+    navTalk: 'Let’s Talk ↗',
+    logoAria: 'Return to home wheel',
+    homeAria: 'Return to portfolio cards',
+    talkAria: 'Open Contact page',
+    pill: 'PICK A CONTAINER ↓',
+    eyebrow: 'ZIKRI’S DEPOT · 7 CONTAINERS · 2026',
+    caseBtn: 'Case Study',
+    demoBtn: 'Live Demo ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: 'Get in Touch ↗',
+    openSr: 'Open container',
+    closeModalAria: 'Close case study',
+    modalLightboxHint: 'Launch Live Demo ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / MODULAR HOUSING',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: 'Editorial landing page for modular housing built with monumental display typography and calm minimal chrome.',
+        chips: ['HTML5', 'CSS3', 'Editorial Type']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / ENERGY DRINK',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: 'High-conversion zero-sugar energy drink showcase pairing electric lime accents with a crisp white canvas.',
+        chips: ['Tailwind CSS', 'Conversion UI']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / AI PLATFORM',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: 'Technical dark-mode front page for distributed AI agents with real-time metrics and crisp deployment CTAs.',
+        chips: ['Dark UI System', 'SaaS Landing']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / ARTISAN BAKERY',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: 'Warm cream-and-gold storefront for an artisan pastry studio anchored by timeless serif typography.',
+        chips: ['JavaScript', 'E-Commerce']
+      },
+      process: {
+        label: ['PROCESS'],
+        eb: '05 / HOW I WORK',
+        titleBefore: 'How I ',
+        titleAccent: 'build.',
+        body: 'Research the brief, design clear systems, engineer responsive code, polish micro-interactions, and ship.',
+        chips: ['Research', 'UI Systems', 'Clean Code', 'Ship']
+      },
+      do: {
+        label: ['CODE', 'ARCHIVE'],
+        eb: '06 / ARCHIVE',
+        titleBefore: 'Boxes of ',
+        titleAccent: 'code.',
+        body: 'Interactive UI studies, creative front-end experiments, and open repositories crafted through studio & DigitalCODE work.',
+        chips: ['Open Source', 'Vanilla JS', 'UI Motion']
+      },
+      archive: {
+        label: ['SAY', 'HELLO'],
+        eb: '07 / COLLABORATE',
+        titleBefore: 'Got an ',
+        titleAccent: 'idea?',
+        body: 'Available for freelance web builds, UI design collaborations, or a quick conversation about your next product.',
+        chips: []
+      }
+    }
+  },
+  zh: {
+    word: '精选项目',
+    navHome: '首页',
+    navTalk: '联系我 ↗',
+    logoAria: '返回首页卡片',
+    homeAria: '返回作品集轮盘',
+    talkAria: '打开联系页面',
+    pill: '选择一个集装箱 ↓',
+    eyebrow: 'ZIKRI 仓库 · 7 个集装箱 · 2026',
+    caseBtn: '项目详情',
+    demoBtn: '在线演示 ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: '立即联系 ↗',
+    openSr: '打开集装箱',
+    closeModalAria: '关闭案例详情',
+    modalLightboxHint: '打开在线演示 ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / 模块化住宅',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: '面向模块化住宅的杂志风落地页，以巨幅排版与耐候钢材质对比展现空间张力。',
+        chips: ['HTML5', 'CSS3', '杂志排版']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / 能量饮品',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: '零糖能量饮品高转化展示页，在纯白画布上释放鲜活霓虹青柠张力。',
+        chips: ['Tailwind CSS', '高转化界面']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / AI 平台',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: '分布式 AI 智能体平台的深色官网，呈现实时性能指标与清晰行动按钮。',
+        chips: ['暗色界面系统', 'SaaS 落地页']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / 手作烘焙',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: '温暖奶油与香槟金配色的手作烘焙官网，以典雅衬线标题聚焦精品系列。',
+        chips: ['JavaScript', '电商目录']
+      },
+      process: {
+        label: ['工作流程'],
+        eb: '05 / 工作方式',
+        titleBefore: '我的打造',
+        titleAccent: '方式。',
+        body: '深入调研需求、构建设计系统、编写洁净响应式代码、打磨交互细节并稳健发布。',
+        chips: ['需求调研', '界面设计', '洁净代码', '发布上线']
+      },
+      do: {
+        label: ['代码', '档案馆'],
+        eb: '06 / 开源归档',
+        titleBefore: '实验与',
+        titleAccent: '代码。',
+        body: '汇集界面交互实验、动效组件研究以及在 DigitalCODE 实践期间沉淀的开源仓库。',
+        chips: ['开源项目', '原生 JS', '界面动效']
+      },
+      archive: {
+        label: ['开启', '合作'],
+        eb: '07 / 联系合作',
+        titleBefore: '有新的',
+        titleAccent: '想法？',
+        body: '开放自由职业承接、网页界面设计与创意协作，欢迎随时交流你的下一个产品构想。',
+        chips: []
+      }
+    }
+  },
+  es: {
+    word: 'PROYECTOS',
+    navHome: 'Inicio',
+    navTalk: 'Hablemos ↗',
+    logoAria: 'Volver al inicio',
+    homeAria: 'Volver a las tarjetas',
+    talkAria: 'Abrir página de contacto',
+    pill: 'ELIGE UN CONTENEDOR ↓',
+    eyebrow: 'DEPÓSITO DE ZIKRI · 7 CONTENEDORES · 2026',
+    caseBtn: 'Ver Detalle',
+    demoBtn: 'Ver Demo ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: 'Contactar ↗',
+    openSr: 'Abrir contenedor',
+    closeModalAria: 'Cerrar detalle del proyecto',
+    modalLightboxHint: 'Abrir demo en vivo ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / VIVIENDA MODULAR',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: 'Landing editorial para vivienda modular con tipografía monumental y navegación sobria.',
+        chips: ['HTML5', 'CSS3', 'Tipografía']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / BEBIDA ENERGÉTICA',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: 'Escaparate de alta conversión para bebida sin azúcar con acentos lima sobre blanco puro.',
+        chips: ['Tailwind CSS', 'UI Conversión']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / PLATAFORMA IA',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: 'Portada oscura para agentes de IA distribuidos con telemetría en vivo y CTA directo.',
+        chips: ['UI Oscuro', 'Landing SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / PASTELERÍA',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: 'Escaparate cálido en crema y oro para pastelería artesanal con tipografía serif clásica.',
+        chips: ['JavaScript', 'Catálogo']
+      },
+      process: {
+        label: ['PROCESO'],
+        eb: '05 / METODOLOGÍA',
+        titleBefore: 'Cómo ',
+        titleAccent: 'trabajo.',
+        body: 'Investigo el objetivo, diseño sistemas claros, programo con precisión y pulo cada interacción.',
+        chips: ['Análisis', 'Diseño UI', 'Código limpio', 'Lanzamiento']
+      },
+      do: {
+        label: ['ARCHIVO', 'GITHUB'],
+        eb: '06 / ARCHIVO DE CÓDIGO',
+        titleBefore: 'Cajas de ',
+        titleAccent: 'código.',
+        body: 'Experimentos interactivos, componentes web y repositorios públicos creados en mi trayectoria.',
+        chips: ['Open Source', 'Vanilla JS', 'Animación UI']
+      },
+      archive: {
+        label: ['HABLEMOS', 'HOY'],
+        eb: '07 / COLABORACIÓN',
+        titleBefore: '¿Tienes una ',
+        titleAccent: 'idea?',
+        body: 'Disponible para proyectos freelance, diseño UI y colaboraciones web. Cuéntame tu idea.',
+        chips: []
+      }
+    }
+  },
+  ar: {
+    word: 'المشاريع',
+    navHome: 'الرئيسية',
+    navTalk: 'تواصل معي ↗',
+    logoAria: 'العودة إلى الرئيسية',
+    homeAria: 'العودة إلى البطاقات',
+    talkAria: 'فتح صفحة التواصل',
+    pill: 'اختر حاوية ↓',
+    eyebrow: 'مستودع زكري · 7 حاويات · 2026',
+    caseBtn: 'تفاصيل المشروع',
+    demoBtn: 'معاينة مباشرة ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: 'ابدأ المحادثة ↗',
+    openSr: 'فتح الحاوية',
+    closeModalAria: 'إغلاق تفاصيل المشروع',
+    modalLightboxHint: 'فتح المعاينة المباشرة ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / مساكن معيارية',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: 'صفحة هبوط تحريرية لمساكن معيارية بطباعة عملاقة وتباين بصري هادئ بين الفولاذ والماء.',
+        chips: ['HTML5', 'CSS3', 'طباعة تحريرية']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / مشروب طاقة',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: 'عرض منتج عالي التحويل لمشروب طاقة خالٍ من السكر بلمسات نيون على خلفية بيضاء.',
+        chips: ['Tailwind CSS', 'واجهة تحويل']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / منصة ذكاء اصطناعي',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: 'واجهة داكنة لمنصة وكلاء ذكاء اصطناعي موزّعين مع مؤشرات أداء لحظية وأزرار واضحة.',
+        chips: ['واجهة داكنة', 'صفحة SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / مخبز حرفي',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: 'متجر حلويات حرفي بدرجات الكريمي والذهبي وعنوان سيريف كلاسيكي دافئ.',
+        chips: ['JavaScript', 'كتالوج متجر']
+      },
+      process: {
+        label: ['المنهجية'],
+        eb: '05 / طريقة العمل',
+        titleBefore: 'كيف ',
+        titleAccent: 'أعمل.',
+        body: 'أبحث في الفكرة، أصمم نظامًا بصريًا واضحًا، أكتب شيفرة متجاوبة ونظيفة، وأصقل كل تفصيلة.',
+        chips: ['بحث', 'تصميم UI', 'شيفرة نظيفة', 'إطلاق']
+      },
+      do: {
+        label: ['الأرشيف', 'جيت هاب'],
+        eb: '06 / أرشيف الشيفرة',
+        titleBefore: 'صناديق ',
+        titleAccent: 'التجارب.',
+        body: 'مجموعة من تجارب الواجهات التفاعلية ومستودعات الكود المفتوحة خلال دراستي وتدريبي في DigitalCODE.',
+        chips: ['مصدر مفتوح', 'Vanilla JS', 'حركة الواجهة']
+      },
+      archive: {
+        label: ['تواصل', 'معي'],
+        eb: '07 / تعاون جديد',
+        titleBefore: 'لديك ',
+        titleAccent: 'فكرة؟',
+        body: 'متاح للأعمال الحرة، تصميم واجهات الويب، أو التعاون الإبداعي لبناء منتجك الرقمي القادم.',
+        chips: []
+      }
+    }
+  },
+  fr: {
+    word: 'PROJETS',
+    navHome: 'Accueil',
+    navTalk: 'Parlons-en ↗',
+    logoAria: 'Retour à l’accueil',
+    homeAria: 'Retour aux cartes',
+    talkAria: 'Ouvrir la page Contact',
+    pill: 'CHOISIR UN CONTENEUR ↓',
+    eyebrow: 'DÉPÔT DE ZIKRI · 7 CONTENEURS · 2026',
+    caseBtn: 'Étude de cas',
+    demoBtn: 'Démo live ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: 'Me contacter ↗',
+    openSr: 'Ouvrir le conteneur',
+    closeModalAria: 'Fermer l’étude de cas',
+    modalLightboxHint: 'Ouvrir la démo ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / HABITAT MODULAIRE',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: 'Landing éditoriale pour habitat modulaire alliant typographie monumentale et navigation épurée.',
+        chips: ['HTML5', 'CSS3', 'Typographie']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / BOISSON ÉNERGISANTE',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: 'Vitrine à forte conversion pour boisson sans sucre aux accents néon sur scène blanche.',
+        chips: ['Tailwind CSS', 'Conversion UI']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / PLATEFORME IA',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: 'Interface sombre pour agents IA distribués avec télémétrie temps réel et CTA contrasté.',
+        chips: ['UI Sombre', 'Landing SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / PÂTISSERIE',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: 'Maison de pâtisserie artisanale en crème et or portée par une typographie serif intemporelle.',
+        chips: ['JavaScript', 'Catalogue']
+      },
+      process: {
+        label: ['PROCESSUS'],
+        eb: '05 / MÉTHODE',
+        titleBefore: 'Ma façon de ',
+        titleAccent: 'créer.',
+        body: 'Comprendre le besoin, concevoir le système UI, coder proprement, affiner le mouvement et livrer.',
+        chips: ['Recherche', 'Design UI', 'Code propre', 'Livraison']
+      },
+      do: {
+        label: ['ARCHIVES', 'GITHUB'],
+        eb: '06 / ARCHIVES CODE',
+        titleBefore: 'Boîtes de ',
+        titleAccent: 'code.',
+        body: 'Études interactives, composants créatifs et dépôts open source réalisés au fil de mes projets.',
+        chips: ['Open Source', 'Vanilla JS', 'Motion UI']
+      },
+      archive: {
+        label: ['PARLONS', 'PROJET'],
+        eb: '07 / COLLABORATION',
+        titleBefore: 'Une ',
+        titleAccent: 'idée ?',
+        body: 'Disponible pour missions freelance, collaborations UI/Front-End ou discussions créatives.',
+        chips: []
+      }
+    }
+  },
+  ja: {
+    word: 'プロジェクト',
+    navHome: 'ホーム',
+    navTalk: 'お問い合わせ ↗',
+    logoAria: 'ホームに戻る',
+    homeAria: 'カード一覧へ戻る',
+    talkAria: 'お問い合わせページを開く',
+    pill: 'コンテナを選ぶ ↓',
+    eyebrow: 'ZIKRI’S DEPOT · 7 コンテナ · 2026',
+    caseBtn: '詳細を見る',
+    demoBtn: 'ライブデモ ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: '相談する ↗',
+    openSr: 'コンテナを開く',
+    closeModalAria: 'ケーススタディを閉じる',
+    modalLightboxHint: 'ライブデモを開く ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / モジュラー住宅',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: '巨大なタイポグラフィと鋼鉄建築の対比で魅せるモジュラー住宅のランディングページ。',
+        chips: ['HTML5', 'CSS3', 'エディトリアル']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / エナジードリンク',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: '白背景にネオンライムが映える、無糖エナジードリンクの高転換ショーケース。',
+        chips: ['Tailwind CSS', 'コンバージョンUI']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / AIプラットフォーム',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: '分散AIエージェント基盤のための漆黒ダークUIとリアルタイム性能指標。',
+        chips: ['ダークUI', 'SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / 洋菓子店',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: '温かなクリームとゴールド、クラシックなセリフ体で綴る洋菓子店のエディトリアルサイト。',
+        chips: ['JavaScript', 'ECカタログ']
+      },
+      process: {
+        label: ['プロセス'],
+        eb: '05 / 制作フロー',
+        titleBefore: '制作の',
+        titleAccent: '進め方。',
+        body: '要件の理解からUI設計、レスポンシブ実装、細部の検証まで一貫して丁寧に仕上げます。',
+        chips: ['リサーチ', 'UI設計', 'クリーン実装', 'リリース']
+      },
+      do: {
+        label: ['コード', 'アーカイブ'],
+        eb: '06 / コード保管庫',
+        titleBefore: '実験と',
+        titleAccent: 'コード。',
+        body: 'UIモーション研究やインタラクティブな試作、DigitalCODEでの学びを含む公開リポジトリ。',
+        chips: ['オープンソース', 'Vanilla JS', 'UIモーション']
+      },
+      archive: {
+        label: ['コラボ', '相談する'],
+        eb: '07 / コラボレーション',
+        titleBefore: 'アイデアが',
+        titleAccent: 'ありますか？',
+        body: 'フリーランス案件、Web UI制作、クリエイティブな共同制作のご相談をお待ちしています。',
+        chips: []
+      }
+    }
+  },
+  ko: {
+    word: '프로젝트',
+    navHome: '홈',
+    navTalk: '문의하기 ↗',
+    logoAria: '홈으로 돌아가기',
+    homeAria: '카드 목록으로 돌아가기',
+    talkAria: '문의 페이지 열기',
+    pill: '컨테이너 선택 ↓',
+    eyebrow: 'ZIKRI’S DEPOT · 7 컨테이너 · 2026',
+    caseBtn: '상세 보기',
+    demoBtn: '라이브 데모 ↗',
+    githubBtn: 'GitHub @trynvexa ↗',
+    contactBtn: '연락하기 ↗',
+    openSr: '컨테이너 열기',
+    closeModalAria: '케이스 스터디 닫기',
+    modalLightboxHint: '라이브 데모 열기 ↗',
+    containers: {
+      work: {
+        label: ['MONO', 'LIVING'],
+        eb: '01 / 모듈러 하우징',
+        titleBefore: 'Mono ',
+        titleAccent: 'Living.',
+        body: '초대형 타이포그래피와 강철 건축물의 질감 대비가 돋보이는 모듈러 주택 랜딩 페이지.',
+        chips: ['HTML5', 'CSS3', '에디토리얼']
+      },
+      about: {
+        label: ['GIGI', 'ENERGY'],
+        eb: '02 / 에너지 드링크',
+        titleBefore: 'GiGi ',
+        titleAccent: 'Energy.',
+        body: '깨끗한 화이트 캔버스 위에 네온 라임 에너지를 극대화한 제로 슈거 음료 쇼케이스.',
+        chips: ['Tailwind CSS', '전환 UI']
+      },
+      kit: {
+        label: ['COMPUTE', 'AI'],
+        eb: '03 / AI 플랫폼',
+        titleBefore: 'Compute ',
+        titleAccent: 'AI.',
+        body: '분산 AI 에이전트 플랫폼을 위한 다크 UI, 실시간 지표 및 명확한 배포 동선.',
+        chips: ['다크 UI', 'SaaS']
+      },
+      hello: {
+        label: ['SWEET', 'HEAVEN'],
+        eb: '04 / 아티잔 베이커리',
+        titleBefore: 'Sweet ',
+        titleAccent: 'Heaven.',
+        body: '따뜻한 크림과 골드 팔레트, 클래식 세리프 타이포그래피로 완성한 베이커리 스토어.',
+        chips: ['JavaScript', '이커머스']
+      },
+      process: {
+        label: ['프로세스'],
+        eb: '05 / 작업 방식',
+        titleBefore: '작업하는 ',
+        titleAccent: '방식.',
+        body: '요구사항 분석, UI 시스템 설계, 반응형 코드 구현, 인터랙션 디테일 검증까지 꼼꼼히 완성합니다.',
+        chips: ['리서치', 'UI 디자인', '클린 코드', '배포']
+      },
+      do: {
+        label: ['코드', '아카이브'],
+        eb: '06 / 코드 아카이브',
+        titleBefore: '실험과 ',
+        titleAccent: '코드.',
+        body: 'UI 모션 실험, 인터랙티브 컴포넌트, DigitalCODE 실무 경험이 담긴 오픈소스 저장소.',
+        chips: ['오픈소스', 'Vanilla JS', 'UI 모션']
+      },
+      archive: {
+        label: ['협업', '문의하기'],
+        eb: '07 / 협업 제안',
+        titleBefore: '아이디어가 ',
+        titleAccent: '있나요?',
+        body: '프리랜서 웹 개발, UI 디자인 협업, 새로운 프로덕트 논의 모두 열려 있습니다.',
+        chips: []
+      }
+    }
+  }
+};
+
+window.ZK_PROJECTS = {
+  DATA: NP_DATA,
+  X: NP_X,
+  I18N: NP_I18N,
+  URL: NP_URL,
+  DEPOT: NP_DEPOT_I18N
+};
+
 var npIdx = 0;
 
 function initProjectSpatialStage() {

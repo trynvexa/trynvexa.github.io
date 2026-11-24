@@ -782,10 +782,27 @@
       SKR.ui
     ],
 
-    // 5: Proyek (Studi kasus interaktif + Grid semua proyek)
+    // 5: Proyek — Zikri's Depot (3D Container-Crane + Case Study Modal)
     [
-      '<div class="np-bg"></div>',
-      `<div class="nwrap" data-i18n-own="1"><i class="np-prog" id="npProg"></i><div class="np-header-bar"><div class="np-kicker-wrap"><span class="me-k" id="npKicker">Karya Pilihan · 04 Studi Kasus</span></div><nav class="np-nav" id="npNav" role="tablist" aria-label="Pilih proyek"></nav></div><section class="np-top"><div class="np-title-col"><div class="np-meta-bar" id="npMetaBar"></div><h1 class="np-name" id="npName" aria-live="polite"></h1><div class="np-stack" id="npStack" aria-label="Teknologi proyek"></div></div><div class="np-info" id="npInfo"></div></section><button type="button" class="np-shot" id="npShot" aria-label="Lihat gambar ukuran penuh"><div class="np-frame" id="npFrame"><div class="np-browser-bar" aria-hidden="true"><span class="np-dots"><i></i><i></i><i></i></span><span class="np-url-pill" id="npUrlPill">v0-mono-ecommerce.vercel.app</span><span class="np-zoom-hint">Perbesar &#8599;</span></div><div class="np-view" id="npView"></div></div></button><section class="np-sec" id="npSec"><h3 id="npCloseTitle">Dilihat dari dekat</h3><div class="np-crops" id="npCrops"></div></section><section class="np-sec np-two"><div><h3 id="npPalTitle">Warna yang dipakai <small class="np-pal-hint">(Klik untuk salin HEX)</small></h3><div class="np-pal" id="npPal"></div></div><div><h3 id="npRowsTitle">Isi halaman</h3><dl class="np-rows" id="npRows"></dl></div></section><section class="np-sec np-all-sec"><div class="np-all-head"><h3 id="npAllTitle">Indeks Semua Proyek (04)</h3><p id="npAllSub">Bandingkan keempat proyek unggulan atau buka demo langsung.</p></div><div class="np-all-grid" id="npAllGrid"></div></section><section class="np-more" id="npMore"></section><dialog class="np-dlg" id="npDlg"><button type="button" class="np-close" id="npClose">Tutup</button><img id="npBig" alt=""></dialog></div>`
+      '',
+      '<div class="dp-stage" data-i18n-own="1" role="region" aria-label="Zikri’s Depot — Proyek">' +
+        '<div class="dp-word" aria-hidden="true"><span id="dpWord" class="dp-rv">PROYEK</span></div>' +
+        '<canvas id="dpGl" class="dp-gl"></canvas>' +
+        '<article id="dpCard" class="dp-card" aria-live="polite"></article>' +
+        '<header class="dp-nav">' +
+          '<button type="button" id="dpLogo" class="dp-logo dp-rv" data-close aria-label="Kembali ke beranda">zikri</button>' +
+          '<div class="dp-nav-acts">' +
+            '<button type="button" id="dpHome" class="dp-nav-link dp-rv" data-close aria-label="Kembali ke daftar kartu">&larr; Beranda</button>' +
+            '<button type="button" id="dpTalk" class="dp-nav-link dp-rv" data-jump="6" aria-label="Buka halaman Kontak">Hubungi &#8599;</button>' +
+          '</div>' +
+        '</header>' +
+        '<div id="dpPill" class="dp-pill dp-rv" aria-hidden="true">PILIH KONTAINER &darr;</div>' +
+        '<p id="dpEyebrow" class="dp-eyebrow dp-rv">ZIKRI’S DEPOT &middot; 7 KONTAINER &middot; 2026</p>' +
+        '<nav id="dpMenu" class="dp-sr" aria-label="Pilih kontainer proyek"></nav>' +
+        '<div id="dpModal" class="dp-modal" hidden role="dialog" aria-modal="true" aria-label="Detail Studi Kasus">' +
+          '<div id="dpModalPanel" class="dp-modal-panel"></div>' +
+        '</div>' +
+      '</div>'
     ],
 
     // 6: Kontak — PAPER RIOT / Edisi 06
@@ -1145,7 +1162,6 @@
       pg.removeAttribute('dir');
       pg.className = 'pg sw p' + i;
       pgb.innerHTML = pageHTML(i);
-      if (i === 5) { setTimeout(initProjectSpatialStage, 30); }
       pg.scrollTop = 0;
       pg.getBoundingClientRect(); // paksa reflow supaya animasi muncul berurutan jalan lagi
       pg.classList.add('open');
@@ -1272,7 +1288,6 @@
     pgb.innerHTML = pageHTML(i);
     pg.removeAttribute('dir');
     pg.className = 'pg p' + i;
-    if (i === 5) { setTimeout(initProjectSpatialStage, 40); }
     pg.hidden = false;
     pg.scrollTop = 0;
     freeze(true);
@@ -1389,6 +1404,7 @@
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') {
       if (cur === 2 && window.__zkMeExitHome) { window.__zkMeExitHome(); return; }
+      if (cur === 5 && window.__zkDepotEscape && window.__zkDepotEscape()) return;
       if (cur === 7 && window.__zkRunwayEscape && window.__zkRunwayEscape()) return;
       closePage();
     }
@@ -1399,7 +1415,7 @@
 
   document.addEventListener('keydown', function(e){
     if (cur >= 0) {
-      if (cur === 2 || cur === 7) return; // Halaman Me & Fashion menangani tombol panah sendiri
+      if (cur === 2 || cur === 5 || cur === 7) return; // Halaman Me, Proyek Depot & Fashion menangani navigasi sendiri
       if (e.key === 'ArrowLeft') switchPage(-1);
       if (e.key === 'ArrowRight') switchPage(1);
       return;
@@ -1713,7 +1729,7 @@
 (function(){
   var pg = document.getElementById('pg'); if (!pg) return;
   var touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)');
-  var BLOCK = '.me-dive,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,.np-nav,#npShot,.np-shot,dialog,input,textarea,select,button,a';
+  var BLOCK = '.me-dive,.dp-stage,.dp-modal,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,.np-nav,#npShot,.np-shot,dialog,input,textarea,select,button,a';
   var x0 = 0, y0 = 0, t0 = 0, ok = false;
   pg.addEventListener('touchstart', function(e){
     ok = false;

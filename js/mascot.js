@@ -41,21 +41,24 @@
   addEventListener('pointermove', aim, { passive: true });
   addEventListener('pointerdown', aim, { passive: true });
 
-  var prevX = 999, prevY = 999;
+  var prevX = 999, prevY = 999, pgEl = document.getElementById('pg'), lastM = 0;
   function f(t) {
+    requestAnimationFrame(f);
     if (document.hidden ||
         document.documentElement.classList.contains('intro-on') ||
-        document.body.classList.contains('covered')) {
-      requestAnimationFrame(f);
+        document.body.classList.contains('covered') ||
+        (pgEl && pgEl.classList.contains('open')) ||
+        t - lastM < 32) {
       return;
     }
+    lastM = t;
     if (t - last > 2400 && t > nextIdle) {
       tx = Math.random() * 2 - 1;
       ty = Math.random() * 1.4 - 0.7;
       nextIdle = t + 1100 + Math.random() * 1800;
     }
-    x += (tx - x) * 0.14;
-    y += (ty - y) * 0.14;
+    x += (tx - x) * 0.2;
+    y += (ty - y) * 0.2;
     if (Math.abs(x - prevX) > 0.002 || Math.abs(y - prevY) > 0.002) {
       prevX = x;
       prevY = y;
@@ -63,7 +66,6 @@
       IR.setAttribute('transform', 'translate(' + (x * 26).toFixed(1) + ' ' + (y * 12).toFixed(1) + ')');
       H.setAttribute('transform', 'translate(' + (x * 14).toFixed(1) + ' ' + (y * 8).toFixed(1) + ') rotate(' + (x * 2.5).toFixed(2) + ' 665 950)');
     }
-    requestAnimationFrame(f);
   }
   requestAnimationFrame(f);
 })();

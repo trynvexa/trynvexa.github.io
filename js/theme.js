@@ -24,7 +24,7 @@
     if (!themeBtn) return;
     themeBtn.dataset.mode = isDark() ? 'dark' : 'light';
     var tc = document.getElementById('themeColor');
-    if (tc) tc.setAttribute('content', isDark() ? '#101312' : '#eeebe2');
+    if (tc) tc.setAttribute('content', isDark() ? '#090a0d' : '#eeebe2');
     themeBtn.setAttribute('aria-label', isDark() ? 'Ganti ke mode terang' : 'Ganti ke mode gelap');
   }
   function applyTheme(next) {

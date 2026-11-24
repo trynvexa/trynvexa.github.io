@@ -176,11 +176,13 @@
   };
   window.__zkBuddySeatIdx = function() { return seatIdx; };
 
-  // Unified 60fps loop (head tracking + sitting/jumping physics without forced reflows)
+  // Unified loop (head tracking + sitting/jumping physics without forced reflows)
+  var pgElB = document.getElementById('pg');
   function frame(now) {
     if (document.hidden ||
         root.classList.contains('intro-on') ||
-        document.body.classList.contains('covered')) {
+        document.body.classList.contains('covered') ||
+        (pgElB && pgElB.classList.contains('open'))) {
       requestAnimationFrame(frame);
       return;
     }

@@ -70,25 +70,25 @@
         bgWrap.appendChild(cv);
         var ctx = cv.getContext('2d');
         var embers = [];
-        for (var i = 0; i < 24; i++) {
+        for (var i = 0; i < 14; i++) {
           embers.push({
             x: Math.random(), y: Math.random(),
-            r: 0.9 + Math.random() * 2.2,
-            vx: (Math.random() - 0.5) * 0.00018,
-            vy: -0.00018 - Math.random() * 0.00032,
+            r: 0.9 + Math.random() * 2.0,
+            vx: (Math.random() - 0.5) * 0.00024,
+            vy: -0.00024 - Math.random() * 0.00042,
             ph: Math.random() * Math.PI * 2
           });
         }
-        var alive = true, eRaf = 0;
+        var alive = true, eRaf = 0, lastEmb = 0;
         function drawEmbers(now) {
           if (!alive || !cv.isConnected) return;
           eRaf = requestAnimationFrame(drawEmbers);
-          if (document.hidden || !ctx) return;
+          if (document.hidden || !ctx || now - lastEmb < 42) return;
+          lastEmb = now;
           var w = cv.clientWidth, h = cv.clientHeight;
           if (!w || !h) return;
-          var d = Math.min(1.5, window.devicePixelRatio || 1);
-          if (cv.width !== Math.round(w * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
-          ctx.setTransform(d, 0, 0, d, 0, 0);
+          if (cv.width !== Math.round(w)) { cv.width = Math.round(w); cv.height = Math.round(h); }
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
           ctx.clearRect(0, 0, w, h);
           var t = now * 0.001;
           for (var j = 0; j < embers.length; j++) {
@@ -162,15 +162,17 @@
       cleanups.push(Z.mountMusicVisualizer(vizCanvas, getAudio));
     }
 
-    // Drive smooth --beat CSS custom property for platter & mini-player pulse
-    var alive = true, bRaf = 0, sBeat = 0;
+    // Drive smooth --beat CSS custom property for platter & mini-player pulse (throttled ~25fps)
+    var alive = true, bRaf = 0, sBeat = 0, lastBeat = 0;
     function beatLoop(now) {
       if (!alive || !stage.isConnected) return;
       bRaf = requestAnimationFrame(beatLoop);
-      if (document.hidden) return;
+      if (document.hidden || now - lastBeat < 40) return;
+      lastBeat = now;
       var st = getAudio(now * 0.001);
       var target = (st && st.playing) ? st.bass : 0;
-      sBeat += (target - sBeat) * 0.22;
+      if (Math.abs(target - sBeat) < 0.004 && target === 0) return;
+      sBeat += (target - sBeat) * 0.28;
       pg.style.setProperty('--beat', sBeat.toFixed(3));
     }
     bRaf = requestAnimationFrame(beatLoop);
@@ -340,71 +342,8 @@
   });
 
   /* ========================================================================
-     p5: PROYEK — Multi-Layer 3D Browser Stage, Flip Switch & HEX Copy Sparks
+     p5: PROYEK — Handled by dedicated js/projects-depot.js (3D Container Depot)
      ======================================================================== */
-  Z.registerPage(5, function (pg, pgb) {
-    var cleanups = [];
-    var cardCleanups = [];
-
-    function bindDynamicCards() {
-      cardCleanups.forEach(function (f) { f(); });
-      cardCleanups.length = 0;
-      [].forEach.call(pgb.querySelectorAll('.np-all-card, .np-cw'), function (card) {
-        cardCleanups.push(Z.attachTilt(card, { maxX: 6, maxY: 7, scale: 1.018 }));
-      });
-    }
-
-    var shot = pgb.querySelector('#npShot');
-    var frame = pgb.querySelector('#npFrame');
-    if (shot && frame && Z.isFine && !Z.isReduced) {
-      var onMove = function (e) {
-        var r = shot.getBoundingClientRect();
-        if (!r.width || !r.height) return;
-        var nx = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-        var ny = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
-        frame.style.setProperty('--gx', (nx * 100).toFixed(1) + '%');
-        frame.style.setProperty('--gy', (ny * 100).toFixed(1) + '%');
-      };
-      shot.addEventListener('pointermove', onMove, { passive: true });
-      cleanups.push(function () { shot.removeEventListener('pointermove', onMove); });
-    }
-
-    // 3D perspective flip pulse when switching active project
-    var nav = pgb.querySelector('#npNav');
-    function triggerFlip() {
-      if (!frame || Z.isReduced) return;
-      frame.classList.remove('np-flip3d');
-      void frame.offsetWidth;
-      frame.classList.add('np-flip3d');
-      setTimeout(bindDynamicCards, 120);
-    }
-    var onProjClick = function (e) {
-      var t = e.target;
-      if (!t || !t.closest) return;
-      // HEX swatch copy micro-spark burst
-      var sw = t.closest('.np-sw-btn');
-      if (sw) {
-        var r = sw.getBoundingClientRect();
-        var hex = sw.getAttribute('data-hex') || '#e0463a';
-        Z.spawnSparks(r.left + r.width / 2, r.top + r.height / 2, hex, 16);
-        return;
-      }
-      if (t.closest('#npNav button, #npNx, .np-nx2, [data-pick]')) {
-        triggerFlip();
-      }
-    };
-    pgb.addEventListener('click', onProjClick);
-    cleanups.push(function () { pgb.removeEventListener('click', onProjClick); });
-
-    // Wait briefly for initProjectSpatialStage to build initial grid
-    var initT = setTimeout(bindDynamicCards, 140);
-    cleanups.push(function () {
-      clearTimeout(initT);
-      cardCleanups.forEach(function (f) { f(); });
-    });
-
-    return function () { cleanups.forEach(function (f) { f(); }); };
-  });
 
   /* ========================================================================
      p6: KONTAK — Prismatic 3D Dev Pass Layer Depth & Ink-Stamp Confirmation
