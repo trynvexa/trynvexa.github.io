@@ -1,8 +1,7 @@
 /* ============================================================
    webgl-scenes.js — Three.js WebGL 3D Centerpieces + Canvas 2D Fallbacks
-   1. Home 3D WebGL Backdrop (#bgWebgl over #bgCinema blurred photos)
-   2. Music 3D Audio-Reactive Frequency Ring & Energy Torus (p1)
-   3. Skill 3D Gyroscopic Energy Constellation anchored over hand (p4)
+   1. Music 3D Audio-Reactive Frequency Ring & Energy Torus (p1)
+   2. Skill 3D Gyroscopic Energy Constellation anchored over hand (p4)
    ============================================================ */
 (function () {
   var Z = window.ZK3D;
@@ -368,14 +367,6 @@
     };
   }
 
-  /* ========================================================================
-     SCENE 4: ME (p2) — Kept lightweight noop hook for backwards compatibility
-     ======================================================================== */
-  function mountMeWebgl() {
-    return { setInput: function () {}, setScroll: function () {}, pulse: function () {}, destroy: function () {} };
-  }
-
   Z.mountMusicVisualizer = mountMusicVisualizer;
   Z.mountSkillWebgl = mountSkillWebgl;
-  Z.mountMeWebgl = mountMeWebgl;
 })();

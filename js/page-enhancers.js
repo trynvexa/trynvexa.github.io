@@ -1,7 +1,8 @@
 /* ============================================================
-   page-enhancers.js — Per-Page 3D Motion Choreography (p0 – p6)
+   page-enhancers.js — Per-Page 3D Motion Choreography (p0, p1, p3, p4, p6)
    Registers deterministic mount + cleanup enhancers via window.ZK3D
-   for Story, Music, Me, Frame, Skill, Proyek, and Kontak.
+   for Story, Music, Frame, Skill, and Kontak.
+   (Me p2, Proyek p5, and Fashion p7 use dedicated engine modules.)
    ============================================================ */
 (function () {
   var Z = window.ZK3D;

@@ -29,13 +29,6 @@
   font-display: swap;
 }
 
-/* Hide global custom portfolio cursor while Depot is active */
-body.dp-active .zk-cur {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
 /* ---------- Page p5 Full-Bleed Terracotta Isolation ---------- */
 .pg.p5 {
   --dp-page: #E27657;

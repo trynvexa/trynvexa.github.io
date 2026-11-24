@@ -236,7 +236,6 @@
     // Trigger landing shockwave & buddy jump when Hero "Me" card snaps into place
     if (!E.landed && E.t >= 2.08) {
       E.landed = true;
-      if (window.__zkBgPulse) window.__zkBgPulse(1);
       if (window.__zkBuddyBounce) window.__zkBuddyBounce(-9.5);
       // Mexican riffle wave outward from center card to neighbors
       triggerRiffleWave(activeC >= 0 ? activeC : 2, 26);
@@ -446,7 +445,6 @@
       nm.textContent = dispName;
       if (window.__zkBuddyCardReact) window.__zkBuddyCardReact(activeIdx);
       if (window.__zkBgSetCard) window.__zkBgSetCard(activeIdx, cards[activeIdx]);
-      if (prevActive >= 0 && window.__zkBgPulse) window.__zkBgPulse(dir);
       if (prevActive >= 0 && !reduce && mk.animate) {
         mk.animate([
           { transform: 'translateX(-50%) translateY(' + (dir * 7) + 'px)', opacity: 0.25 },
@@ -456,9 +454,6 @@
     }
     if (window.__zkBuddyWheelLean && Math.abs(lean) > 0.05) {
       window.__zkBuddyWheelLean(lean * 2.6);
-    }
-    if (window.__zkBgWheelSync) {
-      window.__zkBgWheelSync(pos, lean);
     }
     lastPos = pos;
   }
@@ -1270,7 +1265,6 @@
       vRiffleY[closedIdx] += 15;
       kickTilt();
       triggerRiffleWave(closedIdx, 20);
-      if (window.__zkBgPulse) window.__zkBgPulse(1);
       if (window.__zkBuddyBounce) window.__zkBuddyBounce(-6.5);
       c.focus({ preventScroll: true });
     }, 750);
@@ -1729,7 +1723,7 @@
 (function(){
   var pg = document.getElementById('pg'); if (!pg) return;
   var touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)');
-  var BLOCK = '.me-dive,.dp-stage,.dp-modal,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,.np-nav,#npShot,.np-shot,dialog,input,textarea,select,button,a';
+  var BLOCK = '.me-dive,.dp-stage,.dp-modal,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,dialog,input,textarea,select,button,a';
   var x0 = 0, y0 = 0, t0 = 0, ok = false;
   pg.addEventListener('touchstart', function(e){
     ok = false;

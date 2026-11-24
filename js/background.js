@@ -47,9 +47,6 @@
     prevSlide.classList.remove('on');
   };
 
-  window.__zkBgWheelSync = function () {};
-  window.__zkBgPulse = function () {};
-
   setTimeout(function () {
     var activeCard = document.querySelector('.card.on') || document.querySelectorAll('.card')[2];
     if (lastCardIdx < 0) window.__zkBgSetCard(2, activeCard);

@@ -1,8 +1,7 @@
 /* ============================================================
    motion3d.js — Central 3D Capability, Lifecycle & Micro-FX Engine
    Manages performance tiering (webgl | lite | reduced), Three.js readiness,
-   deterministic page-level mount/cleanup, spring 3D tilt, sparks, stamps,
-   and magnetic desktop cursor.
+   deterministic page-level mount/cleanup, spring 3D tilt, sparks, and stamps.
    ============================================================ */
 (function () {
   var isReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

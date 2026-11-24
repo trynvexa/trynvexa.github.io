@@ -4,13 +4,6 @@
    runway-section, .rw-sheet-host, #rw-bag-dialog, and #rw-bag-status.
    ========================================================================== */
 
-/* Hide global portfolio custom cursor when Fashion Runway is open */
-body.rw-active .zk-cur {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
 /* ---------- Page p7 Isolation (Light Gallery Editorial Stage) ---------- */
 .pg.p7 {
   --font-body--family: Helvetica, Arial, sans-serif;

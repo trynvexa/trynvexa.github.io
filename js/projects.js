@@ -1,5 +1,5 @@
 /* ============================================================
-   Halaman Proyek (P5) - Studi Kasus Interaktif, 3D Browser Stage & Indeks Proyek
+   Halaman Proyek (P5) - Data & Lokalisasi 8 Bahasa Zikri's Depot + Case Study Modal
    8-Language Native Localization (id, en, zh, es, ar, fr, ja, ko)
    ============================================================ */
 var NP_DATA = [
@@ -46,26 +46,14 @@ var NP_X = {
 
 var NP_I18N = {
   id: {
-    kicker: "Karya Pilihan · 04 Studi Kasus",
-    navAria: "Pilih proyek",
-    stackAria: "Teknologi proyek",
-    shotAria: "Lihat gambar ukuran penuh",
     role: "Front-End & Desain UI",
-    visit: "Lihat situs",
     nextLbl: "Berikutnya:",
     closeTitle: "Dilihat dari dekat",
     palTitle: "Warna yang dipakai",
     palHint: "(Klik untuk salin HEX)",
     copyColor: "Salin warna",
     rowsTitle: "Isi halaman & spesifikasi",
-    allTitle: "Indeks Semua Proyek (04)",
-    allSub: "Bandingkan keempat proyek unggulan atau buka demo langsung.",
-    moreNext: "Proyek berikutnya",
-    moreQ: "Punya halaman yang perlu dirombak?",
-    moreCta: "Hubungi saya",
     closeBtn: "Tutup",
-    inspectBtn: "Baca Studi Kasus",
-    zoomHint: "Perbesar ↗",
     copied: "Tersalin!",
     stacks: {
       "Responsive UI": "UI Responsif",
@@ -110,26 +98,14 @@ var NP_I18N = {
     }
   },
   en: {
-    kicker: "Selected Works · 04 Case Studies",
-    navAria: "Select project",
-    stackAria: "Project technologies",
-    shotAria: "View full-size preview",
     role: "Front-End & UI Design",
-    visit: "Live Demo",
     nextLbl: "Next:",
     closeTitle: "Closer Inspection",
     palTitle: "Color System",
     palHint: "(Click swatch to copy HEX)",
     copyColor: "Copy color",
     rowsTitle: "Architecture & Specs",
-    allTitle: "All Projects Index (04)",
-    allSub: "Compare all four featured projects or launch their live demos directly.",
-    moreNext: "Next Project",
-    moreQ: "Have a page or product that needs a redesign?",
-    moreCta: "Let's Talk",
     closeBtn: "Close",
-    inspectBtn: "Read Case Study",
-    zoomHint: "Expand ↗",
     copied: "Copied!",
     stacks: {},
     projects: {
@@ -164,26 +140,14 @@ var NP_I18N = {
     }
   },
   zh: {
-    kicker: "精选作品 · 04 个案例研究",
-    navAria: "选择项目",
-    stackAria: "项目技术栈",
-    shotAria: "查看高清大图",
     role: "前端与界面设计",
-    visit: "在线演示",
     nextLbl: "下一个：",
     closeTitle: "细节近观",
     palTitle: "色彩系统",
     palHint: "（点击色块复制 HEX）",
     copyColor: "复制颜色",
     rowsTitle: "页面结构与规格",
-    allTitle: "全部项目索引 (04)",
-    allSub: "对比全部四个精选项目，或直接打开在线演示。",
-    moreNext: "下一个项目",
-    moreQ: "有需要改版升级的页面或产品吗？",
-    moreCta: "联系我",
     closeBtn: "关闭",
-    inspectBtn: "阅读案例",
-    zoomHint: "放大预览 ↗",
     copied: "已复制！",
     stacks: {
       "Responsive UI": "响应式界面",
@@ -228,26 +192,14 @@ var NP_I18N = {
     }
   },
   es: {
-    kicker: "Obras seleccionadas · 04 casos de estudio",
-    navAria: "Seleccionar proyecto",
-    stackAria: "Tecnologías del proyecto",
-    shotAria: "Ver imagen a tamaño completo",
     role: "Front-End y Diseño UI",
-    visit: "Ver sitio",
     nextLbl: "Siguiente:",
     closeTitle: "Vista en detalle",
     palTitle: "Sistema de color",
     palHint: "(Clic para copiar HEX)",
     copyColor: "Copiar color",
     rowsTitle: "Arquitectura y detalles",
-    allTitle: "Índice de proyectos (04)",
-    allSub: "Compara los cuatro proyectos destacados o abre sus demos en vivo.",
-    moreNext: "Siguiente proyecto",
-    moreQ: "¿Tienes una página o producto que necesita un rediseño?",
-    moreCta: "Hablemos",
     closeBtn: "Cerrar",
-    inspectBtn: "Ver caso de estudio",
-    zoomHint: "Ampliar ↗",
     copied: "¡Copiado!",
     stacks: {
       "Responsive UI": "UI adaptable",
@@ -292,26 +244,14 @@ var NP_I18N = {
     }
   },
   ar: {
-    kicker: "أعمال مختارة · 04 دراسات حالة",
-    navAria: "اختر مشروعًا",
-    stackAria: "تقنيات المشروع",
-    shotAria: "عرض الصورة بالحجم الكامل",
     role: "واجهات أمامية وتصميم UI",
-    visit: "معاينة الموقع",
     nextLbl: "التالي:",
     closeTitle: "نظرة عن قرب",
     palTitle: "نظام الألوان",
     palHint: "(انقر على اللون لنسخ HEX)",
     copyColor: "نسخ اللون",
     rowsTitle: "البنية والمواصفات",
-    allTitle: "فهرس جميع المشاريع (04)",
-    allSub: "قارن بين المشاريع الأربعة المميزة أو افتح المعاينة المباشرة.",
-    moreNext: "المشروع التالي",
-    moreQ: "هل لديك صفحة أو منتج يحتاج إلى إعادة تصميم؟",
-    moreCta: "تواصل معي",
     closeBtn: "إغلاق",
-    inspectBtn: "قراءة دراسة الحالة",
-    zoomHint: "تكبير ↗",
     copied: "تم النسخ!",
     stacks: {
       "Responsive UI": "واجهة متجاوبة",
@@ -356,26 +296,14 @@ var NP_I18N = {
     }
   },
   fr: {
-    kicker: "Travaux choisis · 04 études de cas",
-    navAria: "Choisir un projet",
-    stackAria: "Technologies du projet",
-    shotAria: "Voir l’aperçu en grand",
     role: "Front-End & Design UI",
-    visit: "Démo en ligne",
     nextLbl: "Suivant :",
     closeTitle: "Vue rapprochée",
     palTitle: "Palette de couleurs",
     palHint: "(Cliquer pour copier le HEX)",
     copyColor: "Copier la couleur",
     rowsTitle: "Architecture & détails",
-    allTitle: "Index des projets (04)",
-    allSub: "Comparez les quatre projets phares ou lancez leurs démos en direct.",
-    moreNext: "Projet suivant",
-    moreQ: "Un site ou un produit à repenser ?",
-    moreCta: "Discutons-en",
     closeBtn: "Fermer",
-    inspectBtn: "Lire l’étude de cas",
-    zoomHint: "Agrandir ↗",
     copied: "Copié !",
     stacks: {
       "Responsive UI": "UI réactive",
@@ -420,26 +348,14 @@ var NP_I18N = {
     }
   },
   ja: {
-    kicker: "厳選ワーク · 04 ケーススタディ",
-    navAria: "プロジェクトを選択",
-    stackAria: "使用技術",
-    shotAria: "画像を拡大表示",
     role: "フロントエンド & UIデザイン",
-    visit: "サイトを見る",
     nextLbl: "次へ：",
     closeTitle: "ディテールを見る",
     palTitle: "カラーシステム",
     palHint: "（クリックでHEXをコピー）",
     copyColor: "色をコピー",
     rowsTitle: "構成と仕様",
-    allTitle: "全プロジェクト一覧 (04)",
-    allSub: "4つの注目プロジェクトを比較し、ライブデモを直接開けます。",
-    moreNext: "次のプロジェクト",
-    moreQ: "リニューアルしたいページやプロダクトはありますか？",
-    moreCta: "お問い合わせ",
     closeBtn: "閉じる",
-    inspectBtn: "詳細を見る",
-    zoomHint: "拡大 ↗",
     copied: "コピー完了！",
     stacks: {
       "Responsive UI": "レスポンシブUI",
@@ -484,26 +400,14 @@ var NP_I18N = {
     }
   },
   ko: {
-    kicker: "주요 작품 · 04 케이스 스터디",
-    navAria: "프로젝트 선택",
-    stackAria: "사용 기술",
-    shotAria: "전체 크기로 보기",
     role: "프론트엔드 & UI 디자인",
-    visit: "사이트 보기",
     nextLbl: "다음:",
     closeTitle: "세부 살펴보기",
     palTitle: "컬러 시스템",
     palHint: "(클릭하여 HEX 복사)",
     copyColor: "색상 복사",
     rowsTitle: "페이지 구성 & 스펙",
-    allTitle: "전체 프로젝트 목록 (04)",
-    allSub: "네 가지 대표 프로젝트를 비교하거나 라이브 데모를 바로 열어보세요.",
-    moreNext: "다음 프로젝트",
-    moreQ: "새롭게 개편이 필요한 페이지나 제품이 있나요?",
-    moreCta: "문의하기",
     closeBtn: "닫기",
-    inspectBtn: "케이스 스터디 보기",
-    zoomHint: "크게 보기 ↗",
     copied: "복사됨!",
     stacks: {
       "Responsive UI": "반응형 UI",
@@ -1167,250 +1071,3 @@ window.ZK_PROJECTS = {
   URL: NP_URL,
   DEPOT: NP_DEPOT_I18N
 };
-
-var npIdx = 0;
-
-function initProjectSpatialStage() {
-  var root = document.querySelector('.pg.p5');
-  if (!root) return;
-  var $ = function (id) { return root.querySelector('#' + id); };
-  var nav = $('npNav'), view = $('npView'), nameEl = $('npName'), info = $('npInfo'), shot = $('npShot'), frame = $('npFrame'), dlg = $('npDlg');
-  if (!nav || !view || !nameEl) return;
-  var nwrap = root.querySelector('.nwrap');
-  nav.innerHTML = ''; view.innerHTML = '';
-  var cur = -1, z = 1;
-  var motionOK = matchMedia('(prefers-reduced-motion: no-preference)').matches;
-
-  function getLang() {
-    var l = (window.ZK && ZK.lang) || 'id';
-    return NP_I18N[l] ? l : 'id';
-  }
-  function getPack() {
-    return NP_I18N[getLang()] || NP_I18N.id;
-  }
-  function trStack(pack, chip) {
-    return (pack.stacks && pack.stacks[chip]) || chip;
-  }
-
-  NP_DATA.forEach(function (p, i) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'tab');
-    b.innerHTML = '<span class="np-tab-no">' + p.num + '</span><span>' + p.name + '</span>';
-    b.onclick = function () { go(i); };
-    nav.appendChild(b);
-    var m = document.createElement('img');
-    m.src = p.img;
-    m.alt = (getPack().projects[p.id] && getPack().projects[p.id].alt) || p.name;
-    m.decoding = 'async';
-    view.appendChild(m);
-  });
-
-  function watch() {
-    [].forEach.call(root.querySelectorAll('.np-rv:not(.in), .np-pal:not(.in)'), function (el) {
-      if (el.getBoundingClientRect().top < innerHeight * .95) el.classList.add('in');
-    });
-  }
-
-  function cropEl(c, p, capText) {
-    var rr = p.r.split('/'), W = +rr[0], H = +rr[1];
-    var f = document.createElement('figure');
-    f.className = 'np-cw' + (c.wide ? ' np-wide' : '');
-    f.innerHTML = '<div class="np-crop np-rv" style="aspect-ratio:' + (c.w * W) + '/' + (c.h * H) + '"><img alt="" decoding="async" src="' + p.img + '" style="width:' + (100 / c.w) + '%;left:' + (-c.x / c.w * 100) + '%;top:' + (-c.y / c.h * 100) + '%"></div><figcaption>' + capText + '</figcaption>';
-    return f;
-  }
-
-  function buildAllGrid(pack) {
-    var grid = $('npAllGrid');
-    if (!grid) return;
-    grid.innerHTML = NP_DATA.map(function (item, idx) {
-      var pOv = pack.projects[item.id];
-      var kindTxt = pOv ? pOv.kind : '';
-      var descTxt = pOv ? pOv.t[0] : '';
-      var activeCls = idx === cur ? ' is-current' : '';
-      return '<article class="np-all-card' + activeCls + '" style="--ca:' + item.a + '">' +
-        '<div class="np-all-thumb" data-pick="' + idx + '">' +
-          '<img src="' + item.img + '" alt="' + item.name + '" loading="lazy" decoding="async">' +
-          '<span class="np-all-no">' + item.num + '</span>' +
-        '</div>' +
-        '<div class="np-all-body">' +
-          '<div class="np-all-meta"><span>' + kindTxt + '</span><i>&bull;</i><span>' + item.year + '</span></div>' +
-          '<h4>' + item.name + '</h4>' +
-          '<p>' + descTxt + '</p>' +
-          '<div class="np-all-tags">' + item.stack.map(function (s) { return '<span>' + trStack(pack, s) + '</span>'; }).join('') + '</div>' +
-          '<div class="np-all-acts">' +
-            '<button type="button" class="np-all-pick" data-pick="' + idx + '">' + pack.inspectBtn + '</button>' +
-            '<a class="np-all-live" href="' + NP_URL[item.id] + '" target="_blank" rel="noopener noreferrer">' + pack.visit + ' &#8599;</a>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join('');
-    [].forEach.call(grid.querySelectorAll('[data-pick]'), function (el) {
-      el.onclick = function () {
-        var idx = parseInt(el.getAttribute('data-pick'), 10);
-        if (!isNaN(idx)) {
-          go(idx);
-          root.scrollTo({ top: 0, behavior: motionOK ? 'smooth' : 'auto' });
-        }
-      };
-    });
-  }
-
-  function build(p, nx, pack) {
-    var pOv = pack.projects[p.id];
-    var x = NP_X[p.id], box = $('npCrops');
-    box.innerHTML = '';
-    x.crops.forEach(function (c, idx) {
-      var cap = (pOv && pOv.crops && pOv.crops[idx]) || '';
-      box.appendChild(cropEl(c, p, cap));
-    });
-    if (nwrap) nwrap.setAttribute('dir', getLang() === 'ar' ? 'rtl' : 'ltr');
-    if (nav) nav.setAttribute('aria-label', pack.navAria);
-    if ($('npStack')) $('npStack').setAttribute('aria-label', pack.stackAria);
-    if (shot) shot.setAttribute('aria-label', pack.shotAria);
-    var zh = root.querySelector('.np-zoom-hint');
-    if (zh) zh.textContent = pack.zoomHint;
-    if ($('npKicker')) $('npKicker').textContent = pack.kicker;
-    if ($('npCloseTitle')) $('npCloseTitle').textContent = pack.closeTitle;
-    if ($('npPalTitle')) $('npPalTitle').innerHTML = pack.palTitle + ' <small class="np-pal-hint">' + pack.palHint + '</small>';
-    if ($('npRowsTitle')) $('npRowsTitle').textContent = pack.rowsTitle;
-    if ($('npAllTitle')) $('npAllTitle').textContent = pack.allTitle;
-    if ($('npAllSub')) $('npAllSub').textContent = pack.allSub;
-    if ($('npClose')) $('npClose').textContent = pack.closeBtn;
-
-    var palBox = $('npPal');
-    palBox.classList.remove('in');
-    palBox.innerHTML = x.pal.map(function (c, k) {
-      return '<button type="button" class="np-sw-btn" data-hex="' + c.toUpperCase() + '" aria-label="' + pack.copyColor + ' ' + c.toUpperCase() + '"><i style="--k:' + k + ';background:' + c + '"></i><span>' + c.toUpperCase() + '</span></button>';
-    }).join('');
-    [].forEach.call(palBox.querySelectorAll('.np-sw-btn'), function (btn) {
-      btn.onclick = function () {
-        var hex = btn.getAttribute('data-hex');
-        var sp = btn.querySelector('span');
-        var copiedTxt = getPack().copied;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(hex).catch(function () {});
-        }
-        if (sp) {
-          sp.textContent = copiedTxt;
-          btn.classList.add('copied');
-          setTimeout(function () { sp.textContent = hex; btn.classList.remove('copied'); }, 1400);
-        }
-      };
-    });
-
-    var rowsData = (pOv && pOv.rows) ? pOv.rows : [];
-    $('npRows').innerHTML = rowsData.map(function (r) {
-      return '<div><dt>' + r[0] + '</dt><dd>' + r[1].replace(/&/g, '&amp;') + '</dd></div>';
-    }).join('');
-    var mo = $('npMore');
-    mo.innerHTML = '<div><small>' + pack.moreNext + '</small><button type="button" class="np-nx2">' + nx.name + ' <span aria-hidden="true">\u2192</span></button></div><div class="np-cta-w"><p>' + pack.moreQ + '</p><button type="button" class="np-cta">' + pack.moreCta + '</button></div>';
-    mo.querySelector('.np-nx2').onclick = function () { go(cur + 1); root.scrollTo({ top: 0, behavior: motionOK ? 'smooth' : 'auto' }); };
-    mo.querySelector('.np-cta').onclick = function () { if (window.zkJumpPage) window.zkJumpPage(6); else if (window.zkGoPage) window.zkGoPage(1); };
-    buildAllGrid(pack);
-    setTimeout(watch, 80);
-  }
-
-  function fit() {
-    if (!nameEl.isConnected) return;
-    nameEl.style.removeProperty('font-size');
-  }
-
-  function go(i, force) {
-    i = (i + NP_DATA.length) % NP_DATA.length;
-    if (i === cur && !force) return;
-    cur = npIdx = i;
-    var p = NP_DATA[cur], nx = NP_DATA[(cur + 1) % NP_DATA.length];
-    var pack = getPack(), pOv = pack.projects[p.id];
-    root.style.setProperty('--a', p.a);
-    [].forEach.call(nav.children, function (b, k) { b.setAttribute('aria-selected', k === cur); });
-    view.style.aspectRatio = p.r;
-    [].forEach.call(view.children, function (imgEl, idx) {
-      var isAct = idx === cur;
-      imgEl.classList.toggle('is-active', isAct);
-      if (isAct) {
-        imgEl.style.zIndex = ++z;
-        imgEl.classList.remove('enter');
-        void imgEl.offsetWidth;
-        imgEl.classList.add('enter');
-      }
-    });
-    var h = '', k = 0;
-    p.name.split(' ').forEach(function (w) {
-      h += '<span class="np-w">';
-      w.split('').forEach(function (c) { h += '<span class="np-l"><i style="--k:' + (k++) + '">' + c + '</i></span>'; });
-      h += '</span>';
-    });
-    nameEl.innerHTML = h;
-    nameEl.setAttribute('aria-label', p.name);
-    var metaBar = $('npMetaBar');
-    if (metaBar) {
-      metaBar.innerHTML = '<span class="np-badge-num">' + p.num + ' / 04</span><span class="np-badge-role">' + pack.role + '</span><span class="np-badge-yr">' + p.year + '</span>';
-    }
-    var stackEl = $('npStack');
-    if (stackEl) {
-      stackEl.innerHTML = p.stack.map(function (s) { return '<span class="np-chip">' + trStack(pack, s) + '</span>'; }).join('');
-    }
-    var urlPill = $('npUrlPill');
-    if (urlPill) urlPill.textContent = p.domain;
-    var kindTxt = pOv ? pOv.kind : '';
-    var t0 = pOv ? pOv.t[0] : '';
-    var t1 = pOv ? pOv.t[1] : '';
-    info.innerHTML = '<h2>' + kindTxt + '</h2><p>' + t0 + '</p><p>' + t1 + '</p><div class="np-act-row"><a class="np-visit" href="' + NP_URL[p.id] + '" target="_blank" rel="noopener noreferrer">' + pack.visit + ' <span aria-hidden="true">\u2197</span></a><button type="button" class="np-next" id="npNx">' + pack.nextLbl + ' ' + nx.name + ' \u2192</button></div>';
-    $('npNx').onclick = function () { go(cur + 1); };
-    $('npBig').src = p.img;
-    $('npBig').alt = (pOv && pOv.alt) || p.name;
-    build(p, nx, pack);
-    fit();
-  }
-
-  go(npIdx, true);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-  setTimeout(fit, 350);
-  if (!window.__npResize) {
-    window.__npResize = true;
-    window.addEventListener('zk-lang', function () {
-      if (document.querySelector('.pg.p5')) initProjectSpatialStage();
-    });
-  }
-
-  if (motionOK && matchMedia('(pointer: fine)').matches) {
-    shot.onpointermove = function (e) {
-      var rect = shot.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      var nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      var ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      frame.style.setProperty('--ry', (nx * 4.5).toFixed(2) + 'deg');
-      frame.style.setProperty('--rx', (-ny * 3.5).toFixed(2) + 'deg');
-    };
-    shot.onpointerleave = function () {
-      frame.style.setProperty('--ry', '0deg');
-      frame.style.setProperty('--rx', '0deg');
-    };
-  }
-
-  var tk = 0;
-  var sc = function () {
-    tk = 0;
-    var h = root.scrollHeight - root.clientHeight, pr = $('npProg');
-    watch();
-    if (pr) pr.style.setProperty('--pr', h > 0 ? (root.scrollTop / h).toFixed(4) : 0);
-    if (motionOK) {
-      var r = shot.getBoundingClientRect(), t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * .9)));
-      frame.style.setProperty('--sc', (.95 + .05 * t).toFixed(3));
-    }
-  };
-  root.onscroll = function () { if (!tk) tk = requestAnimationFrame(sc); };
-  sc();
-  var sx = null, mv = false;
-  shot.onpointerdown = function (e) { sx = e.clientX; mv = false; };
-  shot.onpointerup = function (e) {
-    if (sx === null) return;
-    var d = e.clientX - sx;
-    sx = null;
-    if (Math.abs(d) > 50) { mv = true; go(cur + (d < 0 ? 1 : -1)); }
-  };
-  shot.onclick = function () { if (mv) { mv = false; return; } if (dlg.showModal) dlg.showModal(); };
-  $('npClose').onclick = function () { dlg.close(); };
-  dlg.onclick = function (e) { if (e.target === dlg || e.target.id === 'npBig') dlg.close(); };
-}
