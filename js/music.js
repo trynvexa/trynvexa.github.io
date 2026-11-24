@@ -22,6 +22,63 @@ var TRACKS=[
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 var au=new Audio(),cur=-1,ol=null,pg=null,bg=null,sim=false,simT=0,raf=0,rot=0,vel=0,last=0,cv=null,cx=null,P=[],np=null;au.preload="none";
 var synthOn=true,actx=null,synthTimer=0,stepIdx=0;
+var analyser=null,mediaSrc=null,freqBuf=null,vizBins=new Float32Array(64);
+function ensureAnalyser(){
+  if(analyser||sim)return;
+  if(location.protocol==="file:")return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==="suspended")actx.resume();
+    if(!mediaSrc){
+      mediaSrc=actx.createMediaElementSource(au);
+      analyser=actx.createAnalyser();
+      analyser.fftSize=128;
+      analyser.smoothingTimeConstant=0.78;
+      mediaSrc.connect(analyser);
+      analyser.connect(actx.destination);
+      freqBuf=new Uint8Array(analyser.frequencyBinCount);
+    }
+  }catch(e){analyser=null;}
+}
+function getAudioState(t){
+  var run=running(),tr=cur>=0?TRACKS[cur]:null,bpm=(tr&&tr.bpm)||120;
+  var accPair=ACC[(cur>=0?cur:0)%ACC.length];
+  var bass=0,mid=0,treble=0,hasSignal=false;
+  if(run&&analyser&&freqBuf&&!sim){
+    try{
+      analyser.getByteFrequencyData(freqBuf);
+      var n=freqBuf.length,sum=0;
+      for(var s=0;s<n;s++)sum+=freqBuf[s];
+      if(sum>24){
+        hasSignal=true;
+        for(var i=0;i<vizBins.length;i++){
+          vizBins[i]=freqBuf[i%n]/255;
+        }
+        for(var b=0;b<6;b++)bass+=freqBuf[b]/255;
+        bass/=6;
+        for(var m=6;m<22;m++)mid+=freqBuf[m]/255;
+        mid/=16;
+        for(var h=22;h<n;h++)treble+=freqBuf[h]/255;
+        treble/=Math.max(1,n-22);
+      }
+    }catch(e){}
+  }
+  if(run&&!hasSignal){
+    var beatPhase=(t*(bpm/60))%1;
+    var kick=Math.pow(Math.max(0,1-beatPhase*2.6),2);
+    bass=0.22+kick*0.68;
+    mid=0.18+Math.abs(Math.sin(t*3.8))*0.45;
+    treble=0.14+Math.abs(Math.cos(t*6.2))*0.35;
+    for(var k=0;k<vizBins.length;k++){
+      var wave=0.5+0.5*Math.sin(t*5.2+k*0.42);
+      vizBins[k]=Math.min(1,0.12+kick*0.45*(1-k/64)+wave*0.36);
+    }
+  }else if(!run){
+    for(var z=0;z<vizBins.length;z++)vizBins[z]*=0.88;
+  }
+  return {playing:run,sim:sim,bpm:bpm,rot:rot,cur:cur,acc:accPair[0],acc2:accPair[1],bass:bass,mid:mid,treble:treble,bins:vizBins};
+}
+window.__zkMusicAudio={getState:getAudioState};
 function stopSynth(){
   if(synthTimer){clearInterval(synthTimer);synthTimer=0;}
 }
@@ -83,6 +140,7 @@ function fallbackToStudio(){
   sim=true;syncSynth();mark();
 }
 function go(){
+  ensureAnalyser();
   var pr;try{pr=au.play();}catch(e){fallbackToStudio();return;}
   if(pr&&pr.catch)pr.catch(function(e){if(e&&e.name==="AbortError")return;fallbackToStudio();});
 }
@@ -94,7 +152,10 @@ function mark(){
   if(np){
     np.classList.toggle("go",run);
     var kk=np.querySelector(".npk");
-    if(kk)kk.textContent=run?"Sedang diputar":(cur>=0?"Dijeda":"Pemutar");
+    if(kk){
+      kk.textContent=run?"Sedang diputar":(cur>=0?"Dijeda":"Pemutar");
+      if(window.ZK&&ZK.walk)ZK.walk(kk);
+    }
   }
   [].forEach.call(ol.children,function(li,i){var b=li.firstChild;
     if(i===cur)b.setAttribute("aria-current","true");else{b.removeAttribute("aria-current");b.style.removeProperty("--p");}

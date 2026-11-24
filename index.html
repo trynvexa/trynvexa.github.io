@@ -25,7 +25,7 @@
 <link rel="apple-touch-icon" href="assets/images/favicon-192x192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Serif:ital@0;1&family=Pixelify+Sans:wght@400..700&family=Noto+Serif+KR:wght@400&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Serif:ital@0;1&family=Pixelify+Sans:wght@400..700&family=Inter:wght@600&family=Inter+Tight:wght@100..900&family=Caveat+Brush&family=Anton&family=Noto+Serif+KR:wght@400&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -48,10 +48,13 @@
 }
 </script>
 <script>if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro-on");</script>
-<link rel="stylesheet" href="css/base.css?v=370">
-<link rel="stylesheet" href="css/layout.css?v=370">
-<link rel="stylesheet" href="css/pages.css?v=370">
-<link rel="stylesheet" href="css/theme.css?v=370">
+<link rel="stylesheet" href="css/base.css?v=380">
+<link rel="stylesheet" href="css/layout.css?v=380">
+<link rel="stylesheet" href="css/pages.css?v=380">
+<link rel="stylesheet" href="css/theme.css?v=380">
+<link rel="stylesheet" href="css/motion3d.css?v=381">
+<link rel="stylesheet" href="css/me-dive.css?v=386">
+<link rel="stylesheet" href="css/runway.css?v=393">
 </head>
 <body>
 <noscript><p style="font:16px/1.5 system-ui,sans-serif;padding:24px;max-width:520px">Portofolio M. Zikri Al-Bukhori membutuhkan JavaScript. Aktifkan JavaScript di peramban Anda untuk melihatnya.</p></noscript>
@@ -113,6 +116,7 @@
     <div class="bg-slide" id="bgSlideB"></div>
   </div>
   <canvas id="bgField" class="bg-field"></canvas>
+  <canvas id="bgWebgl" class="bg-webgl"></canvas>
   <i></i><i></i><i></i>
 </div>
 
@@ -203,7 +207,7 @@
     <svg class="ring" id="ring" aria-hidden="true"></svg>
     <div class="mk" id="mk">
       <b>&#9650;</b>
-      <span id="nm">ME</span>
+      <span id="nm" data-i18n-own="1">ME</span>
     </div>
   </div>
 </main>
@@ -276,22 +280,37 @@
     <img class="portrait-img" alt="Potret berjaket hitam dikelilingi koran yang beterbangan" draggable="false" decoding="async" src="assets/images/card-contact.webp">
     <em class="lb">Kontak</em>
   </button>
+
+  <!-- 7: Fashion (3D Runway — Personal Collection) -->
+  <button class="card photo runwayphoto" data-n="Fashion" aria-label="Buka kartu Fashion">
+    <s class="gr"></s><s class="gl"></s><s class="dim"></s>
+    <i class="ht"></i>
+    <img class="portrait-img" alt="Fashion — Koleksi Gaya Zikri" draggable="false" decoding="async" src="assets/runway/card-runway.webp">
+    <em class="lb">Fashion</em>
+  </button>
 </template>
 
 <!-- Modular Application Scripts -->
-<script src="js/intro.js?v=370" defer></script>
-<script src="js/theme.js?v=370" defer></script>
-<script src="js/clock.js?v=370" defer></script>
-<script src="js/mascot.js?v=370" defer></script>
-<script src="js/buddy.js?v=370" defer></script>
-<script src="js/i18n.js?v=370" defer></script>
-<script src="js/skills.js?v=370" defer></script>
-<script src="js/gallery.js?v=370" defer></script>
-<script src="js/music.js?v=370" defer></script>
-<script src="js/story.js?v=370" defer></script>
-<script src="js/contact.js?v=370" defer></script>
-<script src="js/projects.js?v=370" defer></script>
-<script src="js/carousel.js?v=370" defer></script>
-<script src="js/background.js?v=370" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" defer></script>
+<script src="js/intro.js?v=380" defer></script>
+<script src="js/theme.js?v=380" defer></script>
+<script src="js/clock.js?v=380" defer></script>
+<script src="js/mascot.js?v=380" defer></script>
+<script src="js/buddy.js?v=390" defer></script>
+<script src="js/i18n.js?v=393" defer></script>
+<script src="js/skills.js?v=393" defer></script>
+<script src="js/gallery.js?v=393" defer></script>
+<script src="js/music.js?v=393" defer></script>
+<script src="js/story.js?v=393" defer></script>
+<script src="js/contact.js?v=393" defer></script>
+<script src="js/projects.js?v=393" defer></script>
+<script src="js/runway-data.js?v=393" defer></script>
+<script src="js/carousel.js?v=393" defer></script>
+<script src="js/background.js?v=393" defer></script>
+<script src="js/motion3d.js?v=390" defer></script>
+<script src="js/webgl-scenes.js?v=381" defer></script>
+<script src="js/page-enhancers.js?v=393" defer></script>
+<script src="js/me-dive.js?v=393" defer></script>
+<script src="js/runway.js?v=393" defer></script>
 </body>
 </html>

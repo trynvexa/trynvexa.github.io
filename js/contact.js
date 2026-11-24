@@ -17,7 +17,7 @@
     loc: {id:"MEDAN, INDONESIA — WIB", en:"MEDAN, INDONESIA — WIB", zh:"印尼棉兰 — WIB", es:"MEDAN, INDONESIA — WIB", ar:"ميدان، إندونيسيا — WIB", fr:"MEDAN, INDONÉSIE — WIB", ja:"インドネシア・メダン — WIB", ko:"인도네시아 메단 — WIB"},
     h1: {id:"ADA PROYEK?", en:"GOT A PROJECT?", zh:"有项目?", es:"¿TIENES UN PROYECTO?", ar:"لديك مشروع؟", fr:"UN PROJET ?", ja:"プロジェクトありますか？", ko:"프로젝트가 있나요?"},
     h2: {id:"Mari bicara.", en:"Let’s talk.", zh:"聊聊吧。", es:"Hablemos.", ar:"لنتحدث.", fr:"Parlons-en.", ja:"話しましょう。", ko:"이야기해요."},
-    p: {id:"Freelance, kolaborasi, atau sekadar bertukar pikiran soal web dan desain — semuanya terbuka. Ceritakan idemu, sekecil apa pun.", en:"Freelance work, collaboration, or just a chat about web and design — all welcome. Tell me your idea, however small.", zh:"自由职业、合作，或者只是聊聊网页与设计——全都欢迎。把你的想法告诉我，再小也可以。", es:"Trabajo freelance, colaboración o simplemente una charla sobre web y diseño: todo es bienvenido. Cuéntame tu idea, por pequeña que sea.", ar:"عمل حر، تعاون، أو مجرد حديث عن الويب والتصميم — كل ذلك مرحّب به. أخبرني بفكرتك، مهما كانت صغيرة.", fr:"Mission freelance, collaboration ou simple échange autour du web et du design — tout est bienvenu. Racontez-moi votre idée, même la plus petite.", ja:"フリーランスの仕事、コラボレーション、ウェブやデザインの雑談まで、すべて歓迎です。小さなアイデアでも聞かせてください。", ko:"프리랜스 작업, 협업, 또는 웹과 디자인에 대한 가벼운 대화까지 모두 환영합니다. 작은 아이디어라도 들려주세요."},
+    p: {id:"Kerja lepas, kolaborasi, atau sekadar bertukar pikiran soal web dan desain — semuanya terbuka. Ceritakan idemu, sekecil apa pun.", en:"Freelance work, collaboration, or just a chat about web and design — all welcome. Tell me your idea, however small.", zh:"自由职业、合作，或者只是聊聊网页与设计——全都欢迎。把你的想法告诉我，再小也可以。", es:"Trabajo freelance, colaboración o simplemente una charla sobre web y diseño: todo es bienvenido. Cuéntame tu idea, por pequeña que sea.", ar:"عمل حر، تعاون، أو مجرد حديث عن الويب والتصميم — كل ذلك مرحّب به. أخبرني بفكرتك، مهما كانت صغيرة.", fr:"Mission freelance, collaboration ou simple échange autour du web et du design — tout est bienvenu. Racontez-moi votre idée, même la plus petite.", ja:"フリーランスの仕事、コラボレーション、ウェブやデザインの雑談まで、すべて歓迎です。小さなアイデアでも聞かせてください。", ko:"프리랜스 작업, 협업, 또는 웹과 디자인에 대한 가벼운 대화까지 모두 환영합니다. 작은 아이디어라도 들려주세요."},
     status: {id:"Sedang menerima proyek", en:"Currently taking projects", zh:"正在接项目", es:"Aceptando proyectos", ar:"أستقبل مشاريع حاليًا", fr:"Disponible pour des projets", ja:"プロジェクト受付中", ko:"프로젝트 받는 중"},
     send: {id:"TULIS EMAIL", en:"WRITE AN EMAIL", zh:"写邮件", es:"ESCRIBIR UN CORREO", ar:"اكتب بريدًا", fr:"ÉCRIRE UN E-MAIL", ja:"メールを書く", ko:"이메일 쓰기"},
     find: {id:"TERBIT JUGA DI", en:"ALSO PUBLISHED ON", zh:"也发布在", es:"TAMBIÉN PUBLICADO EN", ar:"أنشر أيضًا على", fr:"AUSSI PUBLIÉ SUR", ja:"こちらでも発信中", ko:"여기서도 활동해요"},
@@ -25,7 +25,7 @@
     quote: {id:"“Terlalu banyak ide, terlalu sedikit waktu. Mari mulai dari milikmu.”", en:"“Too many ideas, too little time. Let’s start with yours.”", zh:"“想法太多，时间太少。从你的开始吧。”", es:"“Demasiadas ideas, muy poco tiempo. Empecemos por la tuya.”", ar:"«أفكار كثيرة ووقت قليل. لنبدأ بفكرتك.»", fr:"« Trop d’idées, trop peu de temps. Commençons par la vôtre. »", ja:"「アイデアは多く、時間は少ない。あなたのアイデアから始めましょう。」", ko:"“아이디어는 많고 시간은 부족하니까. 당신의 아이디어부터 시작해요.”"},
     attrib: {id:"— Zikri, Medan", en:"— Zikri, Medan", zh:"— Zikri，棉兰", es:"— Zikri, Medan", ar:"— زكري، ميدان", fr:"— Zikri, Medan", ja:"— ズィクリ、メダン", ko:"— 지크리, 메단"},
     role: {id:"Front-End Developer · UI Designer", en:"Front-End Developer · UI Designer", zh:"前端开发者 · UI 设计师", es:"Desarrollador Front-End · Diseñador UI", ar:"مطوّر واجهات أمامية · مصمم واجهات", fr:"Développeur Front-End · Designer UI", ja:"フロントエンド開発者 · UIデザイナー", ko:"프론트엔드 개발자 · UI 디자이너"},
-    ticker: {id:"ADA PROYEK? • FREELANCE • KOLABORASI • FRONT-END • UI DESIGN • MEDAN, INDONESIA • BALAS <24 JAM •", en:"GOT A PROJECT? • FREELANCE • COLLABORATION • FRONT-END • UI DESIGN • MEDAN, INDONESIA • REPLIES <24H •", zh:"有项目? • 自由职业 • 合作 • 前端 • UI 设计 • 印尼棉兰 • 24 小时内回复 •", es:"¿TIENES UN PROYECTO? • FREELANCE • COLABORACIÓN • FRONT-END • DISEÑO UI • MEDAN, INDONESIA • RESPUESTA <24 H •", ar:"لديك مشروع؟ • عمل حر • تعاون • واجهات أمامية • تصميم واجهات • ميدان، إندونيسيا • رد خلال 24 ساعة •", fr:"UN PROJET ? • FREELANCE • COLLABORATION • FRONT-END • DESIGN UI • MEDAN, INDONÉSIE • RÉPONSE <24 H •", ja:"プロジェクトありますか？ • フリーランス • コラボレーション • フロントエンド • UIデザイン • インドネシア・メダン • 24時間以内に返信 •", ko:"프로젝트가 있나요? • 프리랜스 • 협업 • 프론트엔드 • UI 디자인 • 인도네시아 메단 • 24시간 내 답장 •"},
+    ticker: {id:"ADA PROYEK? • KERJA LEPAS • KOLABORASI • FRONT-END • DESAIN UI • MEDAN, INDONESIA • BALAS <24 JAM •", en:"GOT A PROJECT? • FREELANCE • COLLABORATION • FRONT-END • UI DESIGN • MEDAN, INDONESIA • REPLIES <24H •", zh:"有项目? • 自由职业 • 合作 • 前端 • UI 设计 • 印尼棉兰 • 24 小时内回复 •", es:"¿TIENES UN PROYECTO? • FREELANCE • COLABORACIÓN • FRONT-END • DISEÑO UI • MEDAN, INDONESIA • RESPUESTA <24 H •", ar:"لديك مشروع؟ • عمل حر • تعاون • واجهات أمامية • تصميم واجهات • ميدان، إندونيسيا • رد خلال 24 ساعة •", fr:"UN PROJET ? • FREELANCE • COLLABORATION • FRONT-END • DESIGN UI • MEDAN, INDONÉSIE • RÉPONSE <24 H •", ja:"プロジェクトありますか？ • フリーランス • コラボレーション • フロントエンド • UIデザイン • インドネシア・メダン • 24時間以内に返信 •", ko:"프로젝트가 있나요? • 프리랜스 • 협업 • 프론트엔드 • UI 디자인 • 인도네시아 메단 • 24시간 내 답장 •"},
     vtick: {id:"EDISI 06 • POTRET • ZIKRI • MEDAN • 2026 •", en:"EDITION 06 • PORTRAIT • ZIKRI • MEDAN • 2026 •", zh:"第 06 期 • 肖像 • ZIKRI • 棉兰 • 2026 •", es:"EDICIÓN 06 • RETRATO • ZIKRI • MEDAN • 2026 •", ar:"العدد 06 • صورة • زكري • ميدان • 2026 •", fr:"ÉDITION 06 • PORTRAIT • ZIKRI • MEDAN • 2026 •", ja:"第06号 • ポートレート • ズィクリ • メダン • 2026 •", ko:"에디션 06 • 포트레이트 • 지크리 • 메단 • 2026 •"},
     alt: {id:"Zikri di antara lembaran koran yang beterbangan", en:"Zikri among flying sheets of newspaper", zh:"Zikri 置身于飞舞的报纸之间", es:"Zikri entre hojas de periódico al vuelo", ar:"زكري بين أوراق صحف متطايرة", fr:"Zikri parmi des feuilles de journal qui s’envolent", ja:"舞い散る新聞紙の中に立つズィクリ", ko:"신문지가 날리는 가운데 서 있는 지크리"},
     fast: {id:"RESPONS CEPAT", en:"FAST RESPONSE", zh:"快速响应", es:"RESPUESTA RÁPIDA", ar:"استجابة سريعة", fr:"RÉPONSE RAPIDE", ja:"迅速な対応", ko:"빠른 응답"},
@@ -38,8 +38,43 @@
     compWa: {id:"Kirim ke WhatsApp ↗", en:"Send to WhatsApp ↗", zh:"发送到 WhatsApp ↗", es:"Enviar a WhatsApp ↗", ar:"إرسال عبر واتساب ↗", fr:"Envoyer sur WhatsApp ↗", ja:"WhatsAppで送信 ↗", ko:"WhatsApp으로 보내기 ↗"},
     compMail: {id:"Kirim via Email ↗", en:"Send via Email ↗", zh:"通过邮件发送 ↗", es:"Enviar por Correo ↗", ar:"إرسال عبر البريد ↗", fr:"Envoyer par E-mail ↗", ja:"メールで送信 ↗", ko:"이메일로 보내기 ↗"},
     tWeb: {id:"Proyek Web", en:"Web Project", zh:"网站项目", es:"Proyecto Web", ar:"مشروع ويب", fr:"Projet Web", ja:"Web制作", ko:"웹 프로젝트"},
-    tUi: {id:"UI/UX Design", en:"UI/UX Design", zh:"UI/UX 设计", es:"Diseño UI/UX", ar:"تصميم UI/UX", fr:"Design UI/UX", ja:"UI/UXデザイン", ko:"UI/UX 디자인"},
-    tCollab: {id:"Kolaborasi", en:"Collaboration", zh:"创意合作", es:"Colaboración", ar:"تعاون", fr:"Collaboration", ja:"コラボ", ko:"협업"}
+    tUi: {id:"Desain UI/UX", en:"UI/UX Design", zh:"UI/UX 设计", es:"Diseño UI/UX", ar:"تصميم UI/UX", fr:"Design UI/UX", ja:"UI/UXデザイン", ko:"UI/UX 디자인"},
+    tCollab: {id:"Kolaborasi", en:"Collaboration", zh:"创意合作", es:"Colaboración", ar:"تعاون", fr:"Collaboration", ja:"コラボ", ko:"협업"},
+    copyMailAria: {id:"Salin alamat email", en:"Copy email address", zh:"复制邮箱地址", es:"Copiar dirección de correo", ar:"نسخ عنوان البريد الإلكتروني", fr:"Copier l’adresse e-mail", ja:"メールアドレスをコピー", ko:"이메일 주소 복사"},
+    topicAria: {id:"Pilih topik diskusi", en:"Choose discussion topic", zh:"选择讨论主题", es:"Elegir tema de conversación", ar:"اختر موضوع النقاش", fr:"Choisir le sujet", ja:"相談トピックを選択", ko:"문의 주제 선택"},
+    passAria: {id:"Kartu Identitas 3D Interaktif M. Zikri (Geser untuk memutar)", en:"Interactive 3D Identity Card of M. Zikri (Drag to rotate)", zh:"M. Zikri 3D 交互身份卡（拖动旋转）", es:"Tarjeta de identidad 3D interactiva de M. Zikri (Arrastra para girar)", ar:"بطاقة الهوية التفاعلية ثلاثية الأبعاد لـ M. Zikri (اسحب للتدوير)", fr:"Carte d’identité 3D interactive de M. Zikri (Glisser pour pivoter)", ja:"M. Zikri インタラクティブ3D IDカード（ドラッグで回転）", ko:"M. Zikri 인터랙티브 3D ID 카드 (드래그하여 회전)"},
+    passKicker: {id:"EDISI 06 • KARTU AKSES", en:"EDITION 06 • DEV PASS", zh:"第 06 期 • 开发者通行证", es:"EDICIÓN 06 • PASE DEV", ar:"العدد 06 • بطاقة مطوّر", fr:"ÉDITION 06 • PASS DEV", ja:"第06号 • 開発者パス", ko:"에디션 06 • 개발자 패스"},
+    passSubkicker: {id:"MEDAN, ID (WIB)", en:"MEDAN, ID (WIB)", zh:"印尼棉兰 (WIB)", es:"MEDAN, ID (WIB)", ar:"ميدان، إندونيسيا (WIB)", fr:"MEDAN, ID (WIB)", ja:"インドネシア・メダン (WIB)", ko:"인도네시아 메단 (WIB)"},
+    passClearance: {id:"AKSES PENUH", en:"ALL-ACCESS", zh:"全权限通行", es:"ACCESO TOTAL", ar:"دخول شامل", fr:"ACCÈS TOTAL", ja:"全アクセス", ko:"전체 액세스"},
+    passVerified: {id:"TERVERIFIKASI", en:"VERIFIED", zh:"已认证", es:"VERIFICADO", ar:"موثّق", fr:"VÉRIFIÉ", ja:"認証済み", ko:"인증됨"},
+    passAuth: {id:"RESMI", en:"AUTH", zh:"认证", es:"OFICIAL", ar:"معتمد", fr:"AUTH", ja:"認証", ko:"공식"},
+    passRole: {id:"PENGEMBANG FRONT-END • DESAINER UI", en:"FRONT-END DEVELOPER • UI DESIGNER", zh:"前端开发者 • UI 设计师", es:"DESARROLLADOR FRONT-END • DISEÑADOR UI", ar:"مطوّر واجهات أمامية • مصمم UI", fr:"DÉVELOPPEUR FRONT-END • DESIGNER UI", ja:"フロントエンド開発者 • UIデザイナー", ko:"프론트엔드 개발자 • UI 디자이너"},
+    specInst: {id:"INSTITUSI", en:"SCHOOL", zh:"学校", es:"INSTITUCIÓN", ar:"المؤسسة", fr:"ÉCOLE", ja:"所属校", ko:"소속 학교"},
+    specPkl: {id:"UNIT PKL", en:"INTERNSHIP", zh:"实习单位", es:"PRÁCTICAS", ar:"التدريب", fr:"STAGE", ja:"実習先", ko:"실습 기관"},
+    specBase: {id:"BASIS", en:"BASE", zh:"所在地", es:"BASE", ar:"المقر", fr:"BASE", ja:"拠点", ko:"거점"},
+    specMedan: {id:"MEDAN (WIB)", en:"MEDAN (WIB)", zh:"棉兰 (WIB)", es:"MEDAN (WIB)", ar:"ميدان (WIB)", fr:"MEDAN (WIB)", ja:"メダン (WIB)", ko:"메단 (WIB)"},
+    passEmailLbl: {id:"Surel", en:"Email", zh:"电子邮箱", es:"Correo", ar:"البريد الإلكتروني", fr:"E-mail", ja:"メール", ko:"이메일"},
+    passFlipBack: {id:"BALIK KARTU • SPEK & SOSIAL", en:"FLIP CARD • SPECS & SOCIALS", zh:"翻转卡片 • 规格与社交", es:"GIRAR TARJETA • DATOS Y REDES", ar:"اقلب البطاقة • المواصفات والتواصل", fr:"RETOURNER • SPECS & RÉSEAUX", ja:"裏面を見る • スペック＆SNS", ko:"카드 뒤집기 • 스펙 & 소셜"},
+    passFlipBackAria: {id:"Balikkan kartu ke sisi belakang", en:"Flip the card to its back side", zh:"将卡片翻到背面", es:"Girar la tarjeta al reverso", ar:"اقلب البطاقة إلى الوجه الخلفي", fr:"Retourner la carte côté verso", ja:"カードを裏面に返す", ko:"카드를 뒷면으로 뒤집기"},
+    passSig: {id:"TANDA TANGAN RESMI • TIDAK DAPAT DIPINDAHTANGANKAN", en:"AUTHORIZED SIGNATURE • NOT TRANSFERABLE", zh:"授权签名 • 不可转让", es:"FIRMA AUTORIZADA • INTRANSFERIBLE", ar:"توقيع معتمد • غير قابل للتحويل", fr:"SIGNATURE AUTORISÉE • NON TRANSFÉRABLE", ja:"公式署名 • 譲渡不可", ko:"공식 서명 • 양도 불가"},
+    passSec: {id:"KODE", en:"SEC", zh:"安全码", es:"SEG", ar:"الأمان", fr:"SÉC", ja:"コード", ko:"보안"},
+    passNetTitle: {id:"JARINGAN & KODE SUMBER", en:"NETWORK & SOURCE CODE", zh:"社交与代码仓库", es:"REDES Y CÓDIGO FUENTE", ar:"الشبكات والشيفرة المصدرية", fr:"RÉSEAUX & CODE SOURCE", ja:"ネットワーク＆ソースコード", ko:"네트워크 & 소스 코드"},
+    passNetTag: {id:"TERHUBUNG", en:"CONNECTED", zh:"已连接", es:"CONECTADO", ar:"متصل", fr:"CONNECTÉ", ja:"接続済み", ko:"연결됨"},
+    socGhSub: {id:"@trynvexa • Repositori Kode", en:"@trynvexa • Code Repositories", zh:"@trynvexa • 代码仓库", es:"@trynvexa • Repositorios", ar:"@trynvexa • مستودعات الكود", fr:"@trynvexa • Dépôts de code", ja:"@trynvexa • コードリポジトリ", ko:"@trynvexa • 코드 저장소"},
+    socIgSub: {id:"@yo144484 • Visual & Desain", en:"@yo144484 • Visuals & Design", zh:"@yo144484 • 视觉与设计", es:"@yo144484 • Visual y diseño", ar:"@yo144484 • البصريات والتصميم", fr:"@yo144484 • Visuels & Design", ja:"@yo144484 • ビジュアル＆デザイン", ko:"@yo144484 • 비주얼 & 디자인"},
+    socTtSub: {id:"@frince_nael7 • Konten Kreatif", en:"@frince_nael7 • Creative Content", zh:"@frince_nael7 • 创意内容", es:"@frince_nael7 • Contenido creativo", ar:"@frince_nael7 • محتوى إبداعي", fr:"@frince_nael7 • Contenu créatif", ja:"@frince_nael7 • クリエイティブ発信", ko:"@frince_nael7 • 크리에이티브 콘텐츠"},
+    passBuild: {id:"MESIN BANGUN", en:"BUILD ENGINE", zh:"构建引擎", es:"MOTOR DE CREACIÓN", ar:"محرك البناء", fr:"MOTEUR DE BUILD", ja:"ビルド構成", ko:"빌드 엔진"},
+    passProd: {id:"UNIT PRODUKSI", en:"PROD UNIT", zh:"实习团队", es:"UNIDAD PROD.", ar:"وحدة الإنتاج", fr:"UNITÉ PROD.", ja:"実務ユニット", ko:"실무 유닛"},
+    passProdVal: {id:"PKL DIGITALCODE 2026", en:"DIGITALCODE INTERNSHIP 2026", zh:"DIGITALCODE 实习 2026", es:"PRÁCTICAS DIGITALCODE 2026", ar:"تدريب DIGITALCODE 2026", fr:"STAGE DIGITALCODE 2026", ja:"DIGITALCODE 実習 2026", ko:"DIGITALCODE 실습 2026"},
+    passFlipFront: {id:"KEMBALI KE SISI DEPAN", en:"BACK TO FRONT SIDE", zh:"返回正面", es:"VOLVER AL ANVERSO", ar:"العودة إلى الوجه الأمامي", fr:"RETOUR AU RECTO", ja:"表面へ戻る", ko:"앞면으로 돌아가기"},
+    passFlipFrontAria: {id:"Balikkan kartu ke sisi depan", en:"Flip the card to its front side", zh:"将卡片翻到正面", es:"Girar la tarjeta al anverso", ar:"اقلب البطاقة إلى الوجه الأمامي", fr:"Retourner la carte côté recto", ja:"カードを表面に返す", ko:"카드를 앞면으로 뒤집기"},
+    greet: {id:"Halo Zikri, saya ", en:"Hi Zikri, I'm ", zh:"你好 Zikri，我是", es:"Hola Zikri, soy ", ar:"مرحبًا زكري، أنا ", fr:"Bonjour Zikri, je suis ", ja:"こんにちはZikriさん、", ko:"안녕하세요 지크리님, 저는 "},
+    guest: {id:"pengunjung portofolio Anda", en:"a visitor from your portfolio", zh:"来自您作品集的访客", es:"un visitante de tu portafolio", ar:"زائر لمعرض أعمالك", fr:"un visiteur de votre portfolio", ja:"ポートフォリオを見た者です", ko:"포트폴리오 방문자입니다"},
+    topicLbl: {id:"Topik: ", en:"Topic: ", zh:"主题：", es:"Tema: ", ar:"الموضوع: ", fr:"Sujet : ", ja:"トピック：", ko:"주제: "},
+    msgLbl: {id:"Pesan: ", en:"Message: ", zh:"留言：", es:"Mensaje: ", ar:"الرسالة: ", fr:"Message : ", ja:"メッセージ：", ko:"메시지: "},
+    defaultBody: {id:"Saya tertarik berdiskusi mengenai proyek / kolaborasi.", en:"I'd love to discuss a project or collaboration.", zh:"我希望与您探讨项目或合作事宜。", es:"Me gustaría conversar sobre un proyecto o colaboración.", ar:"أود مناقشة مشروع أو فرصة تعاون معك.", fr:"Je souhaite discuter d’un projet ou d’une collaboration.", ja:"プロジェクトやコラボについて相談したいです。", ko:"프로젝트나 협업에 대해 이야기 나누고 싶습니다."},
+    subjFrom: {id:"Dari ", en:"From ", zh:"来自 ", es:"De ", ar:"من ", fr:"De ", ja:"差出人：", ko:"보낸 이: "},
+    subjDefault: {id:"Pesan dari Portofolio", en:"Message from Portfolio", zh:"来自作品集的留言", es:"Mensaje desde el Portafolio", ar:"رسالة من معرض الأعمال", fr:"Message depuis le Portfolio", ja:"ポートフォリオからの連絡", ko:"포트폴리오 문의"}
   };
   function lang(){ return (window.ZK && ZK.lang) || "id"; }
   function word(k){ var d = DICT[k]; return d ? (d[lang()] || d.id) : ""; }
@@ -405,14 +440,12 @@
     }
     var comp = root.querySelector(".pr-composer");
     if (!comp) return;
-    var activeTopic = "Proyek Web";
     var pills = comp.querySelectorAll(".prc-topic");
     [].forEach.call(pills, function(p) {
       p.addEventListener("click", function() {
         [].forEach.call(pills, function(x) { x.classList.remove("on"); x.setAttribute("aria-pressed", "false"); });
         p.classList.add("on");
         p.setAttribute("aria-pressed", "true");
-        activeTopic = p.textContent.trim();
       });
     });
     var nameIn = comp.querySelector("#prcName");
@@ -420,13 +453,15 @@
     var waBtn = comp.querySelector("#prcWaBtn");
     var mailBtn = comp.querySelector("#prcMailBtn");
     function buildMessage() {
+      var onPill = comp.querySelector(".prc-topic.on");
+      var topicText = onPill ? onPill.textContent.trim() : word("tWeb");
       var nm = (nameIn && nameIn.value.trim()) ? nameIn.value.trim() : "";
       var ms = (msgIn && msgIn.value.trim()) ? msgIn.value.trim() : "";
-      var greeting = "Halo Zikri, saya " + (nm || "pengunjung portofolio Anda") + ".";
-      var topicLine = "Topik: " + activeTopic + ".";
-      var bodyLine = ms ? ("Pesan: " + ms) : "Saya tertarik berdiskusi mengenai proyek / kolaborasi.";
+      var greeting = word("greet") + (nm || word("guest")) + ".";
+      var topicLine = word("topicLbl") + topicText + ".";
+      var bodyLine = ms ? (word("msgLbl") + ms) : word("defaultBody");
       return {
-        subject: "[" + activeTopic + "] " + (nm ? "Dari " + nm : "Pesan dari Portofolio"),
+        subject: "[" + topicText + "] " + (nm ? word("subjFrom") + nm : word("subjDefault")),
         full: greeting + "\n" + topicLine + "\n" + bodyLine
       };
     }

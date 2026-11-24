@@ -1,0 +1,1957 @@
+/* ==========================================================================
+   me-dive.css — "Laptop Dive" One-Screen Portfolio Hero for Me (Page p2)
+   Inspired by Haldoren build architecture, tailored for M. Zikri Al-Bukhori.
+   ========================================================================== */
+
+@property --mt {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --m0 {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --mb {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --ms {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Lock Page p2 into a zero-scroll full-viewport interactive stage */
+.pg.p2 {
+  --md-green-900: #0b2f20;
+  --md-green-800: #11402c;
+  --md-green-700: #1a5a40;
+  --md-mint: #cfeee0;
+  --md-ink: #0d0f0e;
+  --glide: 1.6s;
+  --n: 1px;
+  --dbs: 1;
+  --mbs: 0.2;
+  --mbw: 112px;
+  --mwm-top: 94px;
+  --mwm-w: 92vw;
+  --mscr-top: 136px;
+  --mscr-fs: 40px;
+  --mscr-left: 5vw;
+  --th: 148px;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: var(--md-green-900) !important;
+  color: #ffffff !important;
+  font-family: "Inter Tight", system-ui, -apple-system, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pg.p2 .pgb {
+  position: relative !important;
+  max-width: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+.pg.p2 > .pgb > .bg,
+.pg.p2 > .pgb > .bk,
+.pg.p2 > .pgb > .pnav,
+.pg.p2 #zkBar {
+  display: none !important;
+}
+
+.pg.p2 .bd {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.pg.p2 .bd > * {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* ==========================================================================
+   Root Container & Stage Background
+   ========================================================================== */
+.me-dive {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--md-green-900);
+  color: #ffffff;
+  font-family: "Inter Tight", system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.me-dive.md-js .md-pre {
+  opacity: 0;
+}
+
+.md-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0c3523 0%, #14503a 45%, #9fd8bf 100%);
+  transform-origin: 50% 50%;
+  will-change: transform, border-radius, filter;
+}
+
+/* Case studio gradient crossfade layer (also drives desktop subtle ambient depth) */
+.md-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(62% 52% at 50% 44%, rgba(164, 224, 196, 0.24), transparent 72%),
+    linear-gradient(180deg, #1b4a34 0%, #1b4a34 52%, #2f6a50 78%, #8cc7ad 100%);
+  opacity: 0;
+  transition: opacity 1.5s cubic-bezier(.65, 0, .35, 1);
+  z-index: 0;
+}
+
+.md-stage.m-case::before {
+  opacity: 1;
+}
+
+/* Subtle studio vignette over stage */
+.md-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 88% 80% at 50% 45%, transparent 48%, rgba(5, 22, 14, 0.36) 100%);
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Core 1440x810 Scene Frame & Animated Edge Fade Masks
+   ========================================================================== */
+.md-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1440px;
+  height: 810px;
+  transform-origin: 0 0;
+  z-index: 2;
+  will-change: transform;
+  --m0: 0px;
+  --mt: 0px;
+  --mb: 0px;
+  --ms: 0px;
+  transition:
+    --m0 var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --mt var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --mb var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --ms var(--glide) cubic-bezier(.65, 0, .35, 1);
+}
+
+.md-frame.glide {
+  transition:
+    transform var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --m0 var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --mt var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --mb var(--glide) cubic-bezier(.65, 0, .35, 1),
+    --ms var(--glide) cubic-bezier(.65, 0, .35, 1);
+}
+
+.md-frame.d-fade {
+  --m0: 0px;
+  --mt: 0px;
+  --mb: 0px;
+  --ms: 0px;
+}
+
+/* Feather left/right plate wings seamlessly on wide/short/ultrawide screens */
+.md-frame.d-fade.has-side-fade:not(.m-case) {
+  --ms: 175px;
+}
+
+.md-frame.d-fade.m-case {
+  --m0: 0px;
+  --mt: 110px;
+  --mb: 60px;
+  --ms: 170px;
+}
+
+.md-frame.m-fade {
+  --m0: 0px;
+  --mt: 110px;
+  --mb: 16px;
+  --ms: 120px;
+}
+
+.md-frame.m-fade.m-case {
+  --m0: 14px;
+  --mt: 78px;
+  --mb: 72px;
+  --ms: 115px;
+}
+
+/* Shared edge fade mask applied to plate, trans, caseplate (NEVER cut) */
+.md-masked {
+  -webkit-mask-image:
+    linear-gradient(180deg,
+      transparent calc(var(--o, 0px) + var(--m0)),
+      rgba(0, 0, 0, .35) calc(var(--o, 0px) + var(--m0) + var(--mt) * .37),
+      #000 calc(var(--o, 0px) + var(--m0) + var(--mt)),
+      #000 calc(100% - var(--ob, 0px) - var(--mb)),
+      transparent calc(100% - var(--ob, 0px))),
+    linear-gradient(90deg, transparent 0, #000 var(--ms), #000 calc(100% - var(--ms)), transparent 100%);
+  mask-image:
+    linear-gradient(180deg,
+      transparent calc(var(--o, 0px) + var(--m0)),
+      rgba(0, 0, 0, .35) calc(var(--o, 0px) + var(--m0) + var(--mt) * .37),
+      #000 calc(var(--o, 0px) + var(--m0) + var(--mt)),
+      #000 calc(100% - var(--ob, 0px) - var(--mb)),
+      transparent calc(100% - var(--ob, 0px))),
+    linear-gradient(90deg, transparent 0, #000 var(--ms), #000 calc(100% - var(--ms)), transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* Studio Hero Background Plate */
+.md-plate {
+  position: absolute;
+  left: 0;
+  top: -73.125px;
+  width: 1440px;
+  height: 956.25px;
+  --o: 73.125px;
+  --ob: 73.125px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(64% 58% at 52% 48%, #1d6448 0%, #104330 48%, #092c1e 100%);
+  will-change: transform, opacity, filter;
+}
+
+/* Studio ambient depth light beam behind subject */
+.md-studio-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 52% at 50% 56%, rgba(164, 232, 198, 0.16), transparent 70%),
+    radial-gradient(36% 42% at 22% 78%, rgba(255, 255, 255, 0.06), transparent 68%);
+  transition: opacity 0.6s ease;
+}
+
+.md-frame.m-case .md-studio-glow {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   Hero Elements: Wordmark, Subject Cutout, Script, Lanyard Badge
+   ========================================================================== */
+.md-wm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1440px;
+  height: 295px;
+  overflow: visible;
+  z-index: 3;
+  pointer-events: none;
+  will-change: transform, opacity, clip-path;
+}
+
+.md-wm text {
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 318px;
+  letter-spacing: -4px;
+}
+
+/* Subject Cutout (Real Zikri portrait cutout layered IN FRONT of wordmark) */
+.md-cut-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: 688px;
+  height: 688px;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+
+.md-cut-wrap.is-custom-plate {
+  left: 112.5px;
+  top: 0;
+  bottom: auto;
+  width: 1215px;
+  height: 810px;
+  transform: none;
+  /* Keep head, hair, shoulders & laptop razor-sharp over wordmark while letting
+     lower legs blend cleanly into original plate (eliminates any chroma edge). */
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 56%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 56%);
+}
+
+/* ==========================================================================
+   Custom Studio Photography & Video Dive Mode (.has-custom-assets)
+   Calibrated to assets/me/{plate.png, cut.png, case-plate.png, trans.mp4}
+   ========================================================================== */
+.me-dive.has-custom-assets .md-stage {
+  background:
+    radial-gradient(52% 50% at 50% 48%, rgba(16, 84, 44, 0.36) 0%, rgba(4, 31, 15, 0.16) 56%, transparent 82%),
+    linear-gradient(180deg, #031a0d 0%, #031a0d 66%, #0b391e 86%, #175430 96%, #1b5d36 100%);
+}
+
+.me-dive.has-custom-assets .md-stage::before {
+  background:
+    radial-gradient(62% 54% at 50% 48%, rgba(18, 92, 48, 0.45) 0%, rgba(4, 43, 19, 0.25) 58%, transparent 84%),
+    linear-gradient(180deg, #032610 0%, #042b13 62%, #073a1c 100%);
+}
+
+.me-dive.has-custom-assets .md-stage::after,
+.me-dive.has-custom-assets .md-studio-glow {
+  display: none;
+}
+
+.me-dive.has-custom-assets .md-plate,
+.me-dive.has-custom-assets .md-caseplate {
+  left: 0;
+  top: 0;
+  width: 1440px;
+  height: 810px;
+  --o: 0px;
+  --ob: 0px;
+}
+
+.me-dive.has-custom-assets .md-laptop-rig,
+.me-dive.has-custom-assets .md-frame.m-fade .md-laptop-rig,
+.me-dive.has-custom-assets .md-frame:not(.m-case) .md-laptop-rig.is-hover,
+.me-dive.has-custom-assets .md-frame.m-case .md-laptop-rig {
+  z-index: 8;
+  transform: none !important;
+  transition: none !important;
+}
+
+.me-dive.has-custom-assets .md-laptop-shell,
+.me-dive.has-custom-assets .md-screen-idle {
+  display: none !important;
+}
+
+/* Invisible click hotspot directly over the laptop Zikri holds in plate.png */
+.me-dive.has-custom-assets .md-laptop-hero-hit {
+  left: 744px;
+  top: 164px;
+  width: 178px;
+  height: 126px;
+}
+
+/* Exact pixel-measured active LCD inside assets/me/case-plate.png (1440x810 units) */
+.me-dive.has-custom-assets .md-screen {
+  left: 453.4px;
+  top: 232.9px;
+  width: 534.4px;
+  height: 335.25px;
+  border-radius: 2px;
+  opacity: 0;
+}
+
+/* Proportion-locked inner stage (894x561 scaled 0.5978 -> 534.4x335.25) */
+.md-screen-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.me-dive.has-custom-assets .md-screen-inner {
+  width: 894px;
+  height: 561px;
+  transform-origin: 0 0;
+  transform: scale(0.59776);
+}
+
+.me-dive.has-custom-assets .md-frame.m-fade {
+  --m0: 0px;
+  --mt: 96px;
+  --mb: 24px;
+  --ms: 130px;
+}
+
+.me-dive.has-custom-assets .md-frame.m-fade.m-case {
+  --m0: 14px;
+  --mt: 78px;
+  --mb: 72px;
+  --ms: 115px;
+}
+
+.me-dive.has-custom-assets.md-portrait .md-stage {
+  background:
+    radial-gradient(84% 26% at 50% 91%, rgba(30, 102, 58, 0.95) 0%, rgba(21, 78, 44, 0.72) 52%, transparent 86%),
+    linear-gradient(180deg, #031a0d 0%, #031a0d 62%, #0c3e20 82%, #185732 92%, #0b321b 100%);
+}
+
+.md-cut {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  display: block;
+  filter:
+    contrast(1.06)
+    brightness(0.95)
+    saturate(0.92)
+    drop-shadow(0 26px 46px rgba(4, 22, 14, 0.62))
+    drop-shadow(0 -8px 28px rgba(145, 224, 186, 0.14));
+}
+
+.md-cut-wrap.is-custom-plate .md-cut {
+  object-fit: cover;
+  filter: none;
+}
+
+/* Subtle emerald studio atmosphere tint at bottom edge of subject torso */
+.md-cut-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 58%, rgba(11, 47, 32, 0.34) 88%, rgba(11, 47, 32, 0.72) 100%);
+  mix-blend-mode: multiply;
+}
+
+.md-cut-wrap.is-custom-plate::after {
+  display: none;
+}
+
+/* Lanyard ID Badge (582x1030 frame units, pivots at strap top 288px 0) */
+.md-badge {
+  position: absolute;
+  left: 986px;
+  top: -165px;
+  width: 582px;
+  height: 1030px;
+  transform-origin: 288px 0;
+  scale: var(--dbs, 1);
+  z-index: 5;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.md-badge-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.md-badge-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+  pointer-events: none;
+}
+
+.md-badge.has-custom-badge .md-badge-img {
+  display: block;
+}
+
+.md-badge.has-custom-badge .md-badge-art {
+  display: none;
+}
+
+.md-card {
+  position: absolute;
+  left: 172px;
+  top: 536px;
+  width: 238px;
+  height: 392px;
+  padding: 20px 16px 0 16px;
+  color: #141615;
+  font-family: "Inter Tight", system-ui, sans-serif;
+  background: #f8faf9;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.md-badge.has-custom-badge .md-card {
+  background: transparent;
+  box-shadow: none;
+}
+
+.md-card h4 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #141615;
+  text-transform: uppercase;
+}
+
+.md-card .md-yr {
+  position: absolute;
+  right: 16px;
+  top: 62px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #141615;
+}
+
+.md-card .md-role {
+  margin-top: 12px;
+  padding-top: 5px;
+  border-top: 1px solid #222;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #141615;
+  text-transform: uppercase;
+}
+
+.md-card .md-ph {
+  width: 92px;
+  height: 112px;
+  margin: 12px auto;
+  border-radius: 6px;
+  background-color: #dfe4e1;
+  background-size: cover;
+  background-position: 50% 22%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  filter: contrast(1.04);
+}
+
+/* Head-and-shoulders crop from matching hero cutout (assets/me/cut.png 1536x1024) */
+.me-dive.has-custom-assets .md-card .md-ph {
+  background-color: #d7e3dc;
+  background-size: 645px 430px;
+  background-position: -274px 4px;
+}
+
+.md-card .md-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 6px 0 3px;
+  border-bottom: 1.5px dotted #333;
+  color: #141615;
+  line-height: 1.1;
+}
+
+.md-card .md-row span {
+  opacity: 0.65;
+  letter-spacing: 0.03em;
+}
+
+.md-card .md-row b {
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Clear plastic sheen layer over the ID card inside PVC sleeve */
+.md-card-glare {
+  position: absolute;
+  left: 152px;
+  top: 468px;
+  width: 278px;
+  height: 484px;
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(122deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.06) 28%,
+      rgba(255, 255, 255, 0) 42%,
+      rgba(255, 255, 255, 0.14) 74%,
+      rgba(255, 255, 255, 0) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.md-badge.has-custom-badge .md-card-glare {
+  display: none;
+}
+
+.md-hit {
+  position: absolute;
+  left: 160px;
+  top: 470px;
+  width: 262px;
+  height: 440px;
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 5;
+}
+
+.md-hit:active {
+  cursor: grabbing;
+}
+
+/* Handwritten "front-end & ui" */
+.md-script {
+  position: absolute;
+  left: 100px;
+  top: 148px;
+  z-index: 6;
+  font-family: "Caveat Brush", cursive;
+  font-weight: 400;
+  font-size: 82px;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  white-space: nowrap;
+  transform: rotate(-8deg);
+  transform-origin: 0 50%;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  will-change: transform, opacity, clip-path;
+}
+
+/* Transition Video Slots (Forward Dive & Reverse Pull-Out) */
+.md-trans,
+.md-trans-rev {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 810px;
+  --o: 0px;
+  --ob: 0px;
+  object-fit: cover;
+  opacity: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.md-trans-rev {
+  z-index: 7;
+}
+
+/* Optional Custom Case Plate Image Slot */
+.md-caseplate {
+  position: absolute;
+  left: 0;
+  top: -105.47px;
+  width: 1440px;
+  height: 956.25px;
+  --o: 105.47px;
+  --ob: 40.78px;
+  object-fit: cover;
+  opacity: 0;
+  z-index: 7;
+  pointer-events: none;
+  display: none;
+}
+
+.md-frame.has-custom-caseplate .md-caseplate {
+  display: block;
+}
+
+/* ==========================================================================
+   3D Silver Unibody Laptop Rig (Hero Foreground -> 1.6s 3D Dive -> Case Stage)
+   Screen lands at exact Haldoren coordinates: 272.8, 102.7, 894.4 x 604.7
+   ========================================================================== */
+.md-laptop-rig {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 810px;
+  z-index: 7;
+  pointer-events: none;
+  transform-origin: 720px 420px;
+  will-change: transform, opacity, filter;
+  /* Hero pose: angled open silver laptop in lower-left foreground beside Zikri */
+  transform: translate3d(-410px, 168px, 0) perspective(1400px) rotateY(28deg) rotateX(11deg) rotateZ(-6deg) scale(0.415);
+  transition:
+    transform var(--glide) cubic-bezier(.65, 0, .35, 1),
+    filter var(--glide) cubic-bezier(.65, 0, .35, 1);
+}
+
+.md-frame.m-fade .md-laptop-rig {
+  transform: translate3d(-155px, 198px, 0) perspective(1200px) rotateY(22deg) rotateX(10deg) rotateZ(-5deg) scale(0.31);
+}
+
+/* Interactive hover invite on Hero laptop */
+.md-laptop-hero-hit {
+  position: absolute;
+  left: 248px;
+  top: 78px;
+  width: 944px;
+  height: 684px;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 12;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.md-frame.m-case .md-laptop-hero-hit,
+.me-dive.is-busy .md-laptop-hero-hit {
+  display: none;
+  pointer-events: none;
+}
+
+.md-frame:not(.m-case) .md-laptop-rig.is-hover {
+  transform: translate3d(-402px, 154px, 0) perspective(1400px) rotateY(22deg) rotateX(8deg) rotateZ(-4deg) scale(0.435);
+  transition: transform 0.45s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* Case pose: dead-centre square to camera, exact 79..762 vertical footprint */
+.md-frame.m-case .md-laptop-rig {
+  transform: translate3d(0px, 0px, 0) perspective(1400px) rotateY(0deg) rotateX(0deg) rotateZ(0deg) scale(1);
+}
+
+.md-frame.has-custom-caseplate .md-laptop-shell {
+  display: none;
+}
+
+/* Hardware shell (brushed silver unibody aluminum lid, camera bezel & deck) */
+.md-laptop-shell {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.md-laptop-shadow {
+  position: absolute;
+  left: 175px;
+  top: 734px;
+  width: 1090px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(4, 22, 14, 0.72) 0%, rgba(4, 22, 14, 0.28) 54%, transparent 76%);
+  filter: blur(18px);
+}
+
+.md-lid {
+  position: absolute;
+  left: 254px;
+  top: 80px;
+  width: 932px;
+  height: 646px;
+  border-radius: 22px 22px 6px 6px;
+  background:
+    linear-gradient(180deg, #1b1f1e 0%, #0d0f0e 8%, #090b0a 100%);
+  box-shadow:
+    0 0 0 2.5px #d4dcd8,
+    0 0 0 5px #8e9894,
+    0 32px 80px -18px rgba(4, 20, 13, 0.72),
+    inset 0 2px 3px rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+/* Camera dot centered in upper glass bezel */
+.md-lid::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 7px;
+  height: 7px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #5b8c7c 0%, #162420 55%, #070a09 100%);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.09);
+}
+
+/* Specular light sweep across lid during 3D dive */
+.md-lid-glint {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(112deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.22) 48%,
+    rgba(207, 238, 224, 0.14) 54%,
+    transparent 68%);
+  transform: translateX(-110%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.md-frame.m-case .md-lid-glint {
+  animation: mdGlintSweep 1.55s cubic-bezier(.4, 0, .2, 1) forwards;
+}
+
+@keyframes mdGlintSweep {
+  0% { transform: translateX(-110%); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+
+/* Aluminum hinge seam */
+.md-hinge {
+  position: absolute;
+  left: 330px;
+  top: 721px;
+  width: 780px;
+  height: 6px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, #1b201e 0%, #3d4642 15%, #161a19 50%, #3d4642 85%, #1b201e 100%);
+  z-index: 2;
+}
+
+/* Unibody silver aluminum deck lip */
+.md-deck {
+  position: absolute;
+  left: 190px;
+  top: 725px;
+  width: 1060px;
+  height: 33px;
+  border-radius: 3px 3px 18px 18px;
+  background:
+    linear-gradient(180deg, #eef4f1 0%, #d2dbd7 26%, #adb9b4 64%, #7c8883 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3px 6px rgba(10, 28, 20, 0.35),
+    0 14px 30px rgba(4, 20, 13, 0.45);
+  z-index: 1;
+}
+
+/* Side brushed shading on aluminum deck */
+.md-deck::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg,
+    rgba(16, 36, 26, 0.22) 0%,
+    rgba(255, 255, 255, 0.24) 7%,
+    transparent 18%,
+    transparent 82%,
+    rgba(255, 255, 255, 0.24) 93%,
+    rgba(16, 36, 26, 0.22) 100%);
+}
+
+/* Centered machined thumb-notch */
+.md-deck::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 146px;
+  height: 11px;
+  transform: translateX(-50%);
+  border-radius: 0 0 9px 9px;
+  background: linear-gradient(180deg, #74807b 0%, #a0aca7 68%, #c7d1cd 100%);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.32);
+}
+
+/* ==========================================================================
+   Laptop Screen Viewport (Exact 272.8, 102.7, 894.4 x 604.7 inside frame)
+   ========================================================================== */
+.md-screen {
+  position: absolute;
+  left: 272.8px;
+  top: 102.7px;
+  width: 894.4px;
+  height: 604.7px;
+  border-radius: 3px;
+  background: #060908;
+  overflow: hidden;
+  z-index: 8;
+  opacity: 1;
+}
+
+/* Hero standby ambient screen glow (visible when laptop sits angled in Hero) */
+.md-screen-idle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 42px;
+  background:
+    radial-gradient(75% 75% at 72% 24%, rgba(62, 184, 130, 0.26), transparent 65%),
+    linear-gradient(145deg, #0b1c15 0%, #07110d 55%, #0c261c 100%);
+  transition: opacity 0.45s ease;
+  z-index: 1;
+}
+
+.md-frame.m-case .md-screen-idle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.md-idle-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(207, 238, 224, 0.65);
+}
+
+.md-idle-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.md-idle-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(207, 238, 224, 0.28);
+}
+
+.md-idle-dots i:first-child {
+  background: #44d492;
+  box-shadow: 0 0 12px #44d492;
+}
+
+.md-idle-mid {
+  font-family: "Anton", system-ui, sans-serif;
+  font-size: 92px;
+  line-height: 0.94;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+}
+
+.md-idle-mid span {
+  display: block;
+  font-family: "Caveat Brush", cursive;
+  font-size: 46px;
+  color: #8ee0ba;
+  margin-bottom: 8px;
+  text-transform: none;
+}
+
+.md-idle-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(207, 238, 224, 0.72);
+}
+
+/* Glass sheen over laptop screen */
+.md-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, .07) 0%, rgba(255, 255, 255, 0) 38%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* White flash layer on arrival & case swap */
+.md-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Individual Case Slides inside .md-screen */
+.md-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+.md-slide.is-active {
+  pointer-events: auto;
+}
+
+.md-slide video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
+  display: block;
+}
+
+/* Cinema-framed 16:9 project preview + dedicated bottom dock (never crops or covers UI) */
+.md-reel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 44px;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.md-reel img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform-origin: 50% 48%;
+  will-change: transform;
+}
+
+.md-slide.is-active .md-reel img {
+  animation: mdKenBurns 14s ease-in-out infinite alternate;
+}
+
+@keyframes mdKenBurns {
+  0% { transform: scale(1) translate3d(0, 0, 0); }
+  50% { transform: scale(1.032) translate3d(-0.6%, -0.4%, 0); }
+  100% { transform: scale(1.018) translate3d(0.6%, -0.2%, 0); }
+}
+
+/* Ultra-clean cinema dock strip inside the lower black letterbox of the MacBook screen */
+.md-reel-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  padding: 0 20px;
+  background: #050706;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 5;
+}
+
+.md-reel-url {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.md-reel-url i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #48db96;
+  box-shadow: 0 0 8px rgba(72, 219, 150, 0.65);
+}
+
+.md-reel-live {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--md-ink);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.md-reel-live:hover {
+  background: var(--md-mint);
+  transform: translateY(-1px);
+}
+
+.me-dive.is-case .md-screen {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Viewport-Pinned UI (.md-ui, fixed, inset 0, z 20)
+   ========================================================================== */
+.md-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Nav tags: crisp white rectangles with hard 3n ledge & playful tilt hover */
+.md-tag {
+  position: fixed;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(32px, calc(37 * var(--n)), 44px);
+  padding: 0 clamp(13px, calc(18 * var(--n)), 22px);
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--md-ink);
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-weight: 650;
+  font-size: clamp(13px, calc(16.5 * var(--n)), 18.5px);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow:
+    0 calc(3 * var(--n)) 0 rgba(0, 0, 0, 0.18),
+    0 calc(6 * var(--n)) calc(14 * var(--n)) rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.25s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.25s cubic-bezier(.2, .8, .2, 1);
+}
+
+.md-tag:hover {
+  transform: translateY(calc(-2 * var(--n))) rotate(-1.5deg);
+  box-shadow:
+    0 calc(5 * var(--n)) 0 rgba(0, 0, 0, 0.22),
+    0 calc(10 * var(--n)) calc(18 * var(--n)) rgba(0, 0, 0, 0.2);
+}
+
+.md-tag:active {
+  transform: translateY(calc(1 * var(--n)));
+  box-shadow: 0 calc(1 * var(--n)) 0 rgba(0, 0, 0, 0.2);
+}
+
+.md-tag:focus-visible {
+  outline: 2.5px solid var(--md-mint);
+  outline-offset: 3px;
+}
+
+.md-tag.t1 { left: clamp(16px, 2.1vw, 38px); top: clamp(8px, calc(9 * var(--n)), 14px); }
+.md-tag.t2 { left: clamp(144px, 16.2vw, 280px); top: clamp(8px, calc(9 * var(--n)), 14px); }
+.md-tag.t3 { right: clamp(136px, 16.9vw, 290px); top: clamp(8px, calc(9 * var(--n)), 14px); }
+.md-tag.t4 { right: clamp(16px, 2.2vw, 38px); top: clamp(8px, calc(9 * var(--n)), 14px); }
+
+/* Centre Logo (fades in only during case mode) */
+.md-logo {
+  position: fixed;
+  left: 50%;
+  top: clamp(11px, calc(14 * var(--n)), 18px);
+  transform: translateX(-50%);
+  border: 0;
+  background: transparent;
+  padding: 4px 10px;
+  color: #ffffff;
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(15px, calc(19 * var(--n)), 22px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.me-dive.is-case .md-logo {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Dripping Scroll Hint */
+.md-hint {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(10px, calc(18 * var(--n)), 26px);
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, calc(8 * var(--n)), 10px);
+  border: 0;
+  background: transparent;
+  padding: 6px 14px;
+  color: #ffffff;
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-size: clamp(10.5px, calc(12 * var(--n)), 13.5px);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.92;
+  text-shadow: 0 2px 12px rgba(4, 22, 14, 0.92), 0 1px 3px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+
+.md-hint-line {
+  position: relative;
+  width: calc(1.5 * var(--n));
+  min-width: 1.5px;
+  height: clamp(14px, calc(20 * var(--n)), 24px);
+  background: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.md-hint-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -40%;
+  width: 100%;
+  height: 40%;
+  background: #ffffff;
+  animation: mdDrip 1.6s cubic-bezier(.6, 0, .4, 1) infinite;
+}
+
+@keyframes mdDrip {
+  to { top: 100%; }
+}
+
+.me-dive.is-case .md-hint,
+.me-dive.is-busy .md-hint {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Case UI (Desktop): Punched Paper Ticket, Description & Prev/Next Buttons
+   ========================================================================== */
+.md-ticket {
+  position: fixed;
+  right: clamp(16px, calc(32 * var(--n)), 42px);
+  top: clamp(58px, calc(92 * var(--n)), 118px);
+  width: clamp(238px, calc(344 * var(--n)), 408px);
+  min-height: 0;
+  padding:
+    clamp(18px, calc(24 * var(--n)), 28px)
+    clamp(34px, calc(44 * var(--n)), 52px)
+    clamp(16px, calc(22 * var(--n)), 26px)
+    clamp(34px, calc(44 * var(--n)), 52px);
+  background: #ffffff;
+  color: var(--md-ink);
+  border-radius: 3px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  transform-origin: 50% 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  box-sizing: border-box;
+}
+
+.me-dive.is-case .md-ticket {
+  pointer-events: auto;
+}
+
+/* Four Ticket Punch Holes (guaranteed clear of padded inner copy) */
+.md-hole {
+  position: absolute;
+  width: clamp(14px, calc(20 * var(--n)), 22px);
+  height: clamp(14px, calc(20 * var(--n)), 22px);
+  border-radius: 50%;
+  background: var(--md-green-800);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.md-hole.tl { left: clamp(9px, calc(11 * var(--n)), 13px); top: clamp(9px, calc(11 * var(--n)), 13px); }
+.md-hole.tr { right: clamp(9px, calc(11 * var(--n)), 13px); top: clamp(9px, calc(11 * var(--n)), 13px); }
+.md-hole.bl { left: clamp(9px, calc(11 * var(--n)), 13px); bottom: clamp(9px, calc(11 * var(--n)), 13px); }
+.md-hole.br { right: clamp(9px, calc(11 * var(--n)), 13px); bottom: clamp(9px, calc(11 * var(--n)), 13px); }
+
+.md-ticket h2 {
+  margin: 0;
+  font-family: "Anton", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(27px, calc(44 * var(--n)), 54px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--md-ink);
+  text-transform: uppercase;
+}
+
+.md-rows {
+  margin-top: clamp(6px, calc(8 * var(--n)), 10px);
+}
+
+.md-rows div {
+  text-align: right;
+  font-weight: 700;
+  font-size: clamp(10px, calc(12 * var(--n)), 14px);
+  letter-spacing: 0.02em;
+  padding: clamp(3px, calc(4 * var(--n)), 5px) 0 clamp(2px, calc(3 * var(--n)), 4px);
+  border-bottom: 1.5px dotted #2a2a2a;
+  color: var(--md-ink);
+  text-transform: uppercase;
+}
+
+/* Case Description (Left) */
+.md-desc {
+  position: fixed;
+  left: clamp(16px, calc(24 * var(--n)), 36px);
+  top: clamp(120px, 34vh, 336px);
+  width: clamp(146px, calc(174 * var(--n)), 212px);
+  pointer-events: none;
+}
+
+.md-desc > * {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.md-desc .md-k {
+  font-weight: 700;
+  font-size: clamp(13.5px, calc(16.5 * var(--n)), 19px);
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.md-desc p {
+  margin: clamp(8px, calc(12 * var(--n)), 14px) 0 0;
+  font-size: clamp(12px, calc(14 * var(--n)), 16px);
+  line-height: 1.4;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.md-desc .md-num {
+  margin-top: clamp(14px, calc(20 * var(--n)), 24px);
+  font-size: clamp(11px, calc(12 * var(--n)), 14px);
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Compact / Mobile Live Demo CTA (shown in Portrait & Compact Landscape where laptop dock is tiny) */
+.md-desc-live {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  min-height: 32px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--md-ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.me-dive.is-case .md-desc-live {
+  pointer-events: auto;
+}
+
+.md-desc-live:hover {
+  background: var(--md-mint);
+  transform: translateY(-1px);
+}
+
+.md-desc-live:focus-visible {
+  outline: 2.5px solid var(--md-mint);
+  outline-offset: 3px;
+}
+
+/* Round Prev / Next Case Buttons */
+.md-nav-case {
+  position: fixed;
+  bottom: clamp(24px, 12vh, 148px);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, calc(9 * var(--n)), 10px);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #ffffff;
+  font-family: "Inter Tight", system-ui, sans-serif;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.md-nav-case.prev { left: clamp(22px, 5vw, 96px); }
+.md-nav-case.next { right: clamp(22px, 5vw, 96px); }
+
+.me-dive.is-case .md-nav-case {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.me-dive.is-case .md-nav-case.prev.dim {
+  opacity: 0.45;
+}
+
+.md-nav-case .md-c {
+  width: clamp(42px, calc(50 * var(--n)), 58px);
+  height: clamp(42px, calc(50 * var(--n)), 58px);
+  border-radius: 50%;
+  border: 1.6px solid rgba(255, 255, 255, 0.9);
+  display: grid;
+  place-items: center;
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), background 0.2s ease, border-color 0.2s ease;
+}
+
+.md-nav-case .md-c svg {
+  width: clamp(20px, calc(24 * var(--n)), 26px);
+  height: clamp(20px, calc(24 * var(--n)), 26px);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.md-nav-case.next .md-c {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: var(--md-green-800);
+}
+
+.md-nav-case:hover .md-c {
+  transform: scale(1.08);
+}
+
+.md-nav-case.next:hover .md-c {
+  background: var(--md-mint);
+  border-color: var(--md-mint);
+}
+
+.md-nav-case .md-lbl {
+  font-weight: 600;
+  font-size: clamp(12px, calc(15 * var(--n)), 17px);
+  line-height: 1.08;
+  text-align: center;
+}
+
+.md-nav-case:focus-visible {
+  outline: 2.5px solid var(--md-mint);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+/* ==========================================================================
+   Mobile-Only Copies (Hidden on Desktop & Compact Landscape)
+   ========================================================================== */
+.md-m-only {
+  display: none;
+}
+
+/* ==========================================================================
+   Tier 2: Compact Landscape (.md-compact-land) — Landscape Phones & Split-Screen
+   Examples: 667x375, 844x390, 932x430, 860x640, 900x700
+   ========================================================================== */
+.me-dive.md-compact-land .md-tag {
+  height: 28px;
+  padding: 0 11px;
+  font-size: 12px;
+  top: calc(7px + env(safe-area-inset-top, 0px));
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.me-dive.md-compact-land .md-tag.t1 { left: 12px; right: auto; }
+.me-dive.md-compact-land .md-tag.t2 { left: 108px; right: auto; }
+.me-dive.md-compact-land .md-tag.t3 { right: 94px; left: auto; }
+.me-dive.md-compact-land .md-tag.t4 { right: 12px; left: auto; }
+
+.me-dive.md-compact-land .md-logo {
+  top: calc(9px + env(safe-area-inset-top, 0px));
+  font-size: 14px;
+}
+
+.me-dive.md-compact-land .md-hint {
+  left: 14px;
+  transform: none;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(5, 29, 16, 0.76);
+  border: 1px solid rgba(207, 238, 224, 0.24);
+  flex-direction: row;
+  gap: 8px;
+  font-size: 10px;
+}
+
+.me-dive.md-compact-land .md-hint-line {
+  height: 12px;
+}
+
+.me-dive.md-compact-land .md-ticket {
+  right: 12px;
+  top: calc(44px + env(safe-area-inset-top, 0px));
+  width: clamp(148px, 23vw, 226px);
+  padding: 13px 24px 11px 24px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.me-dive.md-compact-land .md-hole {
+  width: 11px;
+  height: 11px;
+}
+.me-dive.md-compact-land .md-hole.tl { left: 6px; top: 6px; }
+.me-dive.md-compact-land .md-hole.tr { right: 6px; top: 6px; }
+.me-dive.md-compact-land .md-hole.bl { left: 6px; bottom: 6px; }
+.me-dive.md-compact-land .md-hole.br { right: 6px; bottom: 6px; }
+
+.me-dive.md-compact-land .md-ticket h2 {
+  font-size: clamp(18px, 2.7vw, 28px);
+}
+
+.me-dive.md-compact-land .md-rows {
+  margin-top: 4px;
+}
+
+.me-dive.md-compact-land .md-rows div {
+  font-size: clamp(8.5px, 1.15vw, 10.5px);
+  padding: 2.5px 0 2px;
+}
+
+.me-dive.md-compact-land .md-desc {
+  left: 12px;
+  top: calc(48px + env(safe-area-inset-top, 0px));
+  width: clamp(124px, 20vw, 174px);
+}
+
+.me-dive.md-compact-land .md-desc .md-k {
+  font-size: clamp(12px, 1.7vw, 14.5px);
+}
+
+.me-dive.md-compact-land .md-desc p {
+  margin-top: 6px;
+  font-size: clamp(10.5px, 1.45vw, 12.5px);
+  line-height: 1.32;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.me-dive.md-compact-land .md-desc .md-num {
+  margin-top: 8px;
+  font-size: 10px;
+}
+
+.me-dive.md-compact-land .md-desc-live {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 5px 11px;
+  min-height: 28px;
+  font-size: 11px;
+}
+
+/* Maximize project screenshot inside small landscape MacBook screen */
+.me-dive.md-compact-land .md-reel-dock {
+  display: none;
+}
+
+.me-dive.md-compact-land .md-reel {
+  bottom: 0;
+}
+
+.me-dive.md-compact-land .md-nav-case {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  flex-direction: row;
+  gap: 7px;
+}
+
+.me-dive.md-compact-land .md-nav-case.prev { left: 12px; }
+.me-dive.md-compact-land .md-nav-case.next { right: 12px; flex-direction: row-reverse; }
+
+.me-dive.md-compact-land .md-nav-case .md-c {
+  width: 38px;
+  height: 38px;
+}
+
+.me-dive.md-compact-land .md-nav-case .md-c svg {
+  width: 18px;
+  height: 18px;
+}
+
+.me-dive.md-compact-land .md-nav-case .md-lbl {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.me-dive.md-compact-land .md-nav-case .md-lbl br {
+  display: none;
+}
+
+@media (max-width: 740px) {
+  .me-dive.md-compact-land .md-nav-case .md-lbl {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Tier 1: Portrait Screens (.md-portrait) — Phones & Portrait Tablets
+   Examples: 320x568, 360x640, 390x844, 430x932, 768x1024, 820x1180
+   ========================================================================== */
+.me-dive.md-portrait .md-stage {
+  background: #0b3b2a;
+}
+
+.me-dive.md-portrait .md-frame .md-wm,
+.me-dive.md-portrait .md-frame .md-script,
+.me-dive.md-portrait .md-frame .md-badge {
+  display: none;
+}
+
+.me-dive.md-portrait .md-m-only {
+  display: block;
+}
+
+/* Compact 2x2 Nav Tag Grid on Narrow Portrait Phones (< 560px) */
+.me-dive.md-portrait .md-tag {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+  box-shadow: 0 2.5px 0 rgba(0, 0, 0, 0.2), 0 5px 12px rgba(0, 0, 0, 0.18);
+}
+
+.me-dive.md-portrait .md-tag.t1 {
+  left: 12px;
+  right: auto;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+}
+.me-dive.md-portrait .md-tag.t2 {
+  right: 12px;
+  left: auto;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+}
+.me-dive.md-portrait .md-tag.t3 {
+  left: 12px;
+  right: auto;
+  top: calc(48px + env(safe-area-inset-top, 0px));
+}
+.me-dive.md-portrait .md-tag.t4 {
+  right: 12px;
+  left: auto;
+  top: calc(48px + env(safe-area-inset-top, 0px));
+}
+
+/* Single-Row Top Nav on Wide Portrait Tablets (>= 560px, e.g. 768x1024) */
+.me-dive.md-portrait.md-portrait-wide .md-tag {
+  height: 34px;
+  padding: 0 16px;
+  font-size: 14px;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-tag.t1 { left: 20px; right: auto; }
+.me-dive.md-portrait.md-portrait-wide .md-tag.t2 { left: 142px; right: auto; }
+.me-dive.md-portrait.md-portrait-wide .md-tag.t3 { right: 128px; left: auto; }
+.me-dive.md-portrait.md-portrait-wide .md-tag.t4 { right: 20px; left: auto; }
+
+.me-dive.md-portrait.is-case .md-tag.t3,
+.me-dive.md-portrait.is-case .md-tag.t4 {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.me-dive.md-portrait.md-portrait-wide.is-case .md-tag.t2 {
+  left: auto;
+  right: 20px;
+}
+
+/* Portrait Wordmark (JS-synchronized to dedicated top header band above Zikri) */
+.me-dive.md-portrait .md-m-wm {
+  position: fixed;
+  left: 50%;
+  width: var(--mwm-w, 92vw);
+  margin-left: calc(var(--mwm-w, 92vw) * -0.5);
+  height: auto;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mwm-top, 92px));
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.me-dive.md-portrait .md-m-wm text {
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 325px;
+  letter-spacing: -5px;
+}
+
+/* Portrait Handwritten Script (strictly above Zikri's hair!) */
+.me-dive.md-portrait .md-m-script {
+  position: fixed;
+  left: var(--mscr-left, 5vw);
+  right: auto;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mscr-top, 134px));
+  font-family: "Caveat Brush", cursive;
+  font-size: var(--mscr-fs, 40px);
+  line-height: 1;
+  color: #ffffff;
+  transform: rotate(-7deg);
+  transform-origin: 0 50%;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+}
+
+/* Portrait Lanyard Badge Clone — centered cleanly inside --mbw without vw mismatch */
+.me-dive.md-portrait .md-m-badge {
+  position: fixed;
+  right: 10px;
+  top: calc(env(safe-area-inset-top, 0px) - 8px);
+  width: var(--mbw, 112px);
+  height: calc(var(--mbw, 112px) * 1030 / 582);
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-m-badge {
+  right: 26px;
+  top: calc(env(safe-area-inset-top, 0px) - 10px);
+}
+
+.me-dive.md-portrait .md-m-badge .md-badge {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 582px;
+  height: 1030px;
+  transform-origin: 288px 0;
+  translate: -288px 0;
+  scale: var(--mbs);
+}
+
+/* Hide center logo on narrow portrait; show cleanly on wide portrait tablets */
+.me-dive.md-portrait .md-logo {
+  display: none;
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-logo {
+  display: block;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  font-size: 16px;
+}
+
+/* Portrait Case Mode: Ticket centered at top, Description + Live Demo under ticket */
+.me-dive.md-portrait .md-ticket {
+  left: 50%;
+  right: auto;
+  top: calc(52px + env(safe-area-inset-top, 0px));
+  width: min(88vw, 374px);
+  min-height: 0;
+  margin-left: calc(min(88vw, 374px) * -0.5);
+  padding: 18px 34px 16px 34px;
+  border-radius: 3px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-ticket {
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  width: min(72vw, 420px);
+  margin-left: calc(min(72vw, 420px) * -0.5);
+  padding: 22px 42px 20px 42px;
+}
+
+.me-dive.md-portrait .md-hole {
+  width: 14px;
+  height: 14px;
+}
+.me-dive.md-portrait .md-hole.tl { left: 9px; top: 9px; }
+.me-dive.md-portrait .md-hole.tr { right: 9px; top: 9px; }
+.me-dive.md-portrait .md-hole.bl { left: 9px; bottom: 9px; }
+.me-dive.md-portrait .md-hole.br { right: 9px; bottom: 9px; }
+
+.me-dive.md-portrait .md-ticket h2 {
+  font-size: clamp(26px, 8vw, 38px);
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-ticket h2 {
+  font-size: 42px;
+}
+
+.me-dive.md-portrait .md-rows {
+  margin-top: 6px;
+}
+
+.me-dive.md-portrait .md-rows div {
+  font-size: 11px;
+  padding: 3.5px 0 2.5px;
+}
+
+.me-dive.md-portrait .md-desc {
+  left: 50%;
+  top: calc(52px + env(safe-area-inset-top, 0px) + var(--th) + 12px);
+  width: min(88vw, 374px);
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.me-dive.md-portrait.md-portrait-wide .md-desc {
+  top: calc(64px + env(safe-area-inset-top, 0px) + var(--th) + 16px);
+  width: min(76vw, 460px);
+}
+
+.me-dive.md-portrait .md-desc .md-k {
+  font-size: 14.5px;
+}
+
+.me-dive.md-portrait .md-desc p {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.36;
+}
+
+.me-dive.md-portrait .md-desc .md-num {
+  display: none;
+}
+
+.me-dive.md-portrait .md-desc-live {
+  display: inline-flex;
+  margin-top: 10px;
+}
+
+/* On portrait layouts, crisp Live Demo pill sits in .md-desc so screenshot fills full MacBook screen cleanly */
+.me-dive.md-portrait .md-reel-dock {
+  display: none;
+}
+
+.me-dive.md-portrait .md-reel {
+  bottom: 0;
+}
+
+/* Portrait Prev/Next Horizontal Row at Bottom */
+.me-dive.md-portrait .md-nav-case {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  flex-direction: row;
+  gap: 9px;
+}
+
+.me-dive.md-portrait .md-nav-case.prev {
+  left: clamp(14px, 5vw, 38px);
+}
+
+.me-dive.md-portrait .md-nav-case.next {
+  right: clamp(14px, 5vw, 38px);
+  flex-direction: row-reverse;
+}
+
+.me-dive.md-portrait .md-nav-case .md-c {
+  width: 44px;
+  height: 44px;
+}
+
+.me-dive.md-portrait .md-nav-case .md-c svg {
+  width: 20px;
+  height: 20px;
+}
+
+.me-dive.md-portrait .md-nav-case .md-lbl {
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.me-dive.md-portrait .md-nav-case .md-lbl br {
+  display: none;
+}
+
+.me-dive.md-portrait .md-hint {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 7px 15px;
+  border-radius: 999px;
+  background: rgba(6, 30, 18, 0.82);
+  border: 1px solid rgba(207, 238, 224, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  flex-direction: row;
+  gap: 9px;
+  font-size: 10.5px;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.me-dive.md-portrait .md-hint-line {
+  height: 14px;
+}
+
+/* Extra-small portrait phones (<= 340px width or <= 580px height) */
+@media (max-width: 340px), (max-height: 580px) {
+  .me-dive.md-portrait .md-ticket {
+    padding: 14px 28px 12px 28px;
+  }
+  .me-dive.md-portrait .md-ticket h2 {
+    font-size: 24px;
+  }
+  .me-dive.md-portrait .md-rows div {
+    font-size: 10px;
+    padding: 2.5px 0 2px;
+  }
+  .me-dive.md-portrait .md-desc p {
+    font-size: 12px;
+  }
+  .me-dive.md-portrait .md-nav-case .md-lbl {
+    font-size: 11px;
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion (§14)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .me-dive,
+  .me-dive *,
+  .me-dive *::before,
+  .me-dive *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .me-dive.md-js .md-pre {
+    opacity: 1 !important;
+  }
+}

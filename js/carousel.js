@@ -173,6 +173,8 @@
       }
     }
 
+    var ringW = ((window.__zkWORD && window.__zkWORD[(window.ZK && ZK.lang) || 'id']) || 'PORTOFOLIO');
+    var ringRep = [ringW, ringW, ringW, ringW, ringW].join(' • ') + ' •';
     ring.innerHTML = [
       '<defs>',
         '<path id="rp" d="M 0,' + (-rText) + ' A ' + rText + ' ' + rText + ' 0 1 1 0,' + rText + ' A ' + rText + ' ' + rText + ' 0 1 1 0,' + (-rText) + '"/>',
@@ -182,7 +184,7 @@
       '<circle r="' + rInner + '" fill="none" stroke="var(--ring)" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.5"/>',
       '<g>' + ticks.join('') + '</g>',
       '<text style="font-size: ' + (isMob ? 9 : 10) + 'px; font-weight: 700; letter-spacing: 0.16em; fill: var(--ring); font-family: inherit;">',
-        '<textPath href="#rp" textLength="' + (Math.PI * 2 * rText * 0.98) + '">PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO • PORTOFOLIO •</textPath>',
+        '<textPath href="#rp" data-i18n-own="1" textLength="' + (Math.PI * 2 * rText * 0.98) + '">' + ringRep + '</textPath>',
       '</text>'
     ].join('');
 
@@ -463,6 +465,33 @@
 
   function setPos(p) { pos = p; place(); }
 
+  function syncCarouselLang() {
+    var curLang = (window.ZK && ZK.lang) || 'id';
+    if (activeC >= 0 && cards[activeC]) {
+      var rawName = cards[activeC].getAttribute('data-n') || '';
+      nm.textContent = (window.ZK && ZK.t && ZK.t(rawName, curLang)) || rawName;
+    }
+    var tp = ring && ring.querySelector('textPath');
+    if (tp && window.__zkWORD) {
+      var rw = window.__zkWORD[curLang] || window.__zkWORD.id || 'PORTOFOLIO';
+      tp.textContent = [rw, rw, rw, rw, rw].join(' • ') + ' •';
+    }
+    if (cur >= 0) {
+      var pv = (cur + n - 1) % n, nx = (cur + 1) % n;
+      var pb = pgb.querySelector('.pnav button[data-go="-1"]');
+      var nb = pgb.querySelector('.pnav button[data-go="1"]');
+      if (pb) {
+        var rPv = cards[pv].getAttribute('data-n') || '';
+        pb.textContent = '\u25C2 ' + ((window.ZK && ZK.t && ZK.t(rPv, curLang)) || rPv);
+      }
+      if (nb) {
+        var rNx = cards[nx].getAttribute('data-n') || '';
+        nb.textContent = ((window.ZK && ZK.t && ZK.t(rNx, curLang)) || rNx) + ' \u25B8';
+      }
+    }
+  }
+  window.addEventListener('zk-lang', syncCarouselLang);
+
   // Spring physics responsif & cepat (putaran kartu gesit dan mantap)
   var raf = null;
   var afterSettle = null;
@@ -547,51 +576,182 @@
     // 0: Story (bacaan) -- 6 bab autentik perjalanan M. Zikri Al-Bukhori
     [
       '<img src="' + STORY_PHOTO + '" alt="Potret M. Zikri Al-Bukhori dengan sorot cahaya merah">',
-      [
+      '<div class="st-root" data-i18n-own="1">' + [
         '<h2 class="st-h" data-t="h">Cerita Saya</h2>',
-        '<p class="st-sub" data-t="sub">Perjalanan bertumbuh, belajar, dan menemukan arah di dunia web development &amp; desain antarmuka.</p>',
+        '<p class="st-sub" data-t="sub">Perjalanan bertumbuh, belajar, dan menemukan arah di dunia pengembangan web &amp; desain antarmuka.</p>',
         '<p class="st-lead" data-t="lead">Dari masa kecil di Medan hingga terjun langsung ke dunia industri perangkat lunak — berikut adalah bab-bab nyata yang membentuk disiplin, rasa ingin tahu, dan karya saya hari ini.</p>',
         '<div class="st-wrap"><svg class="st-thread" aria-hidden="true"></svg><ol class="st-life" aria-label="Garis waktu cerita saya">' +
           '<li class="st-ch" data-m="0.18"><div class="st-hd"><span class="st-n" aria-hidden="true">01</span><span class="st-when" data-t="c1w">2011 · Medan</span></div><h3 data-t="c1t">Akar &amp; Pencapaian Awal</h3><p data-t="c1p1">Lahir pada tahun 2011 di Medan, Sumatera Utara, dan tumbuh dikelilingi kehangatan keluarga besar ayah maupun ibu sebagai cucu pertama dari kedua belah pihak.</p><p data-t="c1p2">Salah satu momen paling berkesan di masa kecil adalah meraih Juara 1 Lomba Tahfidz Tingkat Kota pada usia enam tahun — pelajaran pertama bahwa fokus dan ketekunan akan membuahkan hasil nyata.</p></li>' +
           '<li class="st-ch" data-m="-0.32"><div class="st-hd"><span class="st-n" aria-hidden="true">02</span><span class="st-when" data-t="c2w">Masa Sekolah</span></div><h3 data-t="c2t">Fondasi Karakter &amp; Akademik</h3><p data-t="c2p1">Menempuh pendidikan dasar di MIS Aisyiyah Sumatera Utara dan melanjutkan jenjang menengah pertama di MTs Aisyiyah Sumatera Utara.</p><p data-t="c2p2">Fase ini membentuk kedisiplinan, daya juang untuk bangkit dari masa-masa sulit, persahabatan yang erat, serta ketertarikan awal terhadap cara kerja antarmuka digital.</p></li>' +
-          '<li class="st-ch" data-m="0.38"><div class="st-hd"><span class="st-n" aria-hidden="true">03</span><span class="st-when" data-t="c3w">Pendidikan Vokasi</span></div><h3 data-t="c3t">Melangkah ke Dunia Web di SMK Swasta Mandiri</h3><p data-t="c3p1">Melanjutkan pendidikan ke SMK Swasta Mandiri di Medan, tempat rasa penasaran berubah menjadi praktik teknis yang terarah.</p><p data-t="c3p2">Di sini saya mulai mendalami rekayasa web, belajar berpikir mandiri, berani bereksperimen, dan menemukan jalur yang ingin saya tekuni di bidang front-end development.</p></li>' +
+          '<li class="st-ch" data-m="0.38"><div class="st-hd"><span class="st-n" aria-hidden="true">03</span><span class="st-when" data-t="c3w">Pendidikan Vokasi</span></div><h3 data-t="c3t">Melangkah ke Dunia Web di SMK Swasta Mandiri</h3><p data-t="c3p1">Melanjutkan pendidikan ke SMK Swasta Mandiri di Medan, tempat rasa penasaran berubah menjadi praktik teknis yang terarah.</p><p data-t="c3p2">Di sini saya mulai mendalami rekayasa web, belajar berpikir mandiri, berani bereksperimen, dan menemukan jalur yang ingin saya tekuni di bidang pengembangan front-end.</p></li>' +
           '<li class="st-ch" data-m="-0.25"><div class="st-hd"><span class="st-n" aria-hidden="true">04</span><span class="st-when" data-t="c4w">Eksplorasi Mandiri</span></div><h3 data-t="c4t">Mendalami Kode, Animasi &amp; Desain UI</h3><p data-t="c4p1">Mengasah struktur HTML5 semantik, arsitektur CSS3 modern dan Tailwind CSS, logika JavaScript (ES6+), serta koreografi animasi dengan GSAP dan Anime.js.</p><p data-t="c4p2">Menyadari bahwa produk digital yang baik menuntut keseimbangan antara ketajaman estetika visual dan kode yang cepat, bersih, serta nyaman diakses di setiap layar.</p></li>' +
           '<li class="st-ch is-now" data-m="0.45"><div class="st-hd"><span class="st-n" aria-hidden="true">05</span><span class="st-when" data-t="c5w">Tahun ke-2 SMK · Industri</span></div><h3 data-t="c5t">Praktik Kerja Lapangan (PKL) di DigitalCODE</h3><p data-t="c5p1">Saat ini berada di tahun kedua SMK dan tengah menjalani pengalaman Praktik Kerja Lapangan (PKL) pertama di perusahaan DigitalCODE.</p><p data-t="c5p2">Terjun ke lingkungan kerja nyata mempertajam alur kerja saya — menerjemahkan teori yang dipelajari di sekolah menjadi antarmuka web fungsional dengan standar produksi.</p></li>' +
-          '<li class="st-ch is-next" data-m="1.0"><div class="st-hd"><span class="st-n" aria-hidden="true">06</span><span class="st-when" data-t="c6w">Hari Ini &amp; Visi</span></div><h3 data-t="c6t">Fokus Saat Ini &amp; Langkah Berikutnya</h3><p data-t="c6p1">Merancang landing page responsif, sistem UI interaktif, dan pengalaman web modern dari Medan sembari terus memperdalam React, Vue, serta alur kerja berbasis AI.</p><p data-t="c6p2">Terbuka untuk proyek freelance, kolaborasi kreatif, dan kontribusi dalam membangun produk digital yang berkarakter.</p></li>' +
+          '<li class="st-ch is-next" data-m="1.0"><div class="st-hd"><span class="st-n" aria-hidden="true">06</span><span class="st-when" data-t="c6w">Hari Ini &amp; Visi</span></div><h3 data-t="c6t">Fokus Saat Ini &amp; Langkah Berikutnya</h3><p data-t="c6p1">Merancang halaman depan responsif, sistem UI interaktif, dan pengalaman web modern dari Medan sembari terus memperdalam React, Vue, serta alur kerja berbasis AI.</p><p data-t="c6p2">Terbuka untuk proyek kerja lepas, kolaborasi kreatif, dan kontribusi dalam membangun produk digital yang berkarakter.</p></li>' +
         '</ol></div>',
         '<div class="st-end"><p><strong data-t="e1">Terus belajar, berinovasi, dan berkembang.</strong></p><p data-t="e2">Setiap baris kode adalah langkah untuk menjadi lebih baik.</p>' +
         '<div class="st-cta-row"><button type="button" class="st-cta-btn pri" data-goto="5" data-t="ctaProj">Lihat Proyek Unggulan &#8599;</button><button type="button" class="st-cta-btn sec" data-goto="6" data-t="ctaContact">Hubungi Saya &#8599;</button></div></div>'
-      ].join('')
+      ].join('') + '</div>'
     ],
 
     // 1: Music -- Studio Synth + MP3 Turntable
     ['<i class="mg"></i><svg class="mw" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mwl" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#e0463a" stop-opacity="0"/><stop offset=".25" stop-color="#e0463a" stop-opacity=".9"/><stop offset=".75" stop-color="#e0463a" stop-opacity=".55"/><stop offset="1" stop-color="#e0463a" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="url(#mwl)" vector-effect="non-scaling-stroke"><path class="ln" style="--i:0;opacity:0.35" stroke-width="1.6" d="M1250 600 C 1020 570, 860 550, 640 500 S 240 290, -60 330"/><path class="ln" style="--i:1;opacity:0.47" stroke-width="1" d="M1250 609 C 1020 579, 860 570, 640 520 S 240 324, -60 364"/><path class="ln" style="--i:2;opacity:0.59" stroke-width="1" d="M1250 618 C 1020 588, 860 590, 640 540 S 240 358, -60 398"/><path class="ln" style="--i:3;opacity:0.71" stroke-width="1.6" d="M1250 627 C 1020 597, 860 610, 640 560 S 240 392, -60 432"/><path class="ln" style="--i:4;opacity:0.35" stroke-width="1" d="M1250 636 C 1020 606, 860 630, 640 580 S 240 426, -60 466"/><path class="ln" style="--i:5;opacity:0.47" stroke-width="1" d="M1250 645 C 1020 615, 860 650, 640 600 S 240 460, -60 500"/><path class="ln" style="--i:6;opacity:0.59" stroke-width="1.6" d="M1250 654 C 1020 624, 860 670, 640 620 S 240 494, -60 534"/><path class="ln" style="--i:7;opacity:0.71" stroke-width="1" d="M1250 663 C 1020 633, 860 690, 640 640 S 240 528, -60 568"/><path class="ln" style="--i:8;opacity:0.35" stroke-width="1" d="M1250 672 C 1020 642, 860 710, 640 660 S 240 562, -60 602"/><path class="ln" style="--i:9;opacity:0.47" stroke-width="1.6" d="M1250 681 C 1020 651, 860 730, 640 680 S 240 596, -60 636"/><path class="ln" style="--i:10;opacity:0.59" stroke-width="1" d="M1250 690 C 1020 660, 860 750, 640 700 S 240 630, -60 670"/><path class="ln" style="--i:11;opacity:0.71" stroke-width="1" d="M1250 699 C 1020 669, 860 770, 640 720 S 240 664, -60 704"/><path class="ln" style="--i:12;opacity:0.35" stroke-width="1.6" d="M1250 708 C 1020 678, 860 790, 640 740 S 240 698, -60 738"/><path class="ln" style="--i:13;opacity:0.47" stroke-width="1" d="M1250 717 C 1020 687, 860 810, 640 760 S 240 732, -60 772"/></g></svg><i class="mn"></i><i class="dim"></i><span class="ghost" id="ghost" aria-hidden="true"></span><img class="cut" src="' + MUSIC_CUT + '" alt="M. Zikri bermain gitar"><i class="lamp"></i><i class="sweep"></i><canvas class="dust" aria-hidden="true"></canvas>', '<div class="me-top"><span class="me-k">Playlist · 06 lagu</span></div><h2 class="pt">Lagi sering<br><em>kuputar.</em></h2><p class="pl-sub">Enam lagu yang lagi nempel di kepala.</p><ol class="pl" id="plist"></ol>'],
 
-    // 2: About (Zikri)
+    // 2: About (Zikri) — Haldoren-style "Laptop Dive" One-Screen Portfolio Hero
     [
-      '<img src="' + PHOTO + '" alt="M. Zikri Al-Bukhori">',
-      '<div class="me-top"><span class="me-k">Tentang saya</span></div>' +
-      '<h2 class="pt">M. Zikri<br><em>Al-Bukhori</em></h2>' +
-      '<div class="me-bio"><p class="me-lead">Halo, saya <strong>M. Zikri Al-Bukhori</strong>, seorang <strong>Front-End Developer &amp; UI Designer</strong> yang berdomisili di <strong>Medan, Sumatera Utara</strong>. Saya berfokus pada perancangan antarmuka web modern yang responsif, rapi, dan mudah digunakan.</p><p>Saat ini saya menempuh pendidikan di <strong>SMK Swasta Mandiri</strong> dan menjalani praktik industri (PKL) di <strong>DigitalCODE</strong>, menerjemahkan ide kreatif menjadi kode yang solid, cepat, dan interaktif.</p></div><blockquote class="me-q"><span>Prinsip saya:</span> Mengutamakan kualitas visual, performa kode, dan pengalaman pengguna yang optimal.</blockquote>' +
-      '<div class="me-f">' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></i><p><b>Fokus</b><span>Front-end development &amp; desain antarmuka</span></p></div>' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></i><p><b>Pengalaman Industri</b><span>PKL di DigitalCODE (Web &amp; UI)</span></p></div>' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.2 2.7 3 6 3s6-1.8 6-3v-4.5"/></svg></i><p><b>Pendidikan</b><span>SMK Swasta Mandiri — Medan</span></p></div>' +
-        '<div><i class="me-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><p><b>Domisili</b><span>Medan, Sumatera Utara</span></p></div>' +
-      '</div>' +
-      '<div class="me-cw"><p class="me-ck">Keahlian &amp; Teknologi Utama</p><ul class="me-chips" aria-label="Teknologi utama">' +
-        '<li><button type="button" class="me-chip" data-goto="4">HTML5 &amp; CSS3</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">JavaScript ES6+</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">Tailwind CSS</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">React &amp; Vue</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">GSAP &amp; Anime.js</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">UI/UX Design</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">Git &amp; GitHub</button></li>' +
-        '<li><button type="button" class="me-chip" data-goto="4">AI Workflow</button></li>' +
-      '</ul></div>' +
-      '<div class="me-b">' +
-        '<button type="button" class="me-btn-pri" data-goto="5">Lihat Proyek Unggulan <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></button>' +
-        '<button type="button" class="me-btn-sec" data-goto="6">Hubungi saya <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></button>' +
+      '',
+      '<div class="me-dive md-js" data-i18n-own="1" role="region" aria-label="Profil M. Zikri Al-Bukhori — Studio &amp; Portfolio">' +
+        '<div class="md-stage">' +
+          '<div class="md-frame d-fade">' +
+            '<img class="md-plate md-masked" src="assets/images/me-studio-plate.webp" alt="" draggable="false" decoding="async">' +
+            '<div class="md-studio-glow" aria-hidden="true"></div>' +
+            '<svg class="md-wm md-pre" viewBox="0 0 1440 295" preserveAspectRatio="none" aria-hidden="true">' +
+              '<defs>' +
+                '<linearGradient id="mdWmGrad" x1="0" y1="0" x2="0" y2="1">' +
+                  '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
+                  '<stop offset="0.5" stop-color="#f1f5f3" stop-opacity="0.9"/>' +
+                  '<stop offset="1" stop-color="#d7e6de" stop-opacity="0.28"/>' +
+                '</linearGradient>' +
+              '</defs>' +
+              '<text x="14" y="250" textLength="1412" lengthAdjust="spacingAndGlyphs" fill="url(#mdWmGrad)">ZIKRI</text>' +
+            '</svg>' +
+            '<div class="md-cut-wrap md-pre">' +
+              '<img class="md-cut" src="assets/images/gallery-hero.webp" alt="M. Zikri Al-Bukhori" draggable="false" decoding="async">' +
+            '</div>' +
+            '<div class="md-badge md-pre">' +
+              '<svg class="md-badge-art" viewBox="0 0 582 1030" fill="none" aria-hidden="true">' +
+                '<defs>' +
+                  '<linearGradient id="mdStrapL" x1="0" y1="0" x2="1" y2="0">' +
+                    '<stop offset="0%" stop-color="#d9e0dd"/>' +
+                    '<stop offset="30%" stop-color="#f7faf8"/>' +
+                    '<stop offset="70%" stop-color="#eef3f0"/>' +
+                    '<stop offset="100%" stop-color="#c6d0cc"/>' +
+                  '</linearGradient>' +
+                  '<linearGradient id="mdStrapR" x1="0" y1="0" x2="1" y2="0">' +
+                    '<stop offset="0%" stop-color="#c4ceca"/>' +
+                    '<stop offset="45%" stop-color="#f2f6f4"/>' +
+                    '<stop offset="100%" stop-color="#d2dad6"/>' +
+                  '</linearGradient>' +
+                  '<linearGradient id="mdMetal" x1="0" y1="0" x2="1" y2="1">' +
+                    '<stop offset="0%" stop-color="#f4f8f6"/>' +
+                    '<stop offset="35%" stop-color="#b4bfba"/>' +
+                    '<stop offset="68%" stop-color="#707a76"/>' +
+                    '<stop offset="100%" stop-color="#dbe3df"/>' +
+                  '</linearGradient>' +
+                  '<filter id="mdBadgeSh" x="-15%" y="-8%" width="130%" height="120%">' +
+                    '<feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#04180f" flood-opacity="0.46"/>' +
+                  '</filter>' +
+                '</defs>' +
+                '<g filter="url(#mdBadgeSh)">' +
+                  '<polygon points="222,0 264,0 294,370 262,370" fill="url(#mdStrapL)"/>' +
+                  '<polygon points="354,0 312,0 286,370 318,370" fill="url(#mdStrapR)"/>' +
+                  '<rect x="256" y="346" width="68" height="28" rx="6" fill="url(#mdMetal)" stroke="#5b6561" stroke-width="1.5"/>' +
+                  '<circle cx="290" cy="390" r="16" fill="none" stroke="url(#mdMetal)" stroke-width="7"/>' +
+                  '<path d="M278 400 L302 400 L306 436 C306 446 298 452 290 452 C282 452 274 446 274 436 Z" fill="url(#mdMetal)" stroke="#5c6662" stroke-width="1.5"/>' +
+                  '<rect x="283" y="446" width="14" height="36" rx="7" fill="url(#mdMetal)" stroke="#5c6662" stroke-width="1.4"/>' +
+                  '<rect x="152" y="468" width="278" height="484" rx="18" fill="rgba(232,244,238,0.18)" stroke="rgba(255,255,255,0.46)" stroke-width="2.5"/>' +
+                  '<rect x="160" y="476" width="262" height="468" rx="13" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>' +
+                  '<rect x="248" y="492" width="84" height="16" rx="8" fill="#0d3726" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>' +
+                  '<circle cx="192" cy="500" r="5" fill="#0d3726" opacity="0.55"/>' +
+                  '<circle cx="388" cy="500" r="5" fill="#0d3726" opacity="0.55"/>' +
+                '</g>' +
+              '</svg>' +
+              '<img class="md-badge-img" alt="" draggable="false" decoding="async">' +
+              '<div class="md-card">' +
+                '<h4>DESIGNER<br>CARD</h4>' +
+                '<span class="md-yr">2026</span>' +
+                '<div class="md-role">FRONT-END // UI DESIGNER</div>' +
+                '<div class="md-ph" aria-hidden="true"></div>' +
+                '<div class="md-row"><span>NAME</span><b>M. ZIKRI</b></div>' +
+                '<div class="md-row"><span>FOCUS</span><b>FRONT-END &amp; UI</b></div>' +
+                '<div class="md-row"><span>WORK</span><b>PKL DIGITALCODE</b></div>' +
+                '<div class="md-row"><span>WEB</span><b>TRYNVEXA.GITHUB.IO</b></div>' +
+              '</div>' +
+              '<div class="md-card-glare" aria-hidden="true"></div>' +
+              '<div class="md-hit" aria-hidden="true"></div>' +
+            '</div>' +
+            '<div class="md-script md-pre" aria-hidden="true">front-end &amp; ui</div>' +
+            '<video class="md-trans md-masked" muted playsinline preload="auto" aria-hidden="true"></video>' +
+            '<video class="md-trans-rev md-masked" muted playsinline preload="auto" aria-hidden="true"></video>' +
+            '<img class="md-caseplate md-masked" alt="" draggable="false" decoding="async" aria-hidden="true">' +
+            '<div class="md-laptop-rig md-pre">' +
+              '<div class="md-laptop-shell" aria-hidden="true">' +
+                '<div class="md-laptop-shadow"></div>' +
+                '<div class="md-lid"><div class="md-lid-glint"></div></div>' +
+                '<div class="md-hinge"></div>' +
+                '<div class="md-deck"></div>' +
+              '</div>' +
+              '<div class="md-screen">' +
+                '<div class="md-screen-inner">' +
+                '<div class="md-screen-idle" aria-hidden="true">' +
+                  '<div class="md-idle-top"><div class="md-idle-dots"><i></i><i></i><i></i></div><span>STUDIO // 2026</span></div>' +
+                  '<div class="md-idle-mid"><span>dive into</span>ZIKRI WORK</div>' +
+                  '<div class="md-idle-foot"><span>MEDAN &bull; WIB</span><span>04 CASES &rarr;</span></div>' +
+                '</div>' +
+                '<div class="md-slide" data-case="0">' +
+                  '<div class="md-reel"><img src="assets/images/project-mono.webp" alt="Mono Living — Hunian Modular" draggable="false" decoding="async"></div>' +
+                  '<div class="md-reel-dock"><span class="md-reel-url"><i></i>v0-mono-ecommerce.vercel.app</span><a class="md-reel-live" href="https://v0-mono-ecommerce.vercel.app/" target="_blank" rel="noopener noreferrer">Live Demo &#8599;</a></div>' +
+                '</div>' +
+                '<div class="md-slide" data-case="1">' +
+                  '<div class="md-reel"><img src="assets/images/project-gigi.webp" alt="GiGi Energy — Minuman Energi" loading="lazy" draggable="false" decoding="async"></div>' +
+                  '<div class="md-reel-dock"><span class="md-reel-url"><i></i>gigi-energy.vercel.app</span><a class="md-reel-live" href="https://modern-gen-z-energy-drink-landi-six-eta.vercel.app/" target="_blank" rel="noopener noreferrer">Live Demo &#8599;</a></div>' +
+                '</div>' +
+                '<div class="md-slide" data-case="2">' +
+                  '<div class="md-reel"><img src="assets/images/project-compute.webp" alt="Compute AI — Platform Agen AI" loading="lazy" draggable="false" decoding="async"></div>' +
+                  '<div class="md-reel-dock"><span class="md-reel-url"><i></i>compute-ai.vercel.app</span><a class="md-reel-live" href="https://compute-the-platform-to-build-psi-tan.vercel.app/" target="_blank" rel="noopener noreferrer">Live Demo &#8599;</a></div>' +
+                '</div>' +
+                '<div class="md-slide" data-case="3">' +
+                  '<div class="md-reel"><img src="assets/images/project-sweet.jpg" alt="Sweet Heaven — Toko Kue Artisan" loading="lazy" draggable="false" decoding="async"></div>' +
+                  '<div class="md-reel-dock"><span class="md-reel-url"><i></i>trynvexa.github.io/toko-kue</span><a class="md-reel-live" href="https://trynvexa.github.io/toko-kue/" target="_blank" rel="noopener noreferrer">Live Demo &#8599;</a></div>' +
+                '</div>' +
+                '<div class="md-flash" aria-hidden="true"></div>' +
+                '</div>' +
+              '</div>' +
+              '<button type="button" class="md-laptop-hero-hit" aria-label="Masuk ke layar laptop untuk melihat profil dan karya"></button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="md-ui">' +
+          '<button type="button" class="md-tag t1 md-pre">&larr; beranda</button>' +
+          '<button type="button" class="md-tag t2 md-pre">portfolio</button>' +
+          '<button type="button" class="md-tag t3 md-pre">proyek</button>' +
+          '<button type="button" class="md-tag t4 md-pre">kontak</button>' +
+          '<button type="button" class="md-logo" aria-label="Kembali ke studio">ZIKRI</button>' +
+          '<svg class="md-m-wm md-m-only md-pre" viewBox="0 0 1440 310" aria-hidden="true">' +
+            '<defs>' +
+              '<linearGradient id="mdWmGradM" x1="0" y1="0" x2="0" y2="1">' +
+                '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
+                '<stop offset="0.5" stop-color="#f1f5f3" stop-opacity="0.9"/>' +
+                '<stop offset="1" stop-color="#d7e6de" stop-opacity="0.3"/>' +
+              '</linearGradient>' +
+            '</defs>' +
+            '<text x="10" y="266" textLength="1420" lengthAdjust="spacingAndGlyphs" fill="url(#mdWmGradM)">ZIKRI</text>' +
+          '</svg>' +
+          '<div class="md-m-script md-m-only md-pre" aria-hidden="true">front-end &amp; ui</div>' +
+          '<div class="md-m-badge md-m-only" aria-hidden="true"></div>' +
+          '<button type="button" class="md-hint md-pre"><i class="md-hint-line" aria-hidden="true"></i><span>scroll ke dalam karya</span></button>' +
+          '<aside class="md-ticket" aria-live="polite">' +
+            '<i class="md-hole tl" aria-hidden="true"></i>' +
+            '<i class="md-hole tr" aria-hidden="true"></i>' +
+            '<i class="md-hole bl" aria-hidden="true"></i>' +
+            '<i class="md-hole br" aria-hidden="true"></i>' +
+            '<h2>MONO LIVING</h2>' +
+            '<div class="md-rows"><div>MODULAR HOUSING</div><div>FRONT-END &amp; UI</div><div>2026</div></div>' +
+          '</aside>' +
+          '<div class="md-desc">' +
+            '<div class="md-k">// mono living</div>' +
+            '<p>&mdash; landing page hunian modular dengan tipografi raksasa yang ditimpa arsitektur baja di tepi air.</p>' +
+            '<div class="md-num">01 / 04</div>' +
+            '<a class="md-desc-live" href="https://v0-mono-ecommerce.vercel.app/" target="_blank" rel="noopener noreferrer">Live Demo &#8599;</a>' +
+          '</div>' +
+          '<button type="button" class="md-nav-case prev dim" aria-label="Slide sebelumnya">' +
+            '<span class="md-c" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>' +
+            '<span class="md-lbl">slide <br>sebelumnya</span>' +
+          '</button>' +
+          '<button type="button" class="md-nav-case next" aria-label="Slide berikutnya">' +
+            '<span class="md-c" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>' +
+            '<span class="md-lbl">slide <br>berikutnya</span>' +
+          '</button>' +
+        '</div>' +
       '</div>'
     ],
 
@@ -625,7 +785,7 @@
     // 5: Proyek (Studi kasus interaktif + Grid semua proyek)
     [
       '<div class="np-bg"></div>',
-      `<div class="nwrap"><i class="np-prog" id="npProg"></i><div class="np-header-bar"><div class="np-kicker-wrap"><span class="me-k" id="npKicker">Karya Pilihan · 04 Studi Kasus</span></div><nav class="np-nav" id="npNav" role="tablist" aria-label="Pilih proyek"></nav></div><section class="np-top"><div class="np-title-col"><div class="np-meta-bar" id="npMetaBar"></div><h1 class="np-name" id="npName" aria-live="polite"></h1><div class="np-stack" id="npStack" aria-label="Teknologi proyek"></div></div><div class="np-info" id="npInfo"></div></section><button type="button" class="np-shot" id="npShot" aria-label="Lihat gambar ukuran penuh"><div class="np-frame" id="npFrame"><div class="np-browser-bar" aria-hidden="true"><span class="np-dots"><i></i><i></i><i></i></span><span class="np-url-pill" id="npUrlPill">v0-mono-ecommerce.vercel.app</span><span class="np-zoom-hint">Perbesar &#8599;</span></div><div class="np-view" id="npView"></div></div></button><section class="np-sec" id="npSec"><h3 id="npCloseTitle">Dilihat dari dekat</h3><div class="np-crops" id="npCrops"></div></section><section class="np-sec np-two"><div><h3 id="npPalTitle">Warna yang dipakai <small class="np-pal-hint">(Klik untuk salin HEX)</small></h3><div class="np-pal" id="npPal"></div></div><div><h3 id="npRowsTitle">Isi halaman</h3><dl class="np-rows" id="npRows"></dl></div></section><section class="np-sec np-all-sec"><div class="np-all-head"><h3 id="npAllTitle">Indeks Semua Proyek (04)</h3><p id="npAllSub">Bandingkan keempat proyek unggulan atau buka demo langsung.</p></div><div class="np-all-grid" id="npAllGrid"></div></section><section class="np-more" id="npMore"></section><dialog class="np-dlg" id="npDlg"><button type="button" class="np-close" id="npClose">Tutup</button><img id="npBig" alt=""></dialog></div>`
+      `<div class="nwrap" data-i18n-own="1"><i class="np-prog" id="npProg"></i><div class="np-header-bar"><div class="np-kicker-wrap"><span class="me-k" id="npKicker">Karya Pilihan · 04 Studi Kasus</span></div><nav class="np-nav" id="npNav" role="tablist" aria-label="Pilih proyek"></nav></div><section class="np-top"><div class="np-title-col"><div class="np-meta-bar" id="npMetaBar"></div><h1 class="np-name" id="npName" aria-live="polite"></h1><div class="np-stack" id="npStack" aria-label="Teknologi proyek"></div></div><div class="np-info" id="npInfo"></div></section><button type="button" class="np-shot" id="npShot" aria-label="Lihat gambar ukuran penuh"><div class="np-frame" id="npFrame"><div class="np-browser-bar" aria-hidden="true"><span class="np-dots"><i></i><i></i><i></i></span><span class="np-url-pill" id="npUrlPill">v0-mono-ecommerce.vercel.app</span><span class="np-zoom-hint">Perbesar &#8599;</span></div><div class="np-view" id="npView"></div></div></button><section class="np-sec" id="npSec"><h3 id="npCloseTitle">Dilihat dari dekat</h3><div class="np-crops" id="npCrops"></div></section><section class="np-sec np-two"><div><h3 id="npPalTitle">Warna yang dipakai <small class="np-pal-hint">(Klik untuk salin HEX)</small></h3><div class="np-pal" id="npPal"></div></div><div><h3 id="npRowsTitle">Isi halaman</h3><dl class="np-rows" id="npRows"></dl></div></section><section class="np-sec np-all-sec"><div class="np-all-head"><h3 id="npAllTitle">Indeks Semua Proyek (04)</h3><p id="npAllSub">Bandingkan keempat proyek unggulan atau buka demo langsung.</p></div><div class="np-all-grid" id="npAllGrid"></div></section><section class="np-more" id="npMore"></section><dialog class="np-dlg" id="npDlg"><button type="button" class="np-close" id="npClose">Tutup</button><img id="npBig" alt=""></dialog></div>`
     ],
 
     // 6: Kontak — PAPER RIOT / Edisi 06
@@ -645,7 +805,7 @@
           '<i class="pr-press" aria-hidden="true">' + s + '</i>' +
           '<i class="pr-noise" aria-hidden="true"></i>';
       })(),
-      `<div class="pr-paper">
+      `<div class="pr-paper" data-i18n-own="1">
         <div class="pr-grid">
           <div class="pr-l">
             <div class="pr-meta pr-rev" style="--d:.2">
@@ -667,7 +827,7 @@
                   <span class="pr-mail-l"><small data-kt="send">TULIS EMAIL</small><b>zikriganteng2023@gmail.com</b></span>
                   <span class="pr-mail-ar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
                 </a>
-                <button type="button" class="pr-copy-btn" id="copyEmailBtn" aria-label="Salin alamat email">
+                <button type="button" class="pr-copy-btn" id="copyEmailBtn" data-ka="copyMailAria" aria-label="Salin alamat email">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   <span data-kt="copyMail">Salin Email</span>
                 </button>
@@ -676,9 +836,9 @@
             <div class="pr-composer pr-rev" style="--d:.5">
               <div class="prc-head">
                 <span class="prc-k" data-kt="compTitle">KIRIM PESAN CEPAT</span>
-                <div class="prc-topics" role="group" aria-label="Pilih topik diskusi">
+                <div class="prc-topics" role="group" data-ka="topicAria" aria-label="Pilih topik diskusi">
                   <button type="button" class="prc-topic on" aria-pressed="true" data-kt="tWeb">Proyek Web</button>
-                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tUi">UI/UX Design</button>
+                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tUi">Desain UI/UX</button>
                   <button type="button" class="prc-topic" aria-pressed="false" data-kt="tCollab">Kolaborasi</button>
                 </div>
               </div>
@@ -699,7 +859,7 @@
           <aside class="pr-r">
             <div class="pass-stage" id="passStage">
               <!-- Kartu 3D Holographic Interaktif (Bebas Melayang & Berotasi Bebas) -->
-              <div class="pass-card" id="passCard" tabindex="0" role="region" aria-label="Kartu Identitas 3D Interaktif M. Zikri (Geser untuk memutar)">
+              <div class="pass-card" id="passCard" tabindex="0" role="region" data-ka="passAria" aria-label="Kartu Identitas 3D Interaktif M. Zikri (Geser untuk memutar)">
                 <!-- Lapisan Kilau Holografik Pelangi -->
                 <div class="pass-glare" aria-hidden="true"></div>
 
@@ -710,11 +870,11 @@
                   <!-- Official Credential Header (Anti-AI-Slop: NO 'AVAILABLE') -->
                   <div class="pass-header-strip">
                     <div class="pass-accred-left">
-                      <span class="pass-kicker">EDISI 06 &bull; DEV PASS</span>
-                      <span class="pass-subkicker">MEDAN, ID (WIB)</span>
+                      <span class="pass-kicker" data-kt="passKicker">EDISI 06 &bull; KARTU AKSES</span>
+                      <span class="pass-subkicker" data-kt="passSubkicker">MEDAN, ID (WIB)</span>
                     </div>
                     <div class="pass-accred-right">
-                      <span class="pass-clearance">ALL-ACCESS</span>
+                      <span class="pass-clearance" data-kt="passClearance">AKSES PENUH</span>
                       <span class="pass-serial-no">#ZK-2026-06</span>
                     </div>
                   </div>
@@ -747,7 +907,7 @@
                         <polygon points="22,7 26,17 37,17 28,24 31,34 22,28 13,34 16,24 7,17 18,17" fill="none" stroke="currentColor" stroke-width="0.8"/>
                         <circle cx="22" cy="22" r="4" fill="currentColor" opacity="0.3"/>
                       </svg>
-                      <span class="seal-text">VERIFIED</span>
+                      <span class="seal-text" data-kt="passVerified">TERVERIFIKASI</span>
                     </div>
                   </div>
 
@@ -755,23 +915,23 @@
                   <div class="pass-info">
                     <div class="pass-identity-row">
                       <h3 class="pass-name">M. ZIKRI AL-BUKHORI</h3>
-                      <span class="pass-id-badge">AUTH</span>
+                      <span class="pass-id-badge" data-kt="passAuth">RESMI</span>
                     </div>
-                    <p class="pass-role-line">FRONT-END DEVELOPER &bull; UI DESIGNER</p>
+                    <p class="pass-role-line" data-kt="passRole">PENGEMBANG FRONT-END &bull; DESAINER UI</p>
 
                     <!-- Technical Credential Specs Grid -->
                     <div class="pass-spec-grid">
                       <div class="pass-spec-box">
-                        <span class="spec-k">INSTITUSI</span>
+                        <span class="spec-k" data-kt="specInst">INSTITUSI</span>
                         <span class="spec-v">SMK MANDIRI</span>
                       </div>
                       <div class="pass-spec-box">
-                        <span class="spec-k">UNIT PKL</span>
+                        <span class="spec-k" data-kt="specPkl">UNIT PKL</span>
                         <span class="spec-v">DIGITALCODE</span>
                       </div>
                       <div class="pass-spec-box">
-                        <span class="spec-k">BASIS</span>
-                        <span class="spec-v">MEDAN (WIB)</span>
+                        <span class="spec-k" data-kt="specBase">BASIS</span>
+                        <span class="spec-v" data-kt="specMedan">MEDAN (WIB)</span>
                       </div>
                     </div>
                   </div>
@@ -794,7 +954,7 @@
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                       </div>
                       <div class="act-btn-text">
-                        <span class="act-btn-lbl">Surel / Email</span>
+                        <span class="act-btn-lbl" data-kt="passEmailLbl">Surel</span>
                         <span class="act-btn-sub">zikriganteng2023@gmail.com</span>
                       </div>
                       <span class="act-btn-arr">&#8599;</span>
@@ -802,9 +962,9 @@
                   </div>
 
                   <!-- Tombol Flip 3D Sisi Belakang -->
-                  <button type="button" class="pass-flip-btn" aria-label="Balikkan kartu ke sisi belakang">
+                  <button type="button" class="pass-flip-btn" data-ka="passFlipBackAria" aria-label="Balikkan kartu ke sisi belakang">
                     <svg class="flip-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.5-4v4h4M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>
-                    <span>BALIK KARTU &bull; SPEK & SOSIAL</span>
+                    <span data-kt="passFlipBack">BALIK KARTU &bull; SPEK &amp; SOSIAL</span>
                   </button>
                 </div>
 
@@ -820,11 +980,11 @@
                     <!-- Panel Tanda Tangan Resmi & Kode CVC -->
                     <div class="pass-signature-strip">
                       <div class="sig-panel">
-                        <span class="sig-watermark">AUTHORIZED SIGNATURE &bull; NOT TRANSFERABLE</span>
+                        <span class="sig-watermark" data-kt="passSig">TANDA TANGAN RESMI &bull; TIDAK DAPAT DIPINDAHTANGANKAN</span>
                         <span class="sig-handwritten">M. Zikri Al-Bukhori</span>
                       </div>
                       <div class="sig-cvc">
-                        <span class="cvc-lbl">SEC</span>
+                        <span class="cvc-lbl" data-kt="passSec">KODE</span>
                         <span class="cvc-val">062</span>
                       </div>
                     </div>
@@ -832,15 +992,15 @@
                     <!-- Hub Saluran Sosial & Repositori Resmi -->
                     <div class="pass-back-socials">
                       <div class="pass-back-head">
-                        <span class="pass-back-lbl">JARINGAN & KODE SUMBER</span>
-                        <span class="pass-back-subtag">TERHUBUNG</span>
+                        <span class="pass-back-lbl" data-kt="passNetTitle">JARINGAN &amp; KODE SUMBER</span>
+                        <span class="pass-back-subtag" data-kt="passNetTag">TERHUBUNG</span>
                       </div>
                       <div class="pass-soc-links">
                         <a class="pass-soc-pill" href="https://github.com/trynvexa" target="_blank" rel="noopener noreferrer">
                           <span class="pill-ic"><svg viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></span>
                           <div class="pill-meta">
                             <span class="pill-t">GitHub</span>
-                            <span class="pill-sub">@trynvexa &bull; Repositori Kode</span>
+                            <span class="pill-sub" data-kt="socGhSub">@trynvexa &bull; Repositori Kode</span>
                           </div>
                           <span class="pill-ar">&#8599;</span>
                         </a>
@@ -848,7 +1008,7 @@
                           <span class="pill-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></span>
                           <div class="pill-meta">
                             <span class="pill-t">Instagram</span>
-                            <span class="pill-sub">@yo144484 &bull; Visual & Desain</span>
+                            <span class="pill-sub" data-kt="socIgSub">@yo144484 &bull; Visual &amp; Desain</span>
                           </div>
                           <span class="pill-ar">&#8599;</span>
                         </a>
@@ -856,7 +1016,7 @@
                           <span class="pill-ic"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.6 3.6 0 1 1-3.6-3.6M14 3c.3 2.7 2 4.4 4.8 4.7"/></svg></span>
                           <div class="pill-meta">
                             <span class="pill-t">TikTok</span>
-                            <span class="pill-sub">@frince_nael7 &bull; Konten Kreatif</span>
+                            <span class="pill-sub" data-kt="socTtSub">@frince_nael7 &bull; Konten Kreatif</span>
                           </div>
                           <span class="pill-ar">&#8599;</span>
                         </a>
@@ -865,8 +1025,8 @@
 
                     <!-- Dossier Spesifikasi Teknis -->
                     <div class="pass-dossier" aria-hidden="true">
-                      <div class="dossier-row"><span>BUILD ENGINE</span><b>VANILLA ES6+ &bull; CSS3</b></div>
-                      <div class="dossier-row"><span>PROD UNIT</span><b>PKL DIGITALCODE 2026</b></div>
+                      <div class="dossier-row"><span data-kt="passBuild">MESIN BANGUN</span><b>VANILLA ES6+ &bull; CSS3</b></div>
+                      <div class="dossier-row"><span data-kt="passProd">UNIT PRODUKSI</span><b data-kt="passProdVal">PKL DIGITALCODE 2026</b></div>
                     </div>
 
                     <!-- Vector Barcode & Geographic Stamp -->
@@ -875,15 +1035,15 @@
                         <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                       </div>
                       <div class="pass-geo">
-                        <span class="geo-code">* ZK &bull; 2026 &bull; ALL-ACCESS &bull; PORTFOLIO *</span>
-                        <small>3&deg;35'24.8" N &bull; 98&deg;40'20.1" E &bull; MEDAN, SUMATERA UTARA</small>
+                        <span class="geo-code">* ZK &bull; 2026 &bull; 06 *</span>
+                        <small>3&deg;35'24.8" N &bull; 98&deg;40'20.1" E &bull; MEDAN</small>
                       </div>
                     </div>
 
                     <!-- Tombol Kembali ke Depan -->
-                    <button type="button" class="pass-flip-btn back-btn" aria-label="Balikkan kartu ke sisi depan">
+                    <button type="button" class="pass-flip-btn back-btn" data-ka="passFlipFrontAria" aria-label="Balikkan kartu ke sisi depan">
                       <svg class="flip-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.5-4v4h4M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>
-                      <span>KEMBALI KE SISI DEPAN</span>
+                      <span data-kt="passFlipFront">KEMBALI KE SISI DEPAN</span>
                     </button>
                   </div>
                 </div>
@@ -899,6 +1059,10 @@
           </div>
         </div>
       </div>`
+    ],
+    [
+      '',
+      function () { return window.ZK_RUNWAY_DATA ? window.ZK_RUNWAY_DATA.renderPage() : ''; }
     ]
   ];
 
@@ -941,9 +1105,10 @@
   function pageHTML(i) {
     var pv = (i + n - 1) % n, nx = (i + 1) % n;
     var ktImg = ((document.querySelector('.kontakphoto .portrait-img') || {}).src || 'assets/images/card-contact.webp');
+    var bodyRaw = typeof PAGES[i][1] === 'function' ? PAGES[i][1]() : PAGES[i][1];
     return '<div class="bg">' + PAGES[i][0] + '</div>' +
            '<button class="bk" data-close aria-label="Kembali ke daftar kartu"><span class="bk-i" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><span class="bk-t">Kembali</span></button>' +
-           '<div class="bd">' + PAGES[i][1].split('__KT_IMG__').join(ktImg) + '</div>' +
+           '<div class="bd">' + bodyRaw.split('__KT_IMG__').join(ktImg) + '</div>' +
            '<nav class="pnav" aria-label="Pindah kartu">' +
              '<button type="button" data-go="-1">&#9666; ' + cards[pv].getAttribute('data-n') + '</button>' +
              '<button type="button" data-go="1">' + cards[nx].getAttribute('data-n') + ' &#9656;</button>' +
@@ -952,6 +1117,7 @@
 
   var switching = false;
   window.zkGoPage = switchPage; // dipakai halaman Proyek (tombol "Hubungi saya")
+  window.zkClosePage = closePage; // dipakai halaman Me (Laptop Dive) untuk kembali ke roda kartu
   window.zkJumpPage = function(targetIdx) {
     targetIdx = ((targetIdx % n) + n) % n;
     if (cur < 0) {
@@ -976,6 +1142,7 @@
       pos = base + (((i - base + n / 2) % n + n) % n - n / 2);
       place();
       cur = i;
+      pg.removeAttribute('dir');
       pg.className = 'pg sw p' + i;
       pgb.innerHTML = pageHTML(i);
       if (i === 5) { setTimeout(initProjectSpatialStage, 30); }
@@ -1073,12 +1240,24 @@
   }
   function closePage() {
     if (cur < 0) return;
+    var closedIdx = cur;
     if (fxReduce) { closeCore(); return; }
     var c = cards[cur], h = fxHost();
     FX.busy = true;
     fxShards(c, true); fxHide(c);
     irisC = { x: innerWidth / 2, y: innerHeight / 2 }; closeCore(); irisC = null;
-    setTimeout(function(){ fxShow(); h.remove(); FX.busy = false; c.focus({ preventScroll: true }); }, 750);
+    setTimeout(function(){
+      fxShow();
+      h.remove();
+      FX.busy = false;
+      // Smooth landing animation on Home radial wheel after returning from detail page
+      vRiffleY[closedIdx] += 15;
+      kickTilt();
+      triggerRiffleWave(closedIdx, 20);
+      if (window.__zkBgPulse) window.__zkBgPulse(1);
+      if (window.__zkBuddyBounce) window.__zkBuddyBounce(-6.5);
+      c.focus({ preventScroll: true });
+    }, 750);
   }
 
   function openCore(i) {
@@ -1091,6 +1270,7 @@
     veil.style.backgroundColor = cs.backgroundColor;
     veil.style.backgroundImage = cs.backgroundImage;
     pgb.innerHTML = pageHTML(i);
+    pg.removeAttribute('dir');
     pg.className = 'pg p' + i;
     if (i === 5) { setTimeout(initProjectSpatialStage, 40); }
     pg.hidden = false;
@@ -1116,6 +1296,7 @@
     if (peel) pg.classList.add('p6-out');
     clipTo(from, rectClip(c), 650, 'cubic-bezier(.65, 0, .25, 1)', function(){
       pg.hidden = true;
+      pg.removeAttribute('dir');
       freeze(false);
       pg.classList.remove('p6-out');
     });
@@ -1206,7 +1387,11 @@
     }
   });
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') closePage();
+    if (e.key === 'Escape') {
+      if (cur === 2 && window.__zkMeExitHome) { window.__zkMeExitHome(); return; }
+      if (cur === 7 && window.__zkRunwayEscape && window.__zkRunwayEscape()) return;
+      closePage();
+    }
   });
 
   document.getElementById('prev').onclick = function(){ go(Math.round(pos) - 1); stop(); };
@@ -1214,6 +1399,7 @@
 
   document.addEventListener('keydown', function(e){
     if (cur >= 0) {
+      if (cur === 2 || cur === 7) return; // Halaman Me & Fashion menangani tombol panah sendiri
       if (e.key === 'ArrowLeft') switchPage(-1);
       if (e.key === 'ArrowRight') switchPage(1);
       return;
@@ -1527,7 +1713,7 @@
 (function(){
   var pg = document.getElementById('pg'); if (!pg) return;
   var touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)');
-  var BLOCK = '.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,.np-nav,#npShot,.np-shot,dialog,input,textarea,select,button,a';
+  var BLOCK = '.me-dive,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,.np-nav,#npShot,.np-shot,dialog,input,textarea,select,button,a';
   var x0 = 0, y0 = 0, t0 = 0, ok = false;
   pg.addEventListener('touchstart', function(e){
     ok = false;

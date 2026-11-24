@@ -3,6 +3,8 @@ portfolio-v228.html
 *.bak
 temp-*
 .playwright-mcp/
+assets/runway/look-*.png
+assets/runway/item-*
 
 # OS metadata
 .DS_Store

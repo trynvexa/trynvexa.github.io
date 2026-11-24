@@ -17,8 +17,10 @@
   var CHEV='<svg class="st-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
   var lang=window.ZK?ZK.lang:"id";window.addEventListener("zk-lang",function(){lang=ZK.lang;apply();});
   function apply(){
+    if(!pg.classList.contains("p0"))return;
     setTimeout(function(){window.dispatchEvent(new Event("st-relayout"));},30);
     pg.setAttribute("lang",lang);
+    pg.setAttribute("dir",lang==="ar"?"rtl":"ltr");
     [].forEach.call(pgb.querySelectorAll("[data-t]"),function(el){
       var k=el.getAttribute("data-t");if(!el.hasAttribute("data-id"))el.setAttribute("data-id",el.textContent);
       var i0=el.getAttribute("data-id"),d=DICT[lang];el.textContent=lang==="id"?i0:((d&&d[k])||(window.ZK&&ZK.t(i0,lang))||DICT.en[k]||i0);

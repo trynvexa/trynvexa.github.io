@@ -39,7 +39,8 @@
   }
   function show(i, dir, first) {
     var t = thumbs[i], src = (window.GAL_FULL && window.GAL_FULL[i]) || t.getAttribute('data-src') || t.querySelector('img').src;
-    im.src = src; im.alt = 'Foto ' + (i + 1);
+    var rawAlt = 'Foto ' + (i + 1);
+    im.src = src; im.alt = (window.ZK && ZK.t && ZK.t(rawAlt, ZK.lang)) || rawAlt;
     nEl.textContent = pad(i + 1) + ' / ' + pad(thumbs.length);
     var ready = im.decode ? im.decode() : Promise.resolve();
     ready.catch(function(){}).then(function(){

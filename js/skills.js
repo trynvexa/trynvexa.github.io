@@ -296,7 +296,7 @@ window.SKR = (function(){
     p.querySelector('.sk-pi img').src = b.querySelector('img').src;
     p.querySelector('.sk-cat').textContent = d.cat;
     p.querySelector('.sk-pn').textContent = d.n;
-    p.querySelector('.sk-lvt').textContent = 'Level: ' + S.lv[d.l];
+    p.querySelector('.sk-lvt').innerHTML = '<span>Tingkat</span><span>: </span><span>' + S.lv[d.l] + '</span>';
     [].forEach.call(p.querySelectorAll('.sk-dots i'), function(i, n){ i.classList.toggle('on', n < d.l); });
     p.querySelector('.sk-pd').textContent = d.d;
     p.querySelector('.sk-fr').textContent = d.f;
@@ -305,6 +305,7 @@ window.SKR = (function(){
     p.querySelector('.sk-rel').innerHTML = d.r.map(function(r){ return '<button type="button" class="sk-rl" data-k="' + r + '">' + D[r].n + '</button>'; }).join('');
     p.querySelector('.sk-use').innerHTML = d.u.map(function(t){ return '<li>' + t + '</li>'; }).join('');
     p.querySelector('.sk-chips').innerHTML = d.t.map(function(t){ return '<li>' + t + '</li>'; }).join('');
+    if (window.ZK && ZK.walk) ZK.walk(p);
     var n = S.order.indexOf(k) + 1;
     p.querySelector('.sk-ct').textContent = (n < 10 ? '0' : '') + n + ' / ' + (S.order.length < 10 ? '0' : '') + S.order.length;
     p.querySelector('.sk-gn').textContent = (n < 10 ? '0' : '') + n;
@@ -627,7 +628,7 @@ window.SKR = (function(){
     var on = dock.querySelector('.sk-dk[data-fg="' + g + '"]'), pill = dock.querySelector('.sk-pill');
     if (on && pill) { pill.classList.remove('mv'); void pill.offsetWidth; pill.classList.add('mv'); pill.style.top = (on.offsetTop - 4) + 'px'; pill.style.left = (on.offsetLeft - 4) + 'px'; pill.style.width = pill.style.height = (on.offsetWidth + 8) + 'px'; }
     var b = dock.querySelector('.sk-n b'); if (b) tween(b, cnt(g), 450);
-    var gh = pgb.querySelector('.sk-ghost'); if (gh) { gh.textContent = g === 'all' ? 'SKILL' : NAME[g].toUpperCase(); if (!RM && gh.animate) gh.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' }); }
+    var gh = pgb.querySelector('.sk-ghost'); if (gh) { var rawG = g === 'all' ? 'SKILL' : NAME[g]; var trG = (window.ZK && ZK.t && ZK.t(rawG, ZK.lang)) || rawG; gh.textContent = trG.toUpperCase(); if (!RM && gh.animate) gh.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' }); }
     if (fromClick && on && !RM) { on.classList.add('pull'); setTimeout(function(){ on.classList.remove('pull'); }, 950); }
   }
   function build(dock){
@@ -665,6 +666,7 @@ window.SKR = (function(){
     if (!p.querySelector('.sk-mtr')) { lv.insertAdjacentHTML('beforeend', '<div class="sk-mtr"><i></i></div>'); p.querySelector('.sk-why').parentNode.insertAdjacentHTML('afterend', '<div class="sk-row sk-first"><b class="sk-sh">Pertama kali pakai</b><p></p></div><div class="sk-row sk-less"><b class="sk-sh">Pelajaran terbesar</b><p></p></div><div class="sk-row sk-pit"><b class="sk-sh">Kesalahan yang pernah saya buat</b><p></p></div>'); }
     var m = p.querySelector('.sk-mtr i'); m.style.width = '0'; setTimeout(function(){ m.style.width = (d.l * 20) + '%'; }, 120);
     p.querySelector('.sk-first p').textContent = d.first || ''; p.querySelector('.sk-less p').textContent = d.less || ''; p.querySelector('.sk-pit p').textContent = d.pit || '';
+    if (window.ZK && ZK.walk) ZK.walk(p);
     if (RM) return;
     var full = d.n, n = 0; pn.textContent = ''; pn.classList.add('typing'); clearInterval(pn._t);
     pn._t = setInterval(function(){ pn.textContent = full.slice(0, ++n); if (n >= full.length) { clearInterval(pn._t); pn.classList.remove('typing'); } }, 55);
@@ -684,4 +686,5 @@ window.SKR = (function(){
     if (mo) [].forEach.call(pgb.querySelectorAll('.sk-marq:not([data-o])'), function(b){ b.setAttribute('data-o', 1); mo.observe(b); });
   }
   new MutationObserver(scan).observe(pgb, { childList: true, subtree: true }); scan();
+  window.addEventListener('zk-lang', function(){ var gh = pgb.querySelector('.sk-ghost'); if (gh) { var rawG = curG === 'all' ? 'SKILL' : NAME[curG]; var trG = (window.ZK && ZK.t && ZK.t(rawG, ZK.lang)) || rawG; gh.textContent = trG.toUpperCase(); } });
 })();

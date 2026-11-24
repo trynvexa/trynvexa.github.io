@@ -24,7 +24,8 @@
     { a: [175, 152, 128], b: [130, 145, 138] }, // 3: Frame
     { a: [130, 162, 136], b: [204, 154, 108] }, // 4: Skill
     { a: [212, 112, 58],  b: [172, 132, 96]  }, // 5: Proyek
-    { a: [138, 168, 142], b: [198, 142, 110] }  // 6: Kontak
+    { a: [138, 168, 142], b: [198, 142, 110] }, // 6: Kontak
+    { a: [118, 152, 186], b: [178, 102, 98] }   // 7: Fashion
   ];
   var curPal = { a: [216, 98, 72], b: [165, 148, 120] };
   var tgtPal = PALETTES[2];
@@ -36,7 +37,8 @@
     'assets/images/card-gallery.webp',
     'assets/images/card-skills.webp',
     'assets/images/card-projects.webp',
-    'assets/images/card-contact.webp'
+    'assets/images/card-contact.webp',
+    'assets/runway/card-runway.webp'
   ];
 
   var motes = [];
@@ -62,6 +64,9 @@
     lastCardIdx = idx;
     tgtPal = PALETTES[idx % PALETTES.length] || PALETTES[2];
     document.documentElement.style.setProperty('--bg-acc', tgtPal.a.join(', '));
+    if (window.__zkWebglBgSync && window.__zkWebglBgSync.setCard) {
+      window.__zkWebglBgSync.setCard(idx, tgtPal);
+    }
     if (!slideA || !slideB) return;
     var imgEl = cardEl && cardEl.querySelector('.portrait-img');
     var src = (imgEl && imgEl.getAttribute('src')) || FALLBACK_IMGS[idx] || FALLBACK_IMGS[2];
@@ -110,9 +115,15 @@
   window.__zkBgWheelSync = function(pos, lean) {
     wheelPos = pos;
     wheelLean = lean || 0;
+    if (window.__zkWebglBgSync && window.__zkWebglBgSync.setWheel) {
+      window.__zkWebglBgSync.setWheel(pos, lean || 0);
+    }
   };
   window.__zkBgPulse = function() {
     waveBoost = Math.min(1.5, waveBoost + 0.8);
+    if (window.__zkWebglBgSync && window.__zkWebglBgSync.pulse) {
+      window.__zkWebglBgSync.pulse();
+    }
   };
 
   function drawSunbeams(t, dark, colA, colB) {
@@ -224,6 +235,7 @@
   var pgEl = document.getElementById('pg');
   function draw(now) {
     var hidden = document.hidden ||
+                 window.__zkWebglBgActive ||
                  document.documentElement.classList.contains('intro-on') ||
                  document.body.classList.contains('covered') ||
                  document.body.classList.contains('busy') ||
