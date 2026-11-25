@@ -356,6 +356,8 @@
       set('wave', 2100);
     } else if (cardIdx === 7) {
       set('point', 2000);
+    } else if (cardIdx === 8) {
+      set('thumb', 2100);
     } else {
       set('point', 1800);
     }

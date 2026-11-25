@@ -17,7 +17,8 @@
     { a: [130, 162, 136], b: [204, 154, 108] }, // 4: Skill
     { a: [226, 118, 87],  b: [182, 122, 86]  }, // 5: Proyek
     { a: [138, 168, 142], b: [198, 142, 110] }, // 6: Kontak
-    { a: [128, 148, 184], b: [178, 102, 98] }   // 7: Fashion
+    { a: [128, 148, 184], b: [178, 102, 98] },  // 7: Fashion
+    { a: [62, 108, 198],  b: [220, 156, 98] }   // 8: Rumah (Dream House)
   ];
 
   var FALLBACK_IMGS = [
@@ -28,7 +29,8 @@
     'assets/images/card-skills.webp',
     'assets/images/card-projects.webp',
     'assets/images/card-contact.webp',
-    'assets/runway/card-runway.webp'
+    'assets/runway/card-runway.webp',
+    'assets/estate/card-home.webp'
   ];
 
   window.__zkBgSetCard = function (idx, cardEl) {

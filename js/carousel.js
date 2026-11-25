@@ -1075,6 +1075,10 @@
     [
       '',
       function () { return window.ZK_RUNWAY_DATA ? window.ZK_RUNWAY_DATA.renderPage() : ''; }
+    ],
+    [
+      '',
+      '<div class="dh-stage" data-i18n-own="1" role="region" aria-label="The Grand Estate — Zikri’s Dream House"></div>'
     ]
   ];
 
@@ -1400,6 +1404,7 @@
       if (cur === 2 && window.__zkMeExitHome) { window.__zkMeExitHome(); return; }
       if (cur === 5 && window.__zkDepotEscape && window.__zkDepotEscape()) return;
       if (cur === 7 && window.__zkRunwayEscape && window.__zkRunwayEscape()) return;
+      if (cur === 8 && window.__zkHouseEscape && window.__zkHouseEscape()) return;
       closePage();
     }
   });
@@ -1409,7 +1414,7 @@
 
   document.addEventListener('keydown', function(e){
     if (cur >= 0) {
-      if (cur === 2 || cur === 5 || cur === 7) return; // Halaman Me, Proyek Depot & Fashion menangani navigasi sendiri
+      if (cur === 2 || cur === 5 || cur === 7 || cur === 8) return; // Halaman Me, Proyek Depot, Fashion & Dream House menangani navigasi sendiri
       if (e.key === 'ArrowLeft') switchPage(-1);
       if (e.key === 'ArrowRight') switchPage(1);
       return;
@@ -1723,7 +1728,7 @@
 (function(){
   var pg = document.getElementById('pg'); if (!pg) return;
   var touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)');
-  var BLOCK = '.me-dive,.dp-stage,.dp-modal,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,dialog,input,textarea,select,button,a';
+  var BLOCK = '.me-dive,.dp-stage,.dp-modal,.dh-stage,.dh-drawer,.ge-drawer,.ge-float-card,.ge-fp-modal,.ge-dpad,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,dialog,input,textarea,select,button,a';
   var x0 = 0, y0 = 0, t0 = 0, ok = false;
   pg.addEventListener('touchstart', function(e){
     ok = false;

@@ -273,7 +273,6 @@ html[lang="ko"] .intro::after{content:"클릭하거나 탭해서 입장 \258C"}
 .sk-bar .sk-rg b::after { content: "%"; margin-left: 1px; font-size: 9px; font-weight: 600; }
 .sk-bar .t, .sk-bar p, .sk-bar .sk-chips { grid-column: 2; }
 .pg .sk-bars .sk-bar .t { margin: 2px 0 6px; font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
-.sk-bar .t span:last-child, .sk-bar .sk-trk { display: none; }
 .pg .sk-bars .sk-bar p { margin-top: 0; }
 .pg .sk-bars .sk-bar .sk-chips li { border: 0; background: color-mix(in srgb, var(--rc) 10%, #fff); color: var(--sk-ink); }
 /* pita tool: tidak hitam lagi */
@@ -1483,10 +1482,10 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highl
   .hd .meta span:last-child { font-size: 10px !important; }
   .hd .hi .clk { font-size: 10.5px !important; }
 
-  /* Tab kategori keahlian: boleh digeser ke samping, tidak berdesakan */
-  .sk-cats { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .sk-cats::-webkit-scrollbar { display: none; }
-  .sk-cats .sk-tab { flex: none; min-height: 40px; font-size: 10.5px !important; letter-spacing: .04em !important; padding: 8px 10px !important; white-space: nowrap; }
+  /* Tab kategori di dalam seksi daftar tool: boleh digeser rapi tanpa merusak dock mengambang */
+  .sk-tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .sk-tabs::-webkit-scrollbar { display: none; }
+  .sk-tabs .sk-tab { flex: none; min-height: 40px; padding: 8px 4px; white-space: nowrap; }
 }
 
 /* Header HP lebih tinggi: judul dan blok merah turun, jarak ke kartu seimbang (v217) */

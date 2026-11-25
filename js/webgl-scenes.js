@@ -250,29 +250,32 @@
     var root = new THREE.Group();
     scene.add(root);
 
-    var r1Geo = new THREE.TorusGeometry(2.35, 0.022, 8, 64);
-    var r1Mat = new THREE.MeshBasicMaterial({ color: 0x14181f, transparent: true, opacity: 0.34 });
+    var r1Geo = new THREE.TorusGeometry(2.38, 0.016, 8, 72);
+    var r1Mat = new THREE.MeshBasicMaterial({ color: 0x14181f, transparent: true, opacity: 0.24 });
     var r1 = new THREE.Mesh(r1Geo, r1Mat);
     root.add(r1);
 
-    var r2Geo = new THREE.TorusGeometry(1.78, 0.018, 8, 56);
-    var r2Mat = new THREE.MeshBasicMaterial({ color: 0xd9731f, transparent: true, opacity: 0.42 });
+    var r2Geo = new THREE.TorusGeometry(1.82, 0.014, 8, 64);
+    var r2Mat = new THREE.MeshBasicMaterial({ color: 0xd9731f, transparent: true, opacity: 0.34 });
     var r2 = new THREE.Mesh(r2Geo, r2Mat);
-    r2.rotation.x = 0.72;
+    r2.rotation.x = 0.78;
     root.add(r2);
 
-    var r3Geo = new THREE.IcosahedronGeometry(1.08, 1);
-    var r3Mat = new THREE.MeshBasicMaterial({ color: 0x14181f, wireframe: true, transparent: true, opacity: 0.16 });
+    var r3Geo = new THREE.TorusGeometry(1.24, 0.012, 8, 56);
+    var r3Mat = new THREE.MeshBasicMaterial({ color: 0x14181f, transparent: true, opacity: 0.18 });
     var r3 = new THREE.Mesh(r3Geo, r3Mat);
+    r3.rotation.y = 1.05;
+    r3.rotation.x = -0.52;
     root.add(r3);
 
-    var count = 48;
+    var isMobile = window.innerWidth <= 820;
+    var count = isMobile ? 28 : 40;
     var pts = new Float32Array(count * 3);
     for (var i = 0; i < count; i++) {
       var u = Math.random(), v = Math.random();
       var theta = u * Math.PI * 2;
       var phi = Math.acos(2 * v - 1);
-      var rad = 1.5 + Math.random() * 1.15;
+      var rad = 1.48 + Math.random() * 1.1;
       pts[i * 3] = rad * Math.sin(phi) * Math.cos(theta);
       pts[i * 3 + 1] = rad * Math.sin(phi) * Math.sin(theta);
       pts[i * 3 + 2] = rad * Math.cos(phi);
@@ -282,10 +285,10 @@
     var sprite = makeGlowSprite(THREE);
     var pMat = new THREE.PointsMaterial({
       color: 0xd9731f,
-      size: 0.18,
+      size: isMobile ? 0.13 : 0.15,
       map: sprite,
       transparent: true,
-      opacity: 0.62,
+      opacity: 0.5,
       depthWrite: false
     });
     var cloud = new THREE.Points(pGeo, pMat);

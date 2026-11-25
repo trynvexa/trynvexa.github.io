@@ -92,17 +92,6 @@
   .pgb {
     padding: max(16px, env(safe-area-inset-top, 0px)) clamp(14px, 4vw, 24px) calc(max(24px, env(safe-area-inset-bottom, 0px)) + 24px) !important;
   }
-  .pg.p4.open .bd > .sk-cats {
-    right: 4px !important;
-    top: 50% !important;
-    transform: translateY(-50%) scale(0.8) !important;
-    transform-origin: 100% 50% !important;
-    padding: 6px 4px !important;
-  }
-  .sk-cats .sk-tab.sk-dk {
-    width: 32px !important;
-    height: 32px !important;
-  }
   .pass-card {
     width: min(100%, 308px) !important;
     height: 468px !important;
