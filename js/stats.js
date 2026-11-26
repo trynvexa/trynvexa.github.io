@@ -1,43 +1,50 @@
 /* ============================================================
-   stats.js — Visitor Counter (Mata) & Star / Like Button (Bintang)
-   Live API via abacus.jasoncameron.dev
+   stats.js — Real-Time Visitor Counter & Star/Like System
+   Live API: abacus.jasoncameron.dev
+   Namespace: trynvexa.github.io
    ============================================================ */
 (function () {
   "use strict";
 
   var API_BASE = "https://abacus.jasoncameron.dev";
-  var NAMESPACE = "trynvexa-portfolio";
+  var NAMESPACE = "trynvexa.github.io";
   var VIEWS_KEY = "views";
-  var LIKES_KEY = "likes";
+  var STARS_KEY = "stars";
 
   var viewsEl = document.getElementById("statViewsVal");
   var starsEl = document.getElementById("statStarsVal");
   var starBtn = document.getElementById("statStarBtn");
-  var badgeEl = document.getElementById("statsBadge");
 
   if (!viewsEl || !starsEl || !starBtn) return;
 
-  // Format large numbers cleanly (e.g. 1200 -> 1.2k)
+  // Format numbers (e.g. 1200 -> 1.2k, 0 -> 0)
   function formatNum(n) {
     var num = parseInt(n, 10);
-    if (isNaN(num) || num < 0) return "--";
+    if (isNaN(num) || num < 0) return "0";
     if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
     if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
     return String(num);
   }
 
-  // Restore cached values from localStorage first for instant display
+  // Check if we are running in local development mode
+  var isLocal =
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.protocol === "file:" ||
+    location.hostname === "";
+
+  // Restore cached values from localStorage for instant smooth render
   try {
-    var cachedViews = localStorage.getItem("zk_cached_views");
-    var cachedLikes = localStorage.getItem("zk_cached_likes");
-    if (cachedViews) viewsEl.textContent = formatNum(cachedViews);
-    if (cachedLikes) starsEl.textContent = formatNum(cachedLikes);
+    var cachedViews = localStorage.getItem("zk_v2_views");
+    var cachedStars = localStorage.getItem("zk_v2_stars");
+    if (cachedViews !== null) viewsEl.textContent = formatNum(cachedViews);
+    if (cachedStars !== null) starsEl.textContent = formatNum(cachedStars);
   } catch (e) {}
 
-  // Check if current visitor has already starred
+  // Check if visitor has already given a star
   var isStarred = false;
   try {
-    isStarred = localStorage.getItem("zk_starred") === "true";
+    isStarred = localStorage.getItem("zk_v2_starred") === "true";
   } catch (e) {}
 
   if (isStarred) {
@@ -45,7 +52,7 @@
     starBtn.setAttribute("title", "Kamu sudah memberi bintang! Terima kasih ✨");
   }
 
-  // Safe fetch helper with 6s timeout and graceful fallback
+  // Safe fetch helper with timeout and error handling
   function apiFetch(path) {
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = ctrl
@@ -59,8 +66,11 @@
     })
       .then(function (res) {
         if (timer) clearTimeout(timer);
-        if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
+      })
+      .then(function (data) {
+        if (data && typeof data.value === "number") return data.value;
+        return 0; // default to 0 if key not found yet
       })
       .catch(function () {
         if (timer) clearTimeout(timer);
@@ -68,41 +78,48 @@
       });
   }
 
-  // 1. Manage Views (Count 1 view per session)
+  // 1. Manage Views: Real visitor gets +1; local dev and repeated refreshes do not increment
   function initViews() {
     var hasViewed = false;
     try {
-      hasViewed = sessionStorage.getItem("zk_view_counted") === "1";
+      hasViewed = sessionStorage.getItem("zk_v2_view_counted") === "1";
     } catch (e) {}
 
-    var endpoint = hasViewed
-      ? "/get/" + NAMESPACE + "/" + VIEWS_KEY
-      : "/hit/" + NAMESPACE + "/" + VIEWS_KEY;
+    // In local dev, NEVER call /hit so developer testing won't increment the counter.
+    // In production, call /hit once per session.
+    var shouldHit = !isLocal && !hasViewed;
+    var endpoint = shouldHit
+      ? "/hit/" + NAMESPACE + "/" + VIEWS_KEY
+      : "/get/" + NAMESPACE + "/" + VIEWS_KEY;
 
-    apiFetch(endpoint).then(function (data) {
-      if (data && typeof data.value === "number") {
+    apiFetch(endpoint).then(function (val) {
+      if (typeof val === "number") {
+        if (shouldHit) {
+          try {
+            sessionStorage.setItem("zk_v2_view_counted", "1");
+          } catch (e) {}
+        }
         try {
-          sessionStorage.setItem("zk_view_counted", "1");
-          localStorage.setItem("zk_cached_views", data.value);
+          localStorage.setItem("zk_v2_views", val);
         } catch (e) {}
-        viewsEl.textContent = formatNum(data.value);
+        viewsEl.textContent = formatNum(val);
       }
     });
   }
 
-  // 2. Manage Likes / Stars
+  // 2. Manage Likes / Stars: Fetch global star count
   function initLikes() {
-    apiFetch("/get/" + NAMESPACE + "/" + LIKES_KEY).then(function (data) {
-      if (data && typeof data.value === "number") {
+    apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (val) {
+      if (typeof val === "number") {
         try {
-          localStorage.setItem("zk_cached_likes", data.value);
+          localStorage.setItem("zk_v2_stars", val);
         } catch (e) {}
-        starsEl.textContent = formatNum(data.value);
+        starsEl.textContent = formatNum(val);
       }
     });
   }
 
-  // Particle effect on star click
+  // Sparkles particle animation on star click
   function spawnStarParticles(btn) {
     var count = 6;
     for (var i = 0; i < count; i++) {
@@ -110,12 +127,12 @@
       p.className = "star-particle";
       p.textContent = i % 2 === 0 ? "★" : "✦";
       var angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-      var dist = 22 + Math.random() * 20;
+      var dist = 20 + Math.random() * 18;
       var tx = Math.cos(angle) * dist;
-      var ty = Math.sin(angle) * dist - 16; // upward bias
+      var ty = Math.sin(angle) * dist - 14;
       p.style.setProperty("--tx", tx.toFixed(1) + "px");
       p.style.setProperty("--ty", ty.toFixed(1) + "px");
-      p.style.setProperty("--dur", (0.6 + Math.random() * 0.3).toFixed(2) + "s");
+      p.style.setProperty("--dur", (0.55 + Math.random() * 0.25).toFixed(2) + "s");
       btn.appendChild(p);
       setTimeout(
         (function (el) {
@@ -123,12 +140,12 @@
             if (el && el.parentNode) el.parentNode.removeChild(el);
           };
         })(p),
-        900
+        850
       );
     }
   }
 
-  // Toast / feedback message
+  // Toast feedback notification
   var toastTimer = null;
   function showToast(msg) {
     var toast = document.getElementById("statToast");
@@ -146,12 +163,14 @@
     }, 2400);
   }
 
-  // Handle star button click
-  starBtn.addEventListener("click", function () {
+  // Handle star button interaction
+  starBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+
     if (!isStarred) {
       isStarred = true;
       try {
-        localStorage.setItem("zk_starred", "true");
+        localStorage.setItem("zk_v2_starred", "true");
       } catch (e) {}
 
       starBtn.classList.add("is-starred");
@@ -160,28 +179,28 @@
         starBtn.classList.remove("pulse");
       }, 500);
 
-      // Optimistic instant UI update
-      var curVal = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || cachedLikes || "0", 10);
+      // Instant optimistic UI update
+      var curVal = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
       var nextVal = curVal + 1;
       starsEl.textContent = formatNum(nextVal);
       try {
-        localStorage.setItem("zk_cached_likes", nextVal);
+        localStorage.setItem("zk_v2_stars", nextVal);
       } catch (e) {}
 
       spawnStarParticles(starBtn);
       showToast("Terima kasih atas bintangnya! ⭐");
 
-      // Sync with server
-      apiFetch("/hit/" + NAMESPACE + "/" + LIKES_KEY).then(function (data) {
-        if (data && typeof data.value === "number") {
+      // Persist to server
+      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (val) {
+        if (typeof val === "number") {
           try {
-            localStorage.setItem("zk_cached_likes", data.value);
+            localStorage.setItem("zk_v2_stars", val);
           } catch (e) {}
-          starsEl.textContent = formatNum(data.value);
+          starsEl.textContent = formatNum(val);
         }
       });
     } else {
-      // Already starred: cheer animation
+      // Already starred: cheerful pulse
       starBtn.classList.add("pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
@@ -191,7 +210,7 @@
     }
   });
 
-  // Run initialization
+  // Run on load
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       initViews();

@@ -357,14 +357,22 @@ html.home-enter .title .t1 i {
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    gap: 3px !important;
-    padding: 8px 0 10px !important;
+    gap: 4px !important;
+    padding: 6px 0 10px !important;
     border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent) !important;
   }
+  body .hd .meta .meta-author {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+  }
+  body .hd .meta .meta-name,
   body .hd .meta span:first-child {
     font-size: clamp(19px, 5vw, 23px) !important;
     line-height: 1.05 !important;
   }
+  body .hd .meta .meta-role,
   body .hd .meta span:last-child {
     font-size: clamp(8.5px, 2.3vw, 10px) !important;
     letter-spacing: 0.13em !important;
@@ -1613,14 +1621,37 @@ body,
 
 /* ============================================================
    STATS BADGE (Views / Mata & Star / Bintang)
+   Ditempatkan di bawah nama (M. Zikri Al-Bukhori)
    ============================================================ */
+.hd .meta {
+  align-items: flex-end !important;
+}
+
+.hd .meta .meta-author {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  position: relative;
+  z-index: 5;
+}
+
+.hd .meta .meta-author .stats-badge {
+  margin-top: 1px;
+}
+
+.hd .meta .meta-role {
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
 .stats-badge {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 3px;
+  padding: 2px;
   background: color-mix(in srgb, var(--bg) 84%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   border-radius: 99px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1642,9 +1673,9 @@ body,
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 5.5px;
-  height: 32px;
-  padding: 0 9px;
+  gap: 4.5px;
+  height: 26px;
+  padding: 0 8px;
   border-radius: 99px;
   font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace, sans-serif;
   font-size: 11px;
@@ -1660,8 +1691,8 @@ body,
 }
 
 .stat-pill .stat-ico {
-  width: 13.5px;
-  height: 13.5px;
+  width: 12.5px;
+  height: 12.5px;
   flex: none;
   transition:
     transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -1796,22 +1827,19 @@ body,
 
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
-  body .hd .mark-wrap {
-    gap: 6px !important;
-  }
   .stats-badge {
-    padding: 2px !important;
+    padding: 1.5px !important;
     gap: 2px !important;
   }
   .stat-pill {
-    height: 30px !important;
-    padding: 0 7px !important;
-    font-size: 10px !important;
-    gap: 4px !important;
+    height: 23px !important;
+    padding: 0 6px !important;
+    font-size: 9.5px !important;
+    gap: 3.5px !important;
   }
   .stat-pill .stat-ico {
-    width: 12px !important;
-    height: 12px !important;
+    width: 11px !important;
+    height: 11px !important;
   }
 }
 
@@ -1819,11 +1847,8 @@ body,
   body .hd .top-row {
     gap: 6px !important;
   }
-  body .hd .mark-wrap {
-    gap: 4px !important;
-  }
   .stat-pill {
     padding: 0 5px !important;
-    font-size: 9.5px !important;
+    font-size: 9px !important;
   }
 }
