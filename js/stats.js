@@ -9,8 +9,8 @@
   var API_BASE = "https://abacus.jasoncameron.dev";
   var NOTIF_ENDPOINT = "https://portofolio-notif.zikriganteng2023.workers.dev";
   var NAMESPACE = "trynvexa.github.io";
-  var VIEWS_KEY = "views";
-  var STARS_KEY = "stars";
+  var VIEWS_KEY = "views_v3";
+  var STARS_KEY = "stars_v3";
 
   var viewsEl = document.getElementById("statViewsVal");
   var starsEl = document.getElementById("statStarsVal");
@@ -76,14 +76,14 @@
 
   /* ---- cached restore for instant display ---- */
   try {
-    var cv = localStorage.getItem("zk_v2_views");
-    var cs = localStorage.getItem("zk_v2_stars");
+    var cv = localStorage.getItem("zk_v3_views");
+    var cs = localStorage.getItem("zk_v3_stars");
     if (cv !== null) viewsEl.textContent = formatNum(cv);
     if (cs !== null) starsEl.textContent = formatNum(cs);
   } catch (e) {}
 
   /* ---- starred state ---- */
-  var isStarred = hasPersistentFlag("zk_v2_starred");
+  var isStarred = hasPersistentFlag("zk_v3_starred");
   function syncStarredUI() {
     if (isStarred) {
       starBtn.classList.add("is-starred");
@@ -161,8 +161,8 @@
   function notifyVisit() {
     if (isLocal || !NOTIF_ENDPOINT) return;
     try {
-      if (sessionStorage.getItem("zk_v2_notif_sent") === "1") return;
-      sessionStorage.setItem("zk_v2_notif_sent", "1");
+      if (sessionStorage.getItem("zk_v3_notif_sent") === "1") return;
+      sessionStorage.setItem("zk_v3_notif_sent", "1");
     } catch (e) {}
 
     try {
@@ -182,23 +182,23 @@
     viewInitStarted = true;
     notifyVisit();
 
-    var alreadyCounted = hasPersistentFlag("zk_v2_view_counted");
+    var alreadyCounted = hasPersistentFlag("zk_v3_view_counted");
     var shouldHit = !isLocal && !alreadyCounted;
 
     // Prevent concurrent double-hit in the same session while fetch is in flight
     if (shouldHit) {
       try {
-        sessionStorage.setItem("zk_v2_view_counted", "1");
+        sessionStorage.setItem("zk_v3_view_counted", "1");
       } catch (e) {}
     }
 
     apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY).then(function (v) {
       if (typeof v !== "number") return;
       if (shouldHit) {
-        setPersistentFlag("zk_v2_view_counted");
+        setPersistentFlag("zk_v3_view_counted");
       }
       try {
-        localStorage.setItem("zk_v2_views", v);
+        localStorage.setItem("zk_v3_views", v);
       } catch (e) {}
       viewsEl.textContent = formatNum(v);
     });
@@ -209,7 +209,7 @@
     apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
       if (typeof v !== "number") return;
       try {
-        localStorage.setItem("zk_v2_stars", v);
+        localStorage.setItem("zk_v3_stars", v);
       } catch (e) {}
       starsEl.textContent = formatNum(v);
     });
@@ -335,14 +335,14 @@
   /* ---- star button (one star per visitor) ---- */
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    if (!isStarred && hasPersistentFlag("zk_v2_starred")) {
+    if (!isStarred && hasPersistentFlag("zk_v3_starred")) {
       isStarred = true;
       syncStarredUI();
     }
 
     if (!isStarred) {
       isStarred = true;
-      setPersistentFlag("zk_v2_starred");
+      setPersistentFlag("zk_v3_starred");
       syncStarredUI();
       starBtn.classList.add("pulse");
       setTimeout(function () {
@@ -352,7 +352,7 @@
       var cur = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
       starsEl.textContent = formatNum(cur + 1);
       try {
-        localStorage.setItem("zk_v2_stars", cur + 1);
+        localStorage.setItem("zk_v3_stars", cur + 1);
       } catch (e) {}
 
       spawnParticles(starBtn);
@@ -361,7 +361,7 @@
       apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
         if (typeof v !== "number") return;
         try {
-          localStorage.setItem("zk_v2_stars", v);
+          localStorage.setItem("zk_v3_stars", v);
         } catch (e) {}
         starsEl.textContent = formatNum(v);
       });
@@ -373,12 +373,12 @@
   /* ---- sync across browser tabs ---- */
   window.addEventListener("storage", function (ev) {
     if (!ev) return;
-    if (ev.key === "zk_v2_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
+    if (ev.key === "zk_v3_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
       isStarred = true;
       syncStarredUI();
-    } else if (ev.key === "zk_v2_stars" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v3_stars" && ev.newValue !== null) {
       starsEl.textContent = formatNum(ev.newValue);
-    } else if (ev.key === "zk_v2_views" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v3_views" && ev.newValue !== null) {
       viewsEl.textContent = formatNum(ev.newValue);
     }
   });
