@@ -1819,7 +1819,7 @@
               offset: 1,
             },
           ],
-          { duration: 1020, delay: s.dn * 105, fill: "both" }
+          { duration: 500, delay: s.dn * 50, fill: "both" }
         );
       }
     });
@@ -1845,12 +1845,12 @@
       openCore(i);
       irisC = null;
     }
-    FX.t = setTimeout(go, 240);
+    FX.t = setTimeout(go, 80);
     setTimeout(function () {
       go();
       h.remove();
       FX.busy = false;
-    }, 820);
+    }, 400);
     h.onclick = go; // ketuk = lewati ke halaman
   }
   function closePage() {
@@ -1899,7 +1899,7 @@
     pg.style.clipPath = from;
     pg.getBoundingClientRect(); // force layout reflow
     pg.classList.add("open");
-    clipTo(from, FULL, 900, "cubic-bezier(.22, 1, .36, 1)", function () {
+    clipTo(from, FULL, 450, "cubic-bezier(.22, 1, .36, 1)", function () {
       if (cur === i) document.body.classList.add("covered");
     });
 
