@@ -1610,3 +1610,220 @@ body,
   opacity: 1 !important;
   filter: none !important;
 }
+
+/* ============================================================
+   STATS BADGE (Views / Mata & Star / Bintang)
+   ============================================================ */
+.stats-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 3px;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: 99px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ink) 4%, transparent);
+  user-select: none;
+  position: relative;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.stats-badge:hover {
+  border-color: color-mix(in srgb, var(--ink) 35%, transparent);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.stat-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5.5px;
+  height: 32px;
+  padding: 0 9px;
+  border-radius: 99px;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  outline: none;
+  line-height: 1;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.stat-pill .stat-ico {
+  width: 13.5px;
+  height: 13.5px;
+  flex: none;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 0.25s,
+    fill 0.25s,
+    stroke 0.25s;
+}
+
+.stat-views {
+  cursor: default;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+
+.stat-views .stat-ico {
+  opacity: 0.82;
+}
+
+.stat-star {
+  cursor: pointer;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  position: relative;
+  overflow: visible;
+}
+
+.stat-star:hover {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.stat-star:hover .star-ico {
+  transform: scale(1.15) rotate(8deg);
+  stroke: #f59e0b;
+}
+
+.stat-star:active {
+  transform: scale(0.94);
+}
+
+.stat-star:focus-visible {
+  outline: 2px solid var(--accent, #e5484d);
+  outline-offset: 2px;
+}
+
+/* Starred state */
+.stat-star.is-starred {
+  background: color-mix(in srgb, #f59e0b 16%, transparent);
+  border: 1px solid color-mix(in srgb, #f59e0b 40%, transparent);
+  color: color-mix(in srgb, var(--ink) 90%, #f59e0b);
+}
+
+.stat-star.is-starred .star-ico {
+  fill: #f59e0b;
+  stroke: #d97706;
+  filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.55));
+}
+
+.stat-star.is-starred:hover .star-ico {
+  transform: scale(1.2) rotate(12deg);
+}
+
+/* Pulse animation on click */
+.stat-star.pulse {
+  animation: starPulse 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes starPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.22) rotate(-8deg);
+  }
+  75% {
+    transform: scale(0.96) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* Star sparkles particle */
+.star-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  font-size: 11px;
+  line-height: 1;
+  color: #f59e0b;
+  animation: starParticleFly var(--dur, 0.75s) cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  z-index: 50;
+}
+
+@keyframes starParticleFly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx) * 1.3), calc(-50% + var(--ty) * 1.3)) scale(0.2);
+  }
+}
+
+/* Floating feedback toast */
+.stat-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 99999;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.stat-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  body .hd .mark-wrap {
+    gap: 6px !important;
+  }
+  .stats-badge {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+  .stat-pill {
+    height: 30px !important;
+    padding: 0 7px !important;
+    font-size: 10px !important;
+    gap: 4px !important;
+  }
+  .stat-pill .stat-ico {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  body .hd .top-row {
+    gap: 6px !important;
+  }
+  body .hd .mark-wrap {
+    gap: 4px !important;
+  }
+  .stat-pill {
+    padding: 0 5px !important;
+    font-size: 9.5px !important;
+  }
+}

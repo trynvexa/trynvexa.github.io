@@ -81,7 +81,7 @@
     <link rel="stylesheet" href="css/base.css?v=420" />
     <link rel="stylesheet" href="css/layout.css?v=420" />
     <link rel="stylesheet" href="css/pages.css?v=420" />
-    <link rel="stylesheet" href="css/theme.css?v=421" />
+    <link rel="stylesheet" href="css/theme.css?v=422" />
     <link rel="stylesheet" href="css/motion3d.css?v=421" />
     <link rel="stylesheet" href="css/skills.css?v=420" />
     <link rel="stylesheet" href="css/me-dive.css?v=400" />
@@ -859,6 +859,53 @@
           >
         </p>
         <div class="mark-wrap">
+          <!-- Statistik Portofolio: Mata (Pengunjung) & Bintang (Suka) -->
+          <div class="stats-badge" id="statsBadge" role="group" aria-label="Statistik portofolio">
+            <span
+              class="stat-pill stat-views"
+              id="statViewsPill"
+              title="Jumlah pengunjung portofolio"
+              aria-label="Total pengunjung"
+            >
+              <svg
+                class="stat-ico"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2 12s3.8-7 10-7 10 7 10 7-3.8 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span class="stat-val" id="statViewsVal">--</span>
+            </span>
+            <button
+              type="button"
+              class="stat-pill stat-star"
+              id="statStarBtn"
+              title="Beri bintang untuk portofolio ini"
+              aria-label="Beri bintang untuk portofolio ini"
+            >
+              <svg
+                class="stat-ico star-ico"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <span class="stat-val" id="statStarsVal">--</span>
+            </button>
+          </div>
           <button
             class="theme-btn"
             id="themeToggle"
@@ -1299,6 +1346,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" defer></script>
     <script src="js/intro.js?v=420" defer></script>
     <script src="js/theme.js?v=400" defer></script>
+    <script src="js/stats.js?v=400" defer></script>
     <script src="js/clock.js?v=400" defer></script>
     <script src="js/mascot.js?v=400" defer></script>
     <script src="js/buddy.js?v=422" defer></script>
