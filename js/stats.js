@@ -205,8 +205,28 @@
     var theme = document.documentElement.getAttribute("data-theme") || "light";
     var siteLang = document.documentElement.getAttribute("lang") || "id";
 
+    var brand = "Lainnya";
+    if (/iPhone/i.test(ua)) brand = "Apple iPhone";
+    else if (/iPad/i.test(ua)) brand = "Apple iPad";
+    else if (/SM-|Samsung/i.test(ua)) brand = "Samsung";
+    else if (/Xiaomi|POCO|Redmi/i.test(ua)) brand = "Xiaomi";
+    else if (/OPPO|CPH\d/i.test(ua)) brand = "OPPO";
+    else if (/vivo|V\d{4}/i.test(ua)) brand = "Vivo";
+    else if (/realme/i.test(ua)) brand = "Realme";
+    else if (/Huawei|HMA|EML|CLT/i.test(ua)) brand = "Huawei";
+    else if (/Infinix/i.test(ua)) brand = "Infinix";
+    else if (/Tecno/i.test(ua)) brand = "Tecno";
+    else if (/Nokia/i.test(ua)) brand = "Nokia";
+    else if (/Pixel/i.test(ua)) brand = "Google Pixel";
+    else if (/OnePlus/i.test(ua)) brand = "OnePlus";
+    else if (/Motorola|moto/i.test(ua)) brand = "Motorola";
+    else if (/Asus|ASUS/i.test(ua)) brand = "Asus";
+    else if (/Lenovo/i.test(ua)) brand = "Lenovo";
+    else if (/Android/i.test(ua)) brand = "Android (Unknown)";
+
     return {
       device: device,
+      brand: brand,
       os: os,
       browser: browser,
       screen: window.screen ? window.screen.width + "x" + window.screen.height : "-",
