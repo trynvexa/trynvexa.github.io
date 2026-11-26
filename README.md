@@ -8,7 +8,7 @@
 
 *Mengubah ide jadi pengalaman web yang interaktif, dinamis, dan berkesan.*
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-trynvexa.github.io-black?style=for-the-badge)](https://trynvexa.github.io)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-trynvexa.my.id-black?style=for-the-badge)](https://trynvexa.my.id)
 [![GitHub](https://img.shields.io/badge/GitHub-trynvexa-181717?style=for-the-badge&logo=github)](https://github.com/trynvexa)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-Chat-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/6281367381826)
 
