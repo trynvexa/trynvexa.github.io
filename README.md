@@ -1,93 +1,177 @@
-# 🌟 M. Zikri Al-Bukhori — Portofolio
+<div align="center">
 
-> **Front-End Developer & UI Designer** berbasis di Medan, Indonesia.  
-> Mengubah ide jadi pengalaman web yang interaktif, dinamis, dan berkesan.
+<img src="https://trynvexa.github.io/assets/images/mascot-head.webp" width="100" alt="Mascot" />
 
-🌐 **Live Demo:** [https://trynvexa.github.io](https://trynvexa.github.io)
+# M. Zikri Al-Bukhori
+
+**Front-End Developer & UI Designer — Medan, Indonesia**
+
+*Mengubah ide jadi pengalaman web yang interaktif, dinamis, dan berkesan.*
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-trynvexa.github.io-black?style=for-the-badge)](https://trynvexa.github.io)
+[![GitHub](https://img.shields.io/badge/GitHub-trynvexa-181717?style=for-the-badge&logo=github)](https://github.com/trynvexa)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-Chat-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/6281367381826)
+
+</div>
 
 ---
 
-## ✨ Fitur Utama
+## ✦ Tentang Proyek
 
-- 🃏 **3D Cardistry Radial Wheel (8 Kartu)**: Navigasi kartu radial interaktif dengan 8 kartu (*Story, Music, Me, Frame, Skill, Proyek, Kontak, Fashion*), koreografi *3D Cardistry Deal & Flip*, punggung kartu maskot simetris, efek serpihan kaca saat membuka halaman, dan fisika kemiringan 3D (*spring-damped tilt*).
-- 💻 **Me — Interactive "Laptop Dive" Hero (`p2`)**: Panggung satu layar interaktif dengan *cutout* potret, *lanyard designer card* 3D, transisi video masuk ke layar laptop, dan pratinjau studi kasus langsung di dalam layar.
-- 🏗️ **Zikri's Depot — 3D Container-Crane Projects (`p5`)**: Panggung 3D Three.js dengan 7 kontainer kargo & *overhead gantry crane* berfisika nyata (mengangkat, mengayun, membuka pintu ganda 122°, menjatuhkan kontainer penyangga), dilengkapi **Case Study Modal** (cuplikan detail, salin palet HEX, spesifikasi arsitektur, & demo langsung).
-- 🧥 **Fashion — 3D Runway Personal Collection (`p7`)**: Panggung *lookbook* 3D interaktif dengan 6 tampilan koleksi pribadi, inspeksi detail item, dan tampilan gaya editorial.
-- 🎵 **3D Vinyl Turntable & Audio-Reactive Visualizer (`p1`)**: Pemutar piringan hitam 3D dengan lengan *tonearm* bergerak, cincin frekuensi audio WebGL/Canvas *real-time*, dan 6 track MP3 teroptimasi (`lagu-1.mp3` s/d `lagu-6.mp3`).
-- ⚛️ **Hand-Anchored 3D Skill Orbit & Gyroscope (`p4`)**: Konstelasi orbit 15 teknologi interaktif yang dapat diputar di atas tangan, lengkap dengan giroskop energi WebGL Three.js dan panel penjelasan kategori.
-- 🖼️ **Frame — Galeri Foto 3D Ring & Editorial Grid (`p3`)**: Panggung cincin foto 3D dengan *viewfinder HUD*, efek *shutter*, tampilan *Editorial Grid*, dan *fullscreen lightbox*.
-- 🧵 **Story — Garis Waktu Benang Merah 3D (`p0`)**: Enam bab perjalanan hidup dengan garis benang merah animatif, paralaks potret, dan partikel bara api ringan.
-- 🪪 **Kontak — 3D Prismatic Holographic Dev Pass (`p6`)**: Kartu identitas 3D prismatik yang dapat dimiringkan dan dibalik, tombol salin email cepat, dan *Quick Inquiry Composer* (WhatsApp & Email).
-- 🤸 **Interactive Mascot & Buddy Physics**: Karakter maskot `#buddy` yang duduk di atas tipografi 3D `PORTOFOLIO`, melompat antar-huruf saat diklik, dan bereaksi terhadap kartu aktif.
-- 🌓 **Tema Dinamis & Circular Wipe**: Mode terang (*Warm Editorial Paper*) dan gelap (*Deep Obsidian*) dengan transisi *View Transitions* melingkar dari tombol tema serta latar belakang foto aktif buram ringan (0% idle CPU/GPU).
-- 🌍 **Multi-Language Engine (8 Bahasa + RTL)**: Terjemahan penuh tanpa celah untuk Bahasa Indonesia (ID), English (EN), 中文 (ZH), Español (ES), العربية (AR + tata letak RTL), Français (FR), 日本語 (JA), dan 한국어 (KO), ditambah jam Medan real-time (WIB).
+Portofolio interaktif penuh yang dibangun **100% tanpa framework** — murni HTML5, CSS modern, dan Vanilla JavaScript. Setiap halaman adalah *panggung* tersendiri dengan efek 3D, fisika, WebGL, dan audio yang berjalan langsung di browser tanpa build step.
+
+> **8 halaman × 8 bahasa × 0 dependensi NPM** — hanya teknologi web native.
+
+---
+
+## 🎪 Galeri Halaman
+
+<div align="center">
+
+| Halaman | Deskripsi |
+|:---:|:---|
+| 🃏 **Roda Kartu Radial** | Navigasi 8 kartu 3D dengan koreografi *Cardistry Deal & Flip*, serpihan kaca, dan spring physics |
+| 💻 **Me — Laptop Dive** | Potret cutout + lanyard 3D, transisi video masuk ke dalam layar laptop |
+| 🏗️ **Zikri's Depot** | Panggung Three.js: 7 kontainer kargo + gantry crane berfisika nyata (angkat, ayun, buka pintu 122°) |
+| 🧥 **Fashion Runway** | Lookbook 3D interaktif, 6 koleksi pribadi, tampilan editorial |
+| 🎵 **Music** | Vinyl turntable 3D + tonearm bergerak + ring frekuensi audio WebGL real-time |
+| ⚛️ **Skill Orbit** | Konstelasi 15 teknologi yang dapat diputar di atas tangan + gyroscope WebGL |
+| 🖼️ **Frame Gallery** | Cincin foto 3D, viewfinder HUD, editorial grid, fullscreen lightbox |
+| 🧵 **Story** | Garis waktu benang merah 3D — 6 bab perjalanan hidup |
+| 🪪 **Kontak** | Kartu identitas holografik prismatik 3D, Quick Inquiry Composer |
+
+</div>
+
+---
+
+## ⚡ Tech Stack
+
+<div align="center">
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=three.js&logoColor=white)
+![WebGL](https://img.shields.io/badge/WebGL-990000?style=flat-square&logo=webgl&logoColor=white)
+![Web Audio API](https://img.shields.io/badge/Web_Audio_API-FF6B6B?style=flat-square)
+![View Transitions](https://img.shields.io/badge/View_Transitions_API-4285F4?style=flat-square&logo=google-chrome&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat-square&logo=github&logoColor=white)
+
+</div>
+
+**Core APIs yang dipakai:**
+- `CSS 3D Transforms` + `Custom Properties` + `View Transitions API`
+- `Three.js` untuk semua adegan WebGL (Music, Skill, Depot, Runway)
+- `Web Audio API` untuk visualizer frekuensi real-time
+- `Web Animations API` untuk koreografi fisika kartu
+- `SVG Filters` untuk efek maskot & intro
 
 ---
 
 ## 📁 Struktur Proyek
 
-```text
-.
-├── index.html                    # Markup HTML5 semantik, SEO/JSON-LD, SVG intro & 8 kartu
-├── favicon.ico                   # Ikon situs utama
+```
+my-portofolio/
+├── index.html              ← markup utama, 8 kartu, SEO/JSON-LD
 ├── css/
-│   ├── base.css                  # Variabel warna, reset, header dasar, roda kartu, & intro
-│   ├── layout.css                # Layout responsif, animasi buddy, galeri Frame, & orbit Skill
-│   ├── pages.css                 # Gaya halaman Story, Music, Kontak (3D Dev Pass), & mobile polish
-│   ├── theme.css                 # Tema Light/Dark, 3D Cardistry, backdrop ringan, & halaman detail
-│   ├── motion3d.css              # View Transitions theme wipe, 3D tilt, foil, sparks, & panggung WebGL
-│   ├── me-dive.css               # Halaman Me (p2): panggung "Laptop Dive" & lanyard 3D
-│   ├── projects-depot.css        # Halaman Proyek (p5): Zikri's Depot 3D & Case Study Modal
-│   └── runway.css                # Halaman Fashion (p7): 3D Runway Personal Collection
+│   ├── theme.css           ← token warna, light/dark, 3D cardistry
+│   ├── motion3d.css        ← view transition wipe, tilt, sparks, foil
+│   ├── layout.css          ← grid responsif, buddy, galeri, orbit
+│   ├── base.css            ← reset, variabel, header, intro
+│   ├── pages.css           ← story, music, kontak, mobile polish
+│   ├── skills.css          ← skill orbit & gyroscope
+│   └── runway.css          ← 3D fashion runway
 ├── js/
-│   ├── intro.js                  # Animasi layar pembuka & pelacakan mata SVG
-│   ├── theme.js                  # Pengatur mode Terang / Gelap + circular View Transition
-│   ├── clock.js                  # Jam real-time Medan (WIB / Asia-Jakarta)
-│   ├── mascot.js                 # Pelacakan mata maskot header
-│   ├── buddy.js                  # Fisika karakter duduk, lompat pindah huruf, & reaksi kartu
-│   ├── i18n.js                   # Mesin terjemahan instan 8 bahasa (+ RTL Arab)
-│   ├── background.js             # Latar foto kartu aktif buram berbasis event (zero idle loop)
-│   ├── carousel.js               # Mesin roda kartu radial 8 kartu, 3D Cardistry, & serpihan kaca
-│   ├── motion3d.js               # Deteksi tier GPU/WebGL, siklus hidup halaman, tilt 3D, sparks & stamp
-│   ├── webgl-scenes.js           # Adegan Three.js WebGL (+ fallback Canvas 2D) untuk Music & Skill
-│   ├── page-enhancers.js         # Koreografi 3D per halaman (Story, Music, Frame, Skill, Kontak)
-│   ├── story.js                  # Garis waktu benang merah (6 bab perjalanan)
-│   ├── music.js                  # Pemutar piringan hitam MP3, Web Audio analyser, & partikel debu
-│   ├── me-dive.js                # Mesin interaktif "Laptop Dive" (p2)
-│   ├── gallery.js                # Galeri Frame 3D Ring, Editorial Grid, & Lightbox (p3)
-│   ├── skills.js                 # Sistem orbit 15 teknologi & modal penjelasan (p4)
-│   ├── projects.js               # Data & lokalisasi 8 bahasa untuk 4 studi kasus + 7 kontainer Depot
-│   ├── projects-depot.js         # Mesin 3D Shipping Container & Gantry Crane + Case Study Modal (p5)
-│   ├── contact.js                # Halaman Kontak Paper Riot, 3D Dev Pass, & Quick Composer (p6)
-│   ├── runway-data.js            # Data koleksi & lokalisasi 8 bahasa untuk Fashion Runway (p7)
-│   └── runway.js                 # Mesin panggung 3D Fashion Runway & inspeksi item (p7)
-├── assets/
-│   ├── images/                   # Ilustrasi karakter, potret kartu, galeri, & pratinjau proyek
-│   ├── icons/                    # 15 ikon teknologi web & AI tools (.webp)
-│   ├── audio/                    # 6 file lagu MP3 playlist (lagu-1.mp3 s/d lagu-6.mp3)
-│   ├── me/                       # Aset panggung Me Laptop Dive (plate, cutout, video transisi)
-│   └── runway/                   # Aset koleksi Fashion 3D Runway (.webp teroptimasi)
-└── README.md                     # Dokumentasi proyek
+│   ├── carousel.js         ← roda kartu radial 8 kartu + cardistry
+│   ├── webgl-scenes.js     ← Three.js: music vinyl + skill orbit
+│   ├── projects-depot.js   ← Three.js: container crane (p5)
+│   ├── runway.js           ← Three.js: fashion runway (p7)
+│   ├── contact.js          ← dev pass 3D + quick composer (p6)
+│   ├── page-enhancers.js   ← koreografi 3D per halaman
+│   ├── motion3d.js         ← GPU tier detect, tilt 3D, sparks
+│   ├── gallery.js          ← frame gallery + lightbox (p3)
+│   ├── skills.js           ← orbit 15 tech + modal (p4)
+│   ├── story.js            ← garis waktu benang merah (p0)
+│   ├── buddy.js            ← mascot physics & jump
+│   ├── i18n.js             ← 8 bahasa + RTL Arab
+│   └── ...                 ← intro, theme, clock, music, me-dive
+└── assets/
+    ├── images/             ← portrait, kartu, galeri, preview
+    ├── icons/              ← 15 ikon tech (.webp)
+    ├── audio/              ← 6 track MP3 (lagu-1 s/d lagu-6)
+    ├── me/                 ← aset laptop dive
+    └── runway/             ← koleksi fashion (.webp)
 ```
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🌍 Multi-Language Support
 
-- **Markup & Styling**: HTML5 Semantik, Modern CSS (CSS Grid, Flexbox, Custom Properties, CSS 3D Transforms, View Transitions API)
-- **Logika & Animasi**: Vanilla JavaScript (ES6+), Three.js (WebGL 3D), Web Audio API, Web Animations API, SVG Filters
-- **Hosting**: GitHub Pages (statis murni tanpa *build step*)
+Mendukung **8 bahasa** dengan terjemahan penuh tanpa celah:
+
+<div align="center">
+
+| 🇮🇩 Bahasa Indonesia | 🇬🇧 English | 🇨🇳 中文 | 🇪🇸 Español |
+|:---:|:---:|:---:|:---:|
+| **🇸🇦 العربية** (RTL) | **🇫🇷 Français** | **🇯🇵 日本語** | **🇰🇷 한국어** |
+
+</div>
+
+Termasuk dukungan **RTL layout** penuh untuk bahasa Arab, dan **jam Medan real-time (WIB)** di header.
+
+---
+
+## 🤸 Fitur Interaksi Spesial
+
+- **Mascot Buddy** — duduk di atas tipografi 3D `PORTOFOLIO`, melompat antar-huruf saat diklik, bereaksi terhadap kartu aktif
+- **Tema Dinamis** — Mode terang (*Warm Editorial Paper*) & gelap (*Deep Obsidian*) dengan **circular wipe** View Transition dari titik klik
+- **Spring-Damped Tilt** — Setiap kartu merespons gerakan mouse dengan fisika tilt 3D natural
+- **Efek Serpihan Kaca** — Animasi fragmentasi saat membuka halaman
+
+---
+
+## 🚀 Jalankan Lokal
+
+Karena ini **murni static** (tanpa build step), cukup:
+
+```bash
+# Clone repo
+git clone https://github.com/trynvexa/trynvexa.github.io.git
+cd trynvexa.github.io
+
+# Jalankan server lokal (pilih salah satu)
+python3 -m http.server 8080
+# atau
+npx serve .
+# atau buka langsung index.html di browser
+```
+
+Lalu buka **`http://localhost:8080`** di browser.
+
+> ⚠️ Beberapa fitur (Web Audio, WebGL) butuh server lokal — tidak bisa dibuka via `file://` langsung.
 
 ---
 
 ## 📬 Kontak
 
-- **WhatsApp**: [+62 813-6738-1826](https://wa.me/6281367381826)
-- **Email**: [zikriganteng2023@gmail.com](mailto:zikriganteng2023@gmail.com)
-- **GitHub**: [@trynvexa](https://github.com/trynvexa)
-- **Instagram**: [@yo144484](https://www.instagram.com/yo144484/)
-- **TikTok**: [@frince_nael7](https://www.tiktok.com/@frince_nael7)
+<div align="center">
+
+| Platform | Link |
+|:---:|:---|
+| 📱 WhatsApp | [+62 813-6738-1826](https://wa.me/6281367381826) |
+| 📧 Email | [zikriganteng2023@gmail.com](mailto:zikriganteng2023@gmail.com) |
+| 🐙 GitHub | [@trynvexa](https://github.com/trynvexa) |
+| 📸 Instagram | [@yo144484](https://www.instagram.com/yo144484/) |
+| 🎵 TikTok | [@frince_nael7](https://www.tiktok.com/@frince_nael7) |
+
+</div>
 
 ---
 
-© 2026 M. Zikri Al-Bukhori. All rights reserved.
+<div align="center">
+
+**© 2026 M. Zikri Al-Bukhori** — Built with ❤️ in Medan, Indonesia
+
+*"Setiap piksel punya cerita."*
+
+</div>
