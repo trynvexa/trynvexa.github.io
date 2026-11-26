@@ -54,8 +54,9 @@
     var gridItems = NAMES.map(function(nm, idx) {
       var ph = GAL_PHOTOS[idx], th = GAL_THUMBS[idx] || ph;
       return '<button type="button" class="ggrid-card" data-gi="' + idx + '" aria-label="Buka potret ' + nm + ' (' + galPad(idx + 1) + ')">' +
-        '<div class="ggrid-img"><img src="' + th + '" alt="' + nm + '" loading="lazy" decoding="async"></div>' +
-        '<div class="ggrid-meta"><span class="ggrid-no">' + galPad(idx + 1) + '</span><strong class="ggrid-nm">' + nm + '</strong><span class="ggrid-ar" aria-hidden="true">&#8599;</span></div>' +
+        '<div class="ggrid-img" style="background:#1c1b19 url(\'' + th + '\') 50% 20%/cover no-repeat"><img src="' + (ph || th) + '" alt="' + nm + '" loading="eager" decoding="sync"></div>' +
+        '<span class="ggrid-no">' + galPad(idx + 1) + '</span>' +
+        '<div class="ggrid-meta"><div class="ggrid-txt"><strong class="ggrid-nm">' + nm + '</strong><span class="ggrid-sub">35mm &middot; Portrait</span></div><span class="ggrid-ar" aria-hidden="true">&#8599;</span></div>' +
       '</button>';
     }).join('');
     return '<div class="gstage" aria-label="Frame"><div class="gtitle" aria-hidden="true" data-t="FRAME"><span>FRAME</span></div><div class="gvf" aria-hidden="true"><i></i><i></i><i></i><i></i></div>' +
@@ -135,6 +136,7 @@
   var lastW = 0;
   function layout() {
     var isMob = window.innerWidth <= 700;
+    var isLand = window.innerHeight <= 480 && window.innerWidth > window.innerHeight;
     var w = cards[0].offsetWidth, h = w * 1.4;
     lastW = w;
     step = isMob ? 17.5 : 23; // Sudut lebih landai & teratur di HP mirip tampilan desktop
@@ -142,10 +144,12 @@
     R = isMob ? w * 2.25 : w * 1.75; // Radius lengkung proporsional
 
     var stageH = stage.clientHeight || (window.innerHeight - (document.querySelector('.hd') ? document.querySelector('.hd').offsetHeight : 180));
-    var cyM = Math.max(h * 0.56 + 14, Math.min(stageH * 0.50, stageH - h * 0.52 - 58));
-    var oy = isMob ? Math.round(cyM + R) : Math.round(h * 0.64 + R);
+    var cyM = isLand
+      ? Math.max(h * 0.54 + 6, Math.min(stageH * 0.48, stageH - h * 0.54 - 28))
+      : Math.max(h * 0.54 + 10, Math.min(stageH * 0.43, stageH - h * 0.54 - 72));
+    var oy = (isMob || isLand) ? Math.round(cyM + R) : Math.round(h * 0.64 + R);
     wheel.style.top = oy + 'px';
-    stage.style.minHeight = Math.round(isMob ? stageH : (oy - R * 0.3)) + 'px';
+    stage.style.minHeight = Math.round((isMob || isLand) ? stageH : (oy - R * 0.3)) + 'px';
 
     var r = R * (isMob ? 0.68 : 0.74);
     ring.setAttribute('width', Math.round(r * 2));
@@ -188,7 +192,14 @@
       '</text>'
     ].join('');
 
-    mk.style.top = (-r + (isMob ? r * 0.19 : r * 0.3)) + 'px';
+    var mkTop = -r + (isMob ? r * 0.14 : r * 0.3);
+    if (isMob || isLand) {
+      var cardBotInStage = cyM + (h * 1.08) * 0.5;
+      var maxMkInStage = isLand ? (stageH - 24) : (stageH - 66);
+      var desiredInStage = Math.min(maxMkInStage, Math.max(cardBotInStage + 10, oy + mkTop));
+      mkTop = desiredInStage - oy;
+    }
+    mk.style.top = Math.round(mkTop) + 'px';
     place();
   }
 
@@ -205,15 +216,15 @@
   function eClamp(x) { return Math.max(0, Math.min(1, x)); }
   function eOut(x) { return 1 - Math.pow(1 - x, 4); }
   function eInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
-  function eBack(x) { return 1 + 2.1 * Math.pow(x - 1, 3) + 1.1 * Math.pow(x - 1, 2); }
-  function eRaw(ad) { return eClamp((E.t - (0.38 + ad * 0.11)) / 1.05); }
-  function entrOp(ad) { return eClamp((E.t - ad * 0.04) / 0.35); }
+  function eBack(x) { return 1 + 1.8 * Math.pow(x - 1, 3) + 0.85 * Math.pow(x - 1, 2); }
+  function eRaw(ad) { return eClamp((E.t - (0.14 + ad * 0.055)) / 0.72); }
+  function entrOp(ad) { return eClamp((E.t - ad * 0.025) / 0.24); }
 
   if (!reduce && document.documentElement.classList.contains('intro-on')) {
     E.on = true;
     cards.forEach(function(c){ c.classList.add('face-down'); });
-    stage.style.transition = 'opacity .35s ease';
-    E.ui.forEach(function(el){ el.style.transition = 'opacity .55s ease .45s'; });
+    stage.style.transition = 'opacity .32s ease';
+    E.ui.forEach(function(el){ el.style.transition = 'opacity .45s ease .15s'; });
     document.addEventListener('introdone', entrStart, { once: true });
   }
   function entrStart() {
@@ -225,25 +236,24 @@
     document.addEventListener('keydown', entrSkip, true);
     E.raf = requestAnimationFrame(entrFrame);
   }
-  function entrSkip(e) { if (e.repeat || performance.now() - E.t0 < 750) return; entrEnd(); }
+  function entrSkip(e) { if (e.repeat || performance.now() - E.t0 < 450) return; entrEnd(); }
   function entrFrame(now) {
     E.t = (now - E.t0) / 1000;
     place();
-    ring.style.opacity = eOut(eClamp((E.t - .15) / 1.35)).toFixed(3);
-    mk.style.opacity = eClamp((E.t - 1.95) / .55).toFixed(3);
-    stage.style.scale = (1 + .06 * (1 - eOut(eClamp(E.t / 2.6)))).toFixed(4);
+    ring.style.opacity = eOut(eClamp((E.t - .06) / 0.75)).toFixed(3);
+    mk.style.opacity = eClamp((E.t - 1.05) / .38).toFixed(3);
+    stage.style.scale = (1 + .045 * (1 - eOut(eClamp(E.t / 1.45)))).toFixed(4);
 
-    // Trigger landing shockwave & buddy jump when Hero "Me" card snaps into place
-    if (!E.landed && E.t >= 2.08) {
+    // Trigger landing shockwave & buddy hop right as Hero "Me" card flips face-up
+    if (!E.landed && E.t >= 1.12) {
       E.landed = true;
-      if (window.__zkBuddyBounce) window.__zkBuddyBounce(-9.5);
-      // Mexican riffle wave outward from center card to neighbors
-      triggerRiffleWave(activeC >= 0 ? activeC : 2, 26);
+      if (window.__zkBuddyBounce) window.__zkBuddyBounce(-7.2);
+      triggerRiffleWave(activeC >= 0 ? activeC : 2, 22);
     }
 
-    var on = cards[activeC], sw = eClamp((E.t - 2.05) / 0.85);
+    var on = cards[activeC], sw = eClamp((E.t - 1.08) / 0.52);
     if (on && sw > 0 && sw < 1) { on.style.setProperty('--mx', (-20 + 140 * eOut(sw)).toFixed(1) + '%'); on.style.setProperty('--my', '18%'); }
-    if (E.t >= 2.95) entrEnd(); else E.raf = requestAnimationFrame(entrFrame);
+    if (E.t >= 1.65) entrEnd(); else E.raf = requestAnimationFrame(entrFrame);
   }
   function entrEnd() {
     if (!E.on) return;
@@ -352,34 +362,32 @@
       var cardFlipY = flipDeg[i] || 0, cardPitchX = 0, orbitSpin = 0;
 
       if (E.on) {
-        // Stage 1: Vertical Card Spring from bottom (0.0s -> 0.85s)
-        var springOrder = (n - 1 - i) * 0.055;
-        var spP = eOut(eClamp((E.t - springOrder) / 0.78));
+        // Stage 1: Crisp Vertical Card Spring from bottom (0.0s -> 0.56s)
+        var springOrder = (n - 1 - i) * 0.032;
+        var spP = eOut(eClamp((E.t - springOrder) / 0.52));
         arr = spP;
 
-        // Stage 2: 360° Mid-Air Tornado Orbit & Ribbon Spread (0.2s -> 1.75s)
-        var orbP = eInOut(eClamp((E.t - 0.12 - springOrder * 0.6) / 1.52));
-        orbitSpin = (1 - orbP) * -185; // Sweeps 185 deg around the wheel into position
+        // Stage 2: Smooth Radial Sweep & Ribbon Spread (0.06s -> 1.02s)
+        var orbP = eInOut(eClamp((E.t - 0.05 - springOrder * 0.5) / 0.92));
+        orbitSpin = (1 - orbP) * -120;
         var rw = eRaw(absD);
         fan = eBack(rw);
 
         // S-Curve aerial spring height
-        var springArc = Math.sin(Math.PI * eClamp((E.t - springOrder) / 1.15)) * lastW * 0.36;
-        arcY = springArc + (absD > 0.5 ? Math.sin(Math.PI * rw) * lastW * 0.08 : 0);
+        var springArc = Math.sin(Math.PI * eClamp((E.t - springOrder) / 0.72)) * lastW * 0.28;
+        arcY = springArc + (absD > 0.5 ? Math.sin(Math.PI * rw) * lastW * 0.06 : 0);
 
-        // Stage 3: Mexican Wave 3D Snap-Flip (Face-down 180° -> Face-up 0°)
-        // Outer cards flip first, culminating in the center "Me" card hero double-flip!
-        var flipStart = absD < 0.5 ? 1.38 : (0.92 + (3 - Math.min(3, absD)) * 0.14 + (d < 0 ? 0 : 0.05));
-        var flipDur = absD < 0.5 ? 0.72 : 0.56;
+        // Stage 3: Snappy 3D Cardistry Flip (Face-down 180° -> Face-up 0°)
+        var flipStart = absD < 0.5 ? 0.68 : (0.44 + (3 - Math.min(3, absD)) * 0.075 + (d < 0 ? 0 : 0.03));
+        var flipDur = absD < 0.5 ? 0.46 : 0.36;
         var flipP = eInOut(eClamp((E.t - flipStart) / flipDur));
-        var startDeg = absD < 0.5 ? 360 : 180; // Center card does a full 360° showstopper flip, others 180° from back
         cardFlipY = (1 - flipP) * 180 + (absD < 0.5 ? (1 - flipP) * 180 : 0);
 
         // Mid-flip jump & aerodynamic pitch
         var flipArc = Math.sin(Math.PI * flipP);
-        liftE = flipArc * lastW * (absD < 0.5 ? 0.24 : 0.13);
-        cardPitchX = flipArc * (absD < 0.5 ? -18 : -11);
-        toss = (d > 0 ? 1 : d < 0 ? -1 : 0) * 14 * Math.pow(1 - rw, 2) + (1 - orbP) * -18;
+        liftE = flipArc * lastW * (absD < 0.5 ? 0.2 : 0.11);
+        cardPitchX = flipArc * (absD < 0.5 ? -16 : -9);
+        toss = (d > 0 ? 1 : d < 0 ? -1 : 0) * 11 * Math.pow(1 - rw, 2) + (1 - orbP) * -12;
 
         // Glare sweep across the card back during flip
         c.style.setProperty('--cb-gx', (-70 + flipP * 160).toFixed(1) + '%');
@@ -414,12 +422,13 @@
         c.style.transform = nextTf;
       }
 
-      // Kartu muncul mulus saat berputar
+      // Kartu muncul mulus saat berputar; kartu belakang yang tak terlihat di-skip paint via visibility
       var op = Math.max(0, Math.min(1, 1 - Math.max(0, absD - (isMob ? 1.4 : 1.5)) * (isMob ? 0.52 : 0.44)));
       if (E.on) op *= entrOp(absD);
-      if (Math.abs(op - (opC[i] || 0)) > 0.02) {
+      if (Math.abs(op - (opC[i] || 0)) > 0.02 || (op === 0 && (opC[i] || 0) !== 0)) {
         opC[i] = op;
         c.style.opacity = op.toFixed(2);
+        c.style.visibility = op <= 0.01 ? 'hidden' : 'visible';
       }
       var far = absD > (isMob ? 3.3 : 3.7);
       if (far !== farC[i]) {
@@ -431,7 +440,7 @@
       if (z !== zC[i]) { zC[i] = z; c.style.zIndex = z; }
     }
 
-    ring.style.transform = 'rotate(' + (-pos * step * 0.6 + (E.on ? (1 - eOut(eClamp(E.t / 2.4))) * -110 : 0)) + 'deg) scale(' + (E.on ? (.82 + .18 * eOut(eClamp(E.t / 1.8))).toFixed(4) : 1) + ')';
+    ring.style.transform = 'rotate(' + (-pos * step * 0.6 + (E.on ? (1 - eOut(eClamp(E.t / 1.35))) * -85 : 0)) + 'deg) scale(' + (E.on ? (.86 + .14 * eOut(eClamp(E.t / 1.15))).toFixed(4) : 1) + ')';
     var activeIdx = ((Math.round(pos) % n) + n) % n;
     if (activeIdx !== activeC) {
       var prevActive = activeC;
@@ -848,19 +857,36 @@
             <div class="pr-composer pr-rev" style="--d:.5">
               <div class="prc-head">
                 <span class="prc-k" data-kt="compTitle">KIRIM PESAN CEPAT</span>
-                <div class="prc-topics" role="group" data-ka="topicAria" aria-label="Pilih topik diskusi">
-                  <button type="button" class="prc-topic on" aria-pressed="true" data-kt="tWeb">Proyek Web</button>
-                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tUi">Desain UI/UX</button>
-                  <button type="button" class="prc-topic" aria-pressed="false" data-kt="tCollab">Kolaborasi</button>
-                </div>
+                <span class="prc-badge">WhatsApp &middot; Email</span>
+              </div>
+              <div class="prc-topics" role="group" data-ka="topicAria" aria-label="Pilih topik diskusi">
+                <button type="button" class="prc-topic on" data-topic="web" aria-pressed="true" data-kt="tWeb">Proyek Web</button>
+                <button type="button" class="prc-topic" data-topic="ui" aria-pressed="false" data-kt="tUi">Desain UI/UX</button>
+                <button type="button" class="prc-topic" data-topic="collab" aria-pressed="false" data-kt="tCollab">Kolaborasi</button>
+                <button type="button" class="prc-topic" data-topic="chat" aria-pressed="false" data-kt="tChat">Sapa &amp; Diskusi</button>
               </div>
               <div class="prc-fields">
-                <input type="text" id="prcName" class="prc-input" placeholder="Nama Anda" data-ka="compName" aria-label="Nama Anda">
-                <input type="text" id="prcMsg" class="prc-input" placeholder="Ceritakan singkat proyek atau ide Anda..." data-ka="compMsg" aria-label="Pesan singkat Anda">
+                <input type="text" id="prcName" class="prc-input" placeholder="Nama atau instansi Anda" data-ka="compName" aria-label="Nama atau instansi Anda">
+                <textarea id="prcMsg" class="prc-input prc-textarea" rows="2" placeholder="Ceritakan singkat proyek, kebutuhan, atau ide Anda..." data-ka="compMsg" aria-label="Pesan singkat Anda"></textarea>
+              </div>
+              <div class="prc-starters" role="group" aria-label="Template pesan cepat">
+                <button type="button" class="prc-chip" data-starter="0" data-kt="starter0">+ Tanya estimasi &amp; jadwal</button>
+                <button type="button" class="prc-chip" data-starter="1" data-kt="starter1">+ Butuh landing page</button>
+                <button type="button" class="prc-chip" data-starter="2" data-kt="starter2">+ Ajak kolaborasi</button>
+              </div>
+              <div class="prc-preview" aria-live="polite">
+                <span class="prc-prev-lbl" data-kt="prevLbl">PRATINJAU PESAN</span>
+                <p class="prc-prev-txt" id="prcPreview"></p>
               </div>
               <div class="prc-actions">
-                <button type="button" class="prc-send wa" id="prcWaBtn" data-kt="compWa">Kirim ke WhatsApp &#8599;</button>
-                <button type="button" class="prc-send mail" id="prcMailBtn" data-kt="compMail">Kirim via Email &#8599;</button>
+                <button type="button" class="prc-send wa" id="prcWaBtn">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.8a8.5 8.5 0 0 1-12.5 7.5L3.5 20.5l1.3-4.3A8.5 8.5 0 1 1 20.5 11.8Z"/><path d="M9.4 9.2c.2-.4.4-.4.6-.4h.5c.2 0 .4.1.5.4l.7 1.6c.1.2 0 .5-.1.6l-.5.6c.5.9 1.3 1.7 2.2 2.2l.6-.5c.2-.1.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .2 0 .4-.4.6-.5.3-1.4.5-2.6 0-1.6-.6-3.4-2.4-4-4-.5-1.2-.3-2.1 0-2.6Z"/></svg>
+                  <span data-kt="compWa">Kirim ke WhatsApp &#8599;</span>
+                </button>
+                <button type="button" class="prc-send mail" id="prcMailBtn">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                  <span data-kt="compMail">Kirim via Email &#8599;</span>
+                </button>
               </div>
             </div>
             <blockquote class="pr-quote pr-rev" style="--d:.58">

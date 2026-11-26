@@ -179,47 +179,45 @@ window.__introLayout=function(sc,portrait,vw,vh){
 
       // Multi-stage choreographed morph from Fullscreen Intro -> Red Banner Block
       if (br && introEl.animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        introEl.classList.add('waapi-morph');
         var sc = document.getElementById('headSvg');
         if (sc && sc.animate) {
           var bCx = br.left + br.width * 0.5 - vw * 0.5;
           var bCy = br.top + br.height * 0.5 - vh * 0.5;
           sc.animate([
             { transform: 'translate3d(0px, 0px, 0) scale(1)', opacity: 1, offset: 0 },
-            { transform: 'translate3d(' + (bCx * 0.25).toFixed(1) + 'px, ' + (bCy * 0.25).toFixed(1) + 'px, 0) scale(0.92)', opacity: 0.85, offset: 0.28 },
-            { transform: 'translate3d(' + (bCx * 0.65).toFixed(1) + 'px, ' + (bCy * 0.65).toFixed(1) + 'px, 0) scale(0.68)', opacity: 0, offset: 0.72 },
-            { transform: 'translate3d(' + bCx.toFixed(1) + 'px, ' + bCy.toFixed(1) + 'px, 0) scale(0.5)', opacity: 0, offset: 1 }
-          ], { duration: 760, easing: 'cubic-bezier(0.32, 0, 0.2, 1)', fill: 'forwards' });
+            { transform: 'translate3d(' + (bCx * 0.22).toFixed(1) + 'px, ' + (bCy * 0.22).toFixed(1) + 'px, 0) scale(1.03)', opacity: 0.78, offset: 0.26 },
+            { transform: 'translate3d(' + (bCx * 0.62).toFixed(1) + 'px, ' + (bCy * 0.62).toFixed(1) + 'px, 0) scale(0.76)', opacity: 0, offset: 0.76 },
+            { transform: 'translate3d(' + bCx.toFixed(1) + 'px, ' + bCy.toFixed(1) + 'px, 0) scale(0.62)', opacity: 0, offset: 1 }
+          ], { duration: 420, easing: 'cubic-bezier(0.32, 0, 0.2, 1)', fill: 'forwards' });
         }
 
-        // Stage 1 -> Stage 2 -> Stage 3 clip-path morph:
-        // 0%: Fullscreen (0 0 0 0)
-        // 42%: Horizontal squeeze into a full-height center red column
-        // 88%: Vertical fold into exact red banner bounds with a slight spring compress
-        // 100%: Exact red banner bounds
-        var sqT = Math.min(vh - 10, ct + 5), sqB = Math.min(vh - 10, cb + 5);
-        var sqL = Math.min(vw - 10, cl + 3), sqR = Math.min(vw - 10, cr + 3);
+        // Single-owner WAAPI clip-path compression:
+        // 0%: Fullscreen -> 40%: Horizontal center red column -> 86%: Elastic lock into .hd .block -> 100%: Seamless hand-off
+        var sqT = Math.min(vh - 10, ct + 4), sqB = Math.min(vh - 10, cb + 4);
+        var sqL = Math.min(vw - 10, cl + 2), sqR = Math.min(vw - 10, cr + 2);
         introEl.animate([
           { clipPath: 'inset(0px 0px 0px 0px round 0px)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.65, 0, 0.22, 1)' },
-          { clipPath: 'inset(0px ' + cl + 'px 0px ' + cr + 'px round 0px)', opacity: 1, offset: 0.44, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-          { clipPath: 'inset(' + sqT + 'px ' + sqR + 'px ' + sqB + 'px ' + sqL + 'px round 2px)', opacity: 1, offset: 0.86, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
-          { clipPath: 'inset(' + ct + 'px ' + cr + 'px ' + cb + 'px ' + cl + 'px round 0px)', opacity: 1, offset: 0.94 },
+          { clipPath: 'inset(0px ' + cl + 'px 0px ' + cr + 'px round 0px)', opacity: 1, offset: 0.42, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          { clipPath: 'inset(' + sqT + 'px ' + sqR + 'px ' + sqB + 'px ' + sqL + 'px round 2px)', opacity: 1, offset: 0.82, easing: 'cubic-bezier(0.34, 1.45, 0.64, 1)' },
+          { clipPath: 'inset(' + ct + 'px ' + cr + 'px ' + cb + 'px ' + cl + 'px round 0px)', opacity: 1, offset: 0.91 },
           { clipPath: 'inset(' + ct + 'px ' + cr + 'px ' + cb + 'px ' + cl + 'px round 0px)', opacity: 0, offset: 1 }
-        ], { duration: 1120, fill: 'forwards' });
+        ], { duration: 680, fill: 'forwards' });
       }
 
-      // Reveal Home and trigger red block impact pulse right as the column locks into place
+      // Reveal Home right as the curtain locks into the center red banner
       setTimeout(function(){
         rootCls.remove('intro-on');
         rootCls.add('home-enter');
         if (bl) {
           bl.classList.add('morph-hit');
-          setTimeout(function(){ bl.classList.remove('morph-hit'); }, 1100);
+          setTimeout(function(){ bl.classList.remove('morph-hit'); }, 950);
         }
         document.dispatchEvent(new Event('introdone'));
-        setTimeout(function(){ rootCls.remove('home-enter'); }, 2200);
-      }, 460);
+        setTimeout(function(){ rootCls.remove('home-enter'); }, 1700);
+      }, 360);
 
-      setTimeout(function(){ introEl.remove(); }, 1350);
+      setTimeout(function(){ introEl.remove(); }, 760);
     };
     introEl.addEventListener('click', endIntro);
     document.addEventListener('keydown', function(e){

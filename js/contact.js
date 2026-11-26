@@ -33,13 +33,48 @@
     copyMail: {id:"Salin Email", en:"Copy Email", zh:"复制邮箱", es:"Copiar correo", ar:"نسخ البريد", fr:"Copier l’e-mail", ja:"メールをコピー", ko:"이메일 복사"},
     copied: {id:"Tersalin!", en:"Copied!", zh:"已复制!", es:"¡Copiado!", ar:"تم النسخ!", fr:"Copié !", ja:"コピー完了!", ko:"복사됨!"},
     compTitle: {id:"KIRIM PESAN CEPAT", en:"QUICK INQUIRY COMPOSER", zh:"快速发送消息", es:"MENSAJE RÁPIDO", ar:"إرسال رسالة سريعة", fr:"MESSAGE RAPIDE", ja:"クイックメッセージ作成", ko:"빠른 메시지 작성"},
-    compName: {id:"Nama Anda", en:"Your Name", zh:"您的姓名", es:"Tu nombre", ar:"اسمك", fr:"Votre nom", ja:"お名前", ko:"이름"},
-    compMsg: {id:"Ceritakan singkat proyek atau ide Anda...", en:"Briefly describe your project or idea...", zh:"简述您的项目或想法...", es:"Describe brevemente tu proyecto o idea...", ar:"صف مشروعك أو فكرتك باختصار...", fr:"Décrivez brièvement votre projet ou idée...", ja:"プロジェクトやアイデアを簡単に教えてください...", ko:"프로젝트나 아이디어를 간단히 적어주세요..."},
-    compWa: {id:"Kirim ke WhatsApp ↗", en:"Send to WhatsApp ↗", zh:"发送到 WhatsApp ↗", es:"Enviar a WhatsApp ↗", ar:"إرسال عبر واتساب ↗", fr:"Envoyer sur WhatsApp ↗", ja:"WhatsAppで送信 ↗", ko:"WhatsApp으로 보내기 ↗"},
+    compName: {id:"Nama atau instansi Anda", en:"Your name or company", zh:"您的姓名或机构", es:"Tu nombre o empresa", ar:"اسمك أو جهتك", fr:"Votre nom ou entreprise", ja:"お名前・ご所属", ko:"이름 또는 소속"},
+    compMsg: {id:"Ceritakan singkat proyek, kebutuhan, atau ide Anda...", en:"Briefly share your project, goals, or idea...", zh:"简述您的项目、需求或想法...", es:"Cuéntame brevemente tu proyecto, objetivo o idea...", ar:"شاركني بإيجاز مشروعك أو هدفك أو فكرتك...", fr:"Décrivez brièvement votre projet, besoin ou idée...", ja:"プロジェクトやご相談内容を簡単に教えてください...", ko:"프로젝트나 아이디어를 간단히 적어주세요..."},
+    compWa: {id:"Kirim ke WhatsApp ↗", en:"Send via WhatsApp ↗", zh:"通过 WhatsApp 发送 ↗", es:"Enviar por WhatsApp ↗", ar:"إرسال عبر واتساب ↗", fr:"Envoyer sur WhatsApp ↗", ja:"WhatsAppで送信 ↗", ko:"WhatsApp으로 보내기 ↗"},
     compMail: {id:"Kirim via Email ↗", en:"Send via Email ↗", zh:"通过邮件发送 ↗", es:"Enviar por Correo ↗", ar:"إرسال عبر البريد ↗", fr:"Envoyer par E-mail ↗", ja:"メールで送信 ↗", ko:"이메일로 보내기 ↗"},
     tWeb: {id:"Proyek Web", en:"Web Project", zh:"网站项目", es:"Proyecto Web", ar:"مشروع ويب", fr:"Projet Web", ja:"Web制作", ko:"웹 프로젝트"},
     tUi: {id:"Desain UI/UX", en:"UI/UX Design", zh:"UI/UX 设计", es:"Diseño UI/UX", ar:"تصميم UI/UX", fr:"Design UI/UX", ja:"UI/UXデザイン", ko:"UI/UX 디자인"},
     tCollab: {id:"Kolaborasi", en:"Collaboration", zh:"创意合作", es:"Colaboración", ar:"تعاون", fr:"Collaboration", ja:"コラボ", ko:"협업"},
+    tChat: {id:"Sapa & Diskusi", en:"Say Hi & Chat", zh:"交流讨论", es:"Saludar y Charlar", ar:"تحية ونقاش", fr:"Échange", ja:"気軽な相談", ko:"가벼운 문의"},
+    starter0: {id:"+ Tanya estimasi & jadwal", en:"+ Ask timeline & quote", zh:"+ 咨询周期与报价", es:"+ Consultar plazo y presupuesto", ar:"+ استفسار عن المدة والتكلفة", fr:"+ Délais & devis", ja:"+ 納期・見積もり相談", ko:"+ 일정·견적 문의"},
+    starter1: {id:"+ Butuh landing page", en:"+ Need a landing page", zh:"+ 需要落地页设计开发", es:"+ Necesito una landing page", ar:"+ أحتاج صفحة هبوط", fr:"+ Besoin d’une landing page", ja:"+ LP制作の相談", ko:"+ 랜딩 페이지 제작"},
+    starter2: {id:"+ Ajak kolaborasi", en:"+ Collaborate on a build", zh:"+ 邀请创意合作", es:"+ Proponer colaboración", ar:"+ دعوة للتعاون", fr:"+ Proposer une collaboration", ja:"+ コラボのご相談", ko:"+ 협업 제안"},
+    starter0Text: {
+      id:"Saya ingin bertanya mengenai ketersediaan waktu, estimasi pengerjaan, dan kisaran biaya untuk proyek web.",
+      en:"I'd like to ask about your availability, estimated timeline, and pricing for a web project.",
+      zh:"想咨询您近期的档期安排、预计开发周期以及网站项目的参考报价。",
+      es:"Me gustaría consultar tu disponibilidad, tiempos estimados y presupuesto para un proyecto web.",
+      ar:"أود الاستفسار عن توافرك، المدة التقديرية للتنفيذ، ونطاق التكلفة لمشروع ويب.",
+      fr:"Je souhaiterais connaître vos disponibilités, délais estimés et tarifs pour un projet web.",
+      ja:"Web制作のご対応可否、スケジュール目安、およその費用感についてご相談したいです。",
+      ko:"웹 프로젝트 진행 가능 여부와 예상 일정, 대략적인 비용을 문의드리고 싶습니다."
+    },
+    starter1Text: {
+      id:"Saya membutuhkan landing page yang modern, cepat, dan responsif untuk brand/bisnis saya.",
+      en:"I need a modern, fast, responsive landing page tailored for my brand or business.",
+      zh:"我需要为品牌/业务打造一个现代、轻量且响应式的落地页。",
+      es:"Necesito una landing page moderna, rápida y responsive para mi marca o negocio.",
+      ar:"أحتاج إلى تصميم وتطوير صفحة هبوط حديثة وسريعة ومتجاوبة لعلامتي التجارية.",
+      fr:"J'ai besoin d'une landing page moderne, rapide et responsive pour ma marque ou mon activité.",
+      ja:"ブランド・サービス向けにモダンで高速・レスポンシブなランディングページを制作したいです。",
+      ko:"브랜드/비즈니스에 맞는 모던하고 빠른 반응형 랜딩 페이지 제작이 필요합니다."
+    },
+    starter2Text: {
+      id:"Saya punya ide proyek kreatif dan tertarik mengajak Anda berkolaborasi di sisi front-end & UI.",
+      en:"I have a creative project idea and would love to collaborate with you on front-end & UI design.",
+      zh:"我有一个创意项目构想，非常希望能与您在前端开发与 UI 设计方面展开合作。",
+      es:"Tengo una idea de proyecto creativo y me encantaría colaborar contigo en front-end y diseño UI.",
+      ar:"لدي فكرة لمشروع إبداعي وأرغب في التعاون معك في تطوير الواجهات وتصميم تجربة المستخدم.",
+      fr:"J'ai une idée de projet créatif et j'aimerais collaborer avec vous sur le front-end et le design UI.",
+      ja:"クリエイティブな企画があり、フロントエンドとUIデザイン面でご一緒できたら嬉しいです。",
+      ko:"창의적인 프로젝트 아이디어가 있어 프론트엔드 및 UI 디자인 협업을 제안드리고 싶습니다."
+    },
+    prevLbl: {id:"PRATINJAU PESAN", en:"MESSAGE PREVIEW", zh:"消息预览", es:"VISTA PREVIA", ar:"معاينة الرسالة", fr:"APERÇU DU MESSAGE", ja:"メッセージプレビュー", ko:"메시지 미리보기"},
     copyMailAria: {id:"Salin alamat email", en:"Copy email address", zh:"复制邮箱地址", es:"Copiar dirección de correo", ar:"نسخ عنوان البريد الإلكتروني", fr:"Copier l’adresse e-mail", ja:"メールアドレスをコピー", ko:"이메일 주소 복사"},
     topicAria: {id:"Pilih topik diskusi", en:"Choose discussion topic", zh:"选择讨论主题", es:"Elegir tema de conversación", ar:"اختر موضوع النقاش", fr:"Choisir le sujet", ja:"相談トピックを選択", ko:"문의 주제 선택"},
     passAria: {id:"Kartu Identitas 3D Interaktif M. Zikri (Geser untuk memutar)", en:"Interactive 3D Identity Card of M. Zikri (Drag to rotate)", zh:"M. Zikri 3D 交互身份卡（拖动旋转）", es:"Tarjeta de identidad 3D interactiva de M. Zikri (Arrastra para girar)", ar:"بطاقة الهوية التفاعلية ثلاثية الأبعاد لـ M. Zikri (اسحب للتدوير)", fr:"Carte d’identité 3D interactive de M. Zikri (Glisser pour pivoter)", ja:"M. Zikri インタラクティブ3D IDカード（ドラッグで回転）", ko:"M. Zikri 인터랙티브 3D ID 카드 (드래그하여 회전)"},
@@ -68,13 +103,22 @@
     passProdVal: {id:"PKL DIGITALCODE 2026", en:"DIGITALCODE INTERNSHIP 2026", zh:"DIGITALCODE 实习 2026", es:"PRÁCTICAS DIGITALCODE 2026", ar:"تدريب DIGITALCODE 2026", fr:"STAGE DIGITALCODE 2026", ja:"DIGITALCODE 実習 2026", ko:"DIGITALCODE 실습 2026"},
     passFlipFront: {id:"KEMBALI KE SISI DEPAN", en:"BACK TO FRONT SIDE", zh:"返回正面", es:"VOLVER AL ANVERSO", ar:"العودة إلى الوجه الأمامي", fr:"RETOUR AU RECTO", ja:"表面へ戻る", ko:"앞면으로 돌아가기"},
     passFlipFrontAria: {id:"Balikkan kartu ke sisi depan", en:"Flip the card to its front side", zh:"将卡片翻到正面", es:"Girar la tarjeta al anverso", ar:"اقلب البطاقة إلى الوجه الأمامي", fr:"Retourner la carte côté recto", ja:"カードを表面に返す", ko:"카드를 앞면으로 뒤집기"},
-    greet: {id:"Halo Zikri, saya ", en:"Hi Zikri, I'm ", zh:"你好 Zikri，我是", es:"Hola Zikri, soy ", ar:"مرحبًا زكري، أنا ", fr:"Bonjour Zikri, je suis ", ja:"こんにちはZikriさん、", ko:"안녕하세요 지크리님, 저는 "},
-    guest: {id:"pengunjung portofolio Anda", en:"a visitor from your portfolio", zh:"来自您作品集的访客", es:"un visitante de tu portafolio", ar:"زائر لمعرض أعمالك", fr:"un visiteur de votre portfolio", ja:"ポートフォリオを見た者です", ko:"포트폴리오 방문자입니다"},
-    topicLbl: {id:"Topik: ", en:"Topic: ", zh:"主题：", es:"Tema: ", ar:"الموضوع: ", fr:"Sujet : ", ja:"トピック：", ko:"주제: "},
-    msgLbl: {id:"Pesan: ", en:"Message: ", zh:"留言：", es:"Mensaje: ", ar:"الرسالة: ", fr:"Message : ", ja:"メッセージ：", ko:"메시지: "},
-    defaultBody: {id:"Saya tertarik berdiskusi mengenai proyek / kolaborasi.", en:"I'd love to discuss a project or collaboration.", zh:"我希望与您探讨项目或合作事宜。", es:"Me gustaría conversar sobre un proyecto o colaboración.", ar:"أود مناقشة مشروع أو فرصة تعاون معك.", fr:"Je souhaite discuter d’un projet ou d’une collaboration.", ja:"プロジェクトやコラボについて相談したいです。", ko:"프로젝트나 협업에 대해 이야기 나누고 싶습니다."},
-    subjFrom: {id:"Dari ", en:"From ", zh:"来自 ", es:"De ", ar:"من ", fr:"De ", ja:"差出人：", ko:"보낸 이: "},
-    subjDefault: {id:"Pesan dari Portofolio", en:"Message from Portfolio", zh:"来自作品集的留言", es:"Mensaje desde el Portafolio", ar:"رسالة من معرض الأعمال", fr:"Message depuis le Portfolio", ja:"ポートフォリオからの連絡", ko:"포트폴리오 문의"}
+    greet: {id:"Halo Zikri! Saya ", en:"Hi Zikri! I'm ", zh:"你好 Zikri！我是", es:"¡Hola Zikri! Soy ", ar:"مرحبًا زكري! أنا ", fr:"Bonjour Zikri ! Je suis ", ja:"こんにちはZikriさん！", ko:"안녕하세요 지크리님! 저는 "},
+    guest: {id:"pengunjung dari portofolio Anda", en:"a visitor from your portfolio", zh:"来自您作品集的访客", es:"un visitante de tu portafolio", ar:"زائر من معرض أعمالك", fr:"un visiteur de votre portfolio", ja:"ポートフォリオを拝見した者です", ko:"포트폴리오를 보고 연락드린 방문자입니다"},
+    waIntro: {id:"Saya baru melihat portofolio Anda dan tertarik berdiskusi mengenai", en:"I just explored your portfolio and would love to chat about", zh:"我刚浏览了您的作品集，很想和您聊聊关于", es:"Acabo de ver tu portafolio y me encantaría hablar sobre", ar:"لقد تصفحت معرض أعمالك للتو وأود التحدث معك حول", fr:"Je viens de découvrir votre portfolio et j'aimerais échanger à propos de", ja:"ポートフォリオを拝見し、以下の件についてご相談したく連絡しました：", ko:"포트폴리오를 잘 보았습니다. 아래 주제로 이야기 나누고 싶습니다:"},
+    waClose: {id:"Boleh kita lanjut diskusi di sini? Terima kasih banyak!", en:"Would love to continue chatting here whenever you're free. Thanks!", zh:"方便的话我们可以在这里继续沟通吗？非常感谢！", es:"¿Podemos seguir conversando por aquí cuando tengas un momento? ¡Muchas gracias!", ar:"هل يمكننا متابعة الحديث هنا في الوقت المناسب لك؟ شكرًا جزيلًا!", fr:"Pouvons-nous en discuter ici dès que vous avez un moment ? Merci beaucoup !", ja:"お時間のある際にお返事いただけますと幸いです。よろしくお願いいたします！", ko:"편하실 때 여기서 이어서 이야기 나눌 수 있을까요? 감사합니다!"},
+    mailSalute: {id:"Halo M. Zikri Al-Bukhori,", en:"Dear M. Zikri Al-Bukhori,", zh:"您好 M. Zikri Al-Bukhori：", es:"Estimado M. Zikri Al-Bukhori,", ar:"تحية طيبة أستاذ M. Zikri Al-Bukhori،", fr:"Bonjour M. Zikri Al-Bukhori,", ja:"M. Zikri Al-Bukhori 様", ko:"안녕하세요, M. Zikri Al-Bukhori 님."},
+    mailIntro: {id:"Perkenalkan, saya ", en:"My name is ", zh:"您好，我是", es:"Me presento, soy ", ar:"أعرّفك بنفسي، أنا ", fr:"Je me présente, je suis ", ja:"はじめまして、", ko:"안녕하세요, 저는 "},
+    mailVia: {id:"Saya menghubungi Anda melalui portofolio web terkait topik ", en:"I'm reaching out through your portfolio regarding ", zh:"我通过您的个人作品集联系您，想进一步沟通关于", es:"Me pongo en contacto contigo a través de tu portafolio en relación con ", ar:"أتواصل معك عبر معرض أعمالك بخصوص ", fr:"Je vous contacte via votre portfolio au sujet de ", ja:"ポートフォリオサイトを拝見し、次の件についてご連絡いたしました：", ko:"포트폴리오를 통해 다음 주제로 연락드립니다: "},
+    mailDetail: {id:"Ringkasan pesan:", en:"Brief details:", zh:"具体说明：", es:"Detalles breves:", ar:"تفاصيل موجزة:", fr:"Détails en bref :", ja:"ご相談内容：", ko:"문의 내용:"},
+    mailClose: {id:"Terima kasih atas waktu dan perhatian Anda. Saya nantikan kabar baiknya.", en:"Thank you for your time and consideration. I look forward to hearing from you.", zh:"感谢您的时间与关注，期待您的回复。", es:"Muchas gracias por tu tiempo y atención. Quedo atento a tu respuesta.", ar:"شكرًا لوقتك واهتمامك، وأتطلع إلى ردك الكريم.", fr:"Je vous remercie pour votre temps et votre attention, et reste dans l'attente de votre retour.", ja:"お忙しいところ恐れ入りますが、ご返信をお待ちしております。", ko:"시간 내어 읽어주셔서 감사합니다. 좋은 답변 기다리겠습니다."},
+    mailSign: {id:"Salam hangat,", en:"Best regards,", zh:"顺祝商祺，", es:"Un cordial saludo,", ar:"مع أطيب التحيات،", fr:"Bien cordialement,", ja:"よろしくお願いいたします。", ko:"감사합니다,"},
+    tplWeb: {id:"Saya sedang merencanakan pembuatan website dan ingin berdiskusi soal konsep, estimasi waktu, serta biayanya.", en:"I'm planning a website build and would like to discuss the concept, timeline, and budget.", zh:"我正在筹划一个网站项目，希望探讨设计方向、开发周期与预算方案。", es:"Estoy planificando un sitio web y me gustaría hablar sobre el concepto, plazos y presupuesto.", ar:"أخطط لبناء موقع إلكتروني وأود مناقشة الفكرة والجدول الزمني والميزانية.", fr:"Je prépare la création d'un site web et j'aimerais discuter du concept, des délais et du budget.", ja:"Webサイトの制作を検討しており、構成・スケジュール・費用感について相談したいです。", ko:"웹사이트 제작을 계획 중이며 방향성, 일정, 예산에 대해 논의하고 싶습니다."},
+    tplUi: {id:"Saya membutuhkan bantuan desain UI/UX agar tampilan produk digital saya lebih rapi, modern, dan nyaman dipakai.", en:"I'm looking for UI/UX design support to make my digital product cleaner, sharper, and easier to use.", zh:"我需要 UI/UX 设计支持，让产品界面更清晰、现代且易于使用。", es:"Busco apoyo en diseño UI/UX para hacer mi producto digital más limpio, moderno e intuitivo.", ar:"أبحث عن دعم في تصميم UI/UX لجعل منتجي الرقمي أكثر أناقة وسهولة في الاستخدام.", fr:"Je recherche un accompagnement en design UI/UX pour rendre mon produit plus clair, moderne et fluide.", ja:"デジタルプロダクトのUI/UXをより洗練され使いやすい体験にブラッシュアップしたいです。", ko:"디지털 프로덕트를 더욱 깔끔하고 사용하기 편하게 개선할 UI/UX 디자인을 논의하고 싶습니다."},
+    tplCollab: {id:"Saya tertarik mengajak Anda berkolaborasi dalam proyek kreatif di bidang front-end dan desain antarmuka.", en:"I'd love to invite you to collaborate on a creative front-end and interface design project.", zh:"我很希望能邀请您共同参与一个前端与界面设计方向的创意合作项目。", es:"Me encantaría invitarte a colaborar en un proyecto creativo de front-end y diseño de interfaces.", ar:"يسعدني دعوتك للتعاون في مشروع إبداعي في مجال الواجهات الأمامية وتصميم التجربة.", fr:"J'aimerais vous proposer une collaboration sur un projet créatif en front-end et design d'interface.", ja:"フロントエンドとUIデザイン領域でのクリエイティブなコラボレーションをご相談したいです。", ko:"프론트엔드와 인터페이스 디자인 분야의 창의적인 프로젝트 협업을 제안드리고 싶습니다."},
+    tplChat: {id:"Saya sangat suka karya di portofolio Anda dan ingin menyapa serta bertukar pikiran seputar web & desain.", en:"I really enjoyed your portfolio and just wanted to say hi and exchange ideas about web & design.", zh:"非常喜欢您的作品集，想打个招呼并交流一下网页开发与设计的想法。", es:"Me encantó tu portafolio y quería saludarte e intercambiar ideas sobre web y diseño.", ar:"أعجبتني أعمالك في المعرض كثيرًا وأردت إلقاء التحية وتبادل الأفكار حول الويب والتصميم.", fr:"J'ai beaucoup aimé votre portfolio et je voulais simplement vous saluer et échanger autour du web et du design.", ja:"ポートフォリオがとても素敵でしたので、Webやデザインについて少しお話しできればと思い連絡しました。", ko:"포트폴리오가 인상 깊어서 인사드리고 웹·디자인 관련 이야기를 나누고 싶습니다."},
+    subjFrom: {id:"Diskusi dari ", en:"Inquiry from ", zh:"来自 ", es:"Consulta de ", ar:"رسالة من ", fr:"Demande de ", ja:"お問い合わせ：", ko:"문의 — "},
+    subjDefault: {id:"Diskusi dari Portofolio Web", en:"Portfolio Inquiry", zh:"来自作品集的咨询", es:"Consulta desde el Portafolio", ar:"استفسار من معرض الأعمال", fr:"Contact depuis le Portfolio", ja:"ポートフォリオからのお問い合わせ", ko:"포트폴리오 문의"}
   };
   function lang(){ return (window.ZK && ZK.lang) || "id"; }
   function word(k){ var d = DICT[k]; return d ? (d[lang()] || d.id) : ""; }
@@ -242,6 +286,14 @@
     var time = 0;
 
     function updateCard3D() {
+      if (!root.isConnected || pg.hidden || !pg.classList.contains("open")) {
+        animRaf = 0;
+        return;
+      }
+      if (document.hidden) {
+        animRaf = requestAnimationFrame(updateCard3D);
+        return;
+      }
       time += 0.032;
 
       // Efek melayang mengambang alami (ambient levitation)
@@ -441,41 +493,106 @@
     var comp = root.querySelector(".pr-composer");
     if (!comp) return;
     var pills = comp.querySelectorAll(".prc-topic");
+    var chips = comp.querySelectorAll(".prc-chip");
+    var nameIn = comp.querySelector("#prcName");
+    var msgIn = comp.querySelector("#prcMsg");
+    var prevEl = comp.querySelector("#prcPreview");
+    var waBtn = comp.querySelector("#prcWaBtn");
+    var mailBtn = comp.querySelector("#prcMailBtn");
+
+    function topicDefault(code) {
+      if (code === "ui") return word("tplUi");
+      if (code === "collab") return word("tplCollab");
+      if (code === "chat") return word("tplChat");
+      return word("tplWeb");
+    }
+
+    function getDraft() {
+      var onPill = comp.querySelector(".prc-topic.on");
+      var topicCode = onPill ? (onPill.getAttribute("data-topic") || "web") : "web";
+      var topicText = onPill ? onPill.textContent.trim() : word("tWeb");
+      var nm = (nameIn && nameIn.value.trim()) ? nameIn.value.trim() : "";
+      var ms = (msgIn && msgIn.value.trim()) ? msgIn.value.trim() : "";
+      var sender = nm || word("guest");
+      var body = ms || topicDefault(topicCode);
+      return { topicCode: topicCode, topicText: topicText, nm: nm, sender: sender, body: body };
+    }
+
+    function buildWhatsAppMessage() {
+      var d = getDraft();
+      return (
+        word("greet") + d.sender + ".\n\n" +
+        word("waIntro") + " *" + d.topicText + "*.\n" +
+        d.body + "\n\n" +
+        word("waClose")
+      );
+    }
+
+    function buildEmailMessage() {
+      var d = getDraft();
+      var subject = "[" + d.topicText + "] " + (d.nm ? (word("subjFrom") + d.nm) : word("subjDefault"));
+      var body =
+        word("mailSalute") + "\n\n" +
+        word("mailIntro") + d.sender + ".\n" +
+        word("mailVia") + d.topicText + ".\n\n" +
+        word("mailDetail") + "\n" +
+        d.body + "\n\n" +
+        word("mailClose") + "\n\n" +
+        word("mailSign") + "\n" +
+        (d.nm || d.sender);
+      return { subject: subject, body: body };
+    }
+
+    function syncPreview() {
+      if (!prevEl) return;
+      var d = getDraft();
+      prevEl.textContent = "“" + word("greet") + d.sender + ". " + d.body + "”";
+    }
+
     [].forEach.call(pills, function(p) {
       p.addEventListener("click", function() {
         [].forEach.call(pills, function(x) { x.classList.remove("on"); x.setAttribute("aria-pressed", "false"); });
         p.classList.add("on");
         p.setAttribute("aria-pressed", "true");
+        syncPreview();
       });
     });
-    var nameIn = comp.querySelector("#prcName");
-    var msgIn = comp.querySelector("#prcMsg");
-    var waBtn = comp.querySelector("#prcWaBtn");
-    var mailBtn = comp.querySelector("#prcMailBtn");
-    function buildMessage() {
-      var onPill = comp.querySelector(".prc-topic.on");
-      var topicText = onPill ? onPill.textContent.trim() : word("tWeb");
-      var nm = (nameIn && nameIn.value.trim()) ? nameIn.value.trim() : "";
-      var ms = (msgIn && msgIn.value.trim()) ? msgIn.value.trim() : "";
-      var greeting = word("greet") + (nm || word("guest")) + ".";
-      var topicLine = word("topicLbl") + topicText + ".";
-      var bodyLine = ms ? (word("msgLbl") + ms) : word("defaultBody");
-      return {
-        subject: "[" + topicText + "] " + (nm ? word("subjFrom") + nm : word("subjDefault")),
-        full: greeting + "\n" + topicLine + "\n" + bodyLine
-      };
-    }
+
+    [].forEach.call(chips, function(ch) {
+      ch.addEventListener("click", function() {
+        var idx = ch.getAttribute("data-starter");
+        var txt = word("starter" + idx + "Text");
+        if (msgIn && txt) {
+          msgIn.value = txt;
+          msgIn.focus();
+        }
+        if (idx === "2") {
+          var colPill = comp.querySelector('.prc-topic[data-topic="collab"]');
+          if (colPill) colPill.click();
+        } else if (idx === "1") {
+          var webPill = comp.querySelector('.prc-topic[data-topic="web"]');
+          if (webPill) webPill.click();
+        }
+        syncPreview();
+      });
+    });
+
+    if (nameIn) nameIn.addEventListener("input", syncPreview);
+    if (msgIn) msgIn.addEventListener("input", syncPreview);
+    root.__syncPreview = syncPreview;
+    syncPreview();
+
     if (waBtn) {
       waBtn.addEventListener("click", function() {
-        var m = buildMessage();
-        var url = "https://wa.me/6281367381826?text=" + encodeURIComponent(m.full);
+        var text = buildWhatsAppMessage();
+        var url = "https://wa.me/6281367381826?text=" + encodeURIComponent(text);
         window.open(url, "_blank", "noopener,noreferrer");
       });
     }
     if (mailBtn) {
       mailBtn.addEventListener("click", function() {
-        var m = buildMessage();
-        window.location.href = "mailto:zikriganteng2023@gmail.com?subject=" + encodeURIComponent(m.subject) + "&body=" + encodeURIComponent(m.full);
+        var m = buildEmailMessage();
+        window.location.href = "mailto:zikriganteng2023@gmail.com?subject=" + encodeURIComponent(m.subject) + "&body=" + encodeURIComponent(m.body);
       });
     }
   }
@@ -491,5 +608,5 @@
     var root = pgb.querySelector(".pr-paper");
     if (root && !root.__k) { root.__k = 1; init(root); }
   }).observe(pgb, {childList: true});
-  window.addEventListener("zk-lang", function(){ var r = pgb.querySelector(".pr-paper"); if (r) tr(r); });
+  window.addEventListener("zk-lang", function(){ var r = pgb.querySelector(".pr-paper"); if (r) { tr(r); if (r.__syncPreview) r.__syncPreview(); } });
 })();

@@ -177,88 +177,67 @@
 }
 
 /* --------------------------------------------------------------------------
-   5. PAGE p1 (MUSIC) — 3D VINYL TURNTABLE, TONEARM & AUDIO VISUALIZER
+   5. PAGE p1 (MUSIC) — SUNLIT ACOUSTIC RESONANCE STAGE & HARMONIC VISUALIZER
    -------------------------------------------------------------------------- */
-.pg.p1.has-vinyl3d .bg::before {
-  display: none !important;
-}
-.vinyl-stage-3d {
+.pg.p1 .bg .music-aura-stage {
   position: absolute;
-  right: -7vmin;
-  top: 50%;
-  width: min(86vmin, 740px);
+  right: 3.5vmin;
+  top: 46%;
+  width: min(76vmin, 680px);
   aspect-ratio: 1;
-  transform: translateY(-48%) perspective(1100px) rotateY(-14deg) rotateX(9deg);
-  transform-style: preserve-3d;
+  transform: translate3d(var(--ma-x, 0px), calc(-50% + var(--ma-y, 0px)), 0);
   pointer-events: none;
   z-index: 0;
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
-.pg.p1.playing .vinyl-stage-3d {
-  transform: translateY(-48%) perspective(1100px) rotateY(-9deg) rotateX(6deg) scale(calc(1 + var(--beat, 0) * 0.032));
+.pg.p1 .bg .music-sun {
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 46% 42%, rgba(255, 252, 245, 0.88) 0%, rgba(255, 246, 234, 0.56) 28%, color-mix(in srgb, var(--acc2, #f59a72) 26%, transparent) 54%, color-mix(in srgb, var(--acc, #e0654f) 10%, transparent) 72%, transparent 86%);
+  transform: scale(calc(1 + var(--beat, 0) * 0.085));
+  transition: opacity 0.8s ease;
+  opacity: 0.9;
+  z-index: 0;
 }
-.vinyl-viz-canvas {
+.pg.p1.playing .bg .music-sun {
+  opacity: 1;
+}
+.pg.p1 .bg .music-rosette {
+  position: absolute;
+  inset: 4%;
+  pointer-events: none;
+  z-index: 1;
+}
+.pg.p1 .bg .music-rosette svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pg.p1 .bg .music-rosette-outer {
+  transform-origin: 200px 200px;
+  transform: rotate(calc(var(--rot, 0) * 0.24deg));
+}
+.pg.p1 .bg .music-rosette-inner {
+  transform-origin: 200px 200px;
+  transform: rotate(calc(var(--rot, 0) * -0.16deg));
+}
+.pg.p1 .bg .music-rosette-core {
+  transform-origin: 200px 200px;
+  transform: scale(calc(1 + var(--beat, 0) * 0.055));
+}
+.pg.p1 .bg .music-viz-canvas {
   position: absolute;
   inset: -16%;
   width: 132%;
   height: 132%;
+  max-width: none;
+  max-height: none;
   pointer-events: none;
-  z-index: 0;
-}
-.vinyl-platter {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  transform: rotate(calc(var(--rot, 0) * 1deg));
-  background:
-    radial-gradient(circle at 50% 41.5%, #f3e7d1 0 0.8%, transparent 1%),
-    radial-gradient(circle, #0b0907 0 1.6%, transparent 1.9%),
-    radial-gradient(circle, var(--acc, #e0654f) 0 11%, color-mix(in srgb, var(--acc, #e0654f) 58%, #000) 11.6% 12.8%, transparent 13.2%),
-    conic-gradient(
-      from 30deg,
-      transparent 0 10%,
-      rgba(255, 255, 255, 0.28) 14%,
-      transparent 21% 54%,
-      rgba(255, 255, 255, 0.22) 60%,
-      transparent 67%
-    ),
-    repeating-radial-gradient(circle, rgba(255, 255, 255, 0.065) 0 1px, transparent 1px 4.5px),
-    #14100e;
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.42),
-    0 0 0 14px color-mix(in srgb, var(--acc, #e0654f) 16%, transparent),
-    0 0 calc(90px + var(--beat, 0) * 95px) color-mix(in srgb, var(--acc, #e0654f) 56%, transparent),
-    0 34px 70px -18px rgba(14, 8, 4, 0.58);
-  transition: box-shadow 0.16s ease-out;
-}
-.vinyl-platter::after {
-  content: "";
-  position: absolute;
-  inset: 2%;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(130deg, rgba(255, 255, 255, 0.18) 0%, transparent 38%, transparent 65%, rgba(255, 255, 255, 0.08) 100%);
-}
-/* Pivoting Turntable Tonearm */
-.vinyl-arm {
-  position: absolute;
-  right: 11%;
-  top: 6%;
-  width: 34%;
-  height: 62%;
-  z-index: 3;
-  transform-origin: 78% 14%;
-  transform: translateZ(34px) rotate(-24deg);
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.38));
-}
-.pg.p1.playing .vinyl-arm {
-  transform: translateZ(34px) rotate(12deg);
-}
-.vinyl-arm svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  z-index: 2;
 }
 /* Beat-reactive mini player glow (desktop + mobile) */
 .pg.p1.playing .np {
@@ -269,17 +248,17 @@
     0 0 calc(20px + var(--beat, 0) * 34px) -4px color-mix(in srgb, var(--acc2) 55%, transparent);
 }
 .pg.p1.playing .npd {
-  transform: scale(calc(1 + var(--beat, 0) * 0.08));
+  scale: calc(1 + var(--beat, 0) * 0.06);
 }
 @media (max-width: 820px) {
-  .vinyl-stage-3d {
-    width: 58vmin;
-    right: -13vmin;
-    top: 16%;
-    transform: translateY(-42%) perspective(900px) rotateY(-10deg) rotateX(6deg);
-  }
-  .pg.p1.playing .vinyl-stage-3d {
-    transform: translateY(-42%) perspective(900px) rotateY(-6deg) rotateX(4deg) scale(calc(1 + var(--beat, 0) * 0.03));
+  .pg.p1 .bg .music-aura-stage {
+    left: auto;
+    right: -12vw;
+    top: 3svh;
+    bottom: auto;
+    width: min(80vw, 350px);
+    transform: none;
+    opacity: 0.9;
   }
 }
 
@@ -345,7 +324,7 @@
   transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
 }
 .pg.p3 .ggrid-card .ggrid-meta {
-  transform: translateZ(18px);
+  transform: none;
 }
 .pg.p3 .gk.tl.foc {
   box-shadow:
@@ -475,4 +454,62 @@
   .pg.p0 .st-embers {
     display: none !important;
   }
+}
+
+/* --------------------------------------------------------------------------
+   10. MOBILE / TOUCH COMPOSITING STABILITY
+   Layar sentuh: hilangkan efek yang memaksa raster ulang atau blur langsung
+   (backdrop-filter, shadow & filter yang berubah saat kartu aktif berganti)
+   supaya kartu dan konten tidak hilang-timbul ketika digeser/digulir.
+   -------------------------------------------------------------------------- */
+@media (pointer: coarse), (max-width: 700px) {
+  /* Roda kartu: bayangan & filter foto tetap, tidak berubah saat .on berpindah */
+  .card,
+  .card.on {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, .14),
+      0 14px 26px -10px rgba(0, 0, 0, .34),
+      inset 0 0 0 1px rgba(255, 255, 255, .16),
+      inset 0 1px 0 rgba(255, 255, 255, .4) !important;
+  }
+  .card .portrait-img,
+  .card.on .portrait-img {
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+  .card .dim { transition: none; }
+
+  /* Panah di atas roda: blur langsung di atas kartu yang bergerak = berkedip */
+  .arr {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(255, 255, 255, .9) !important;
+  }
+  :root[data-theme="dark"] .arr { background: rgba(28, 31, 38, .92) !important; }
+
+  /* Halaman detail: tanpa layer permanen & tanpa backdrop blur saat digulir */
+  .pg.open { will-change: auto; }
+  .pg .bk,
+  .pg .rows > * {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .pg .bk { background: color-mix(in srgb, var(--pbg) 92%, transparent); }
+}
+
+/* Story: reveal bab cukup fade + geser 2D di layar sentuh/sempit (tanpa perspective 3D & aura blur) */
+@media (pointer: coarse), (max-width: 820px) {
+  .pg.p0 .st-life { perspective: none; }
+  .pg.p0 .st-ch.st-3d-ready,
+  .pg.p0 .st-end.st-3d-ready {
+    transform: translate3d(0, 22px, 0);
+    transition: transform .6s cubic-bezier(.22, 1, .36, 1), opacity .6s ease;
+  }
+  .pg.p0 .st-ch.st-3d-ready.in-3d,
+  .pg.p0 .st-end.st-3d-ready.in-3d {
+    transform: none;
+  }
+  .pg.p0 .st-ch.st-active-aura::before { display: none; }
 }

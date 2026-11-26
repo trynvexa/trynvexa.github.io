@@ -1360,14 +1360,6 @@ body::before {
 
 /* Page Background Art Placements */
 .p0 .bg svg { right: -18%; bottom: -24%; width: min(110vmin, 900px); }
-.p1 .bg div {
-  right: -10%;
-  bottom: -32%;
-  width: min(120vmin, 1000px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0 2%, #ffe27a 3.5% 5%, #4a8dff 9%, #1a49c4 24%, #0b1d5c 44%, transparent 62%);
-}
 .p3 .bg {
   background-image: linear-gradient(#00000014 1px, transparent 1px), linear-gradient(90deg, #00000014 1px, transparent 1px);
   background-size: 72px 72px;

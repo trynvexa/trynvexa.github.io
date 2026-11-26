@@ -192,19 +192,25 @@ window.SKR = (function(){
   var bars = BARS.map(function(b, i){
     var g = BAR_CATS[i] || 'fe';
     var num = (i + 1 < 10 ? '0' : '') + (i + 1);
-    return '<li class="sk-bar sk-rv" data-bg="' + g + '" style="--d:' + (i * .055) + 's">' +
-      '<div class="t">' +
-        '<div class="sk-bar-id">' +
-          '<span class="sk-bar-kicker"><i class="sk-bar-dot" aria-hidden="true"></i><span>' + num + '</span><span>&middot;</span><span>' + BAR_CAT_NAME[g] + '</span></span>' +
-          '<span class="sk-bar-name">' + b[0] + '</span>' +
-        '</div>' +
-        '<div class="sk-bar-score">' +
+    var focusInline = b[3].map(function(t){ return '<span>' + t + '</span>'; }).join('<i class="sk-sep" aria-hidden="true">&middot;</i>');
+    return '<li class="sk-bar sk-rv" data-bg="' + g + '" style="--d:' + (i * .04) + 's">' +
+      '<span class="sk-bar-num" aria-hidden="true">' + num + '</span>' +
+      '<div class="sk-bar-id">' +
+        '<span class="sk-bar-name">' + b[0] + '</span>' +
+        '<span class="sk-bar-cat">' + BAR_CAT_NAME[g] + '</span>' +
+      '</div>' +
+      '<div class="sk-bar-desc">' +
+        '<p>' + b[2] + '</p>' +
+        '<div class="sk-bar-tags">' + focusInline + '</div>' +
+      '</div>' +
+      '<div class="sk-bar-score">' +
+        '<div class="sk-bar-meta">' +
           '<span class="sk-bar-pct" data-v="' + b[1] + '">0%</span>' +
           '<span class="sk-bar-tier">' + barTier(b[1]) + '</span>' +
         '</div>' +
+        '<div class="sk-trk" aria-hidden="true"><i class="sk-fil" style="--p:' + b[1] + '%"></i></div>' +
       '</div>' +
-      '<div class="sk-trk" aria-hidden="true"><i class="sk-fil" style="--p:' + b[1] + '%"></i></div>' +
-      '<p>' + b[2] + '</p>' + chips(b[3]) + '</li>';
+    '</li>';
   }).join('');
   var prin = PRIN.map(function(p, i){
     return '<div class="sk-pc sk-rv" style="--d:' + (i * .08) + 's"><i aria-hidden="true">' + p[0] + '</i><h4>' + p[1] + '</h4><p>' + p[2] + '</p></div>';

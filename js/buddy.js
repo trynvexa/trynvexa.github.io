@@ -37,6 +37,7 @@
   });
 
   var rd = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isCoarse = matchMedia('(pointer: coarse)').matches;
   var root = document.documentElement;
   var bsh = b.querySelector('.bsh');
 
@@ -57,7 +58,7 @@
 
   // Cached layout geometry so frame() never triggers synchronous layout/reflow
   var cv = document.createElement('canvas').getContext('2d'), capK = '', capH = 40;
-  var geom = { valid: false, hrLeft: 0, hrTop: 0, fs: 60, cap: 42, lets: [], lastMeasure: 0 };
+  var geom = { valid: false, hrLeft: 0, hrTop: 0, topRowBottom: 0, fs: 60, cap: 42, lets: [], lastMeasure: 0 };
 
   function measureCap(cs) {
     var k = cs.fontWeight + cs.fontSize + cs.fontFamily;
@@ -74,11 +75,14 @@
     var lets = getLets();
     if (!lets.length) return;
     var hr = hd.getBoundingClientRect();
+    var topRow = hd.querySelector('.top-row');
+    var trb = topRow ? topRow.getBoundingClientRect().bottom : hr.top;
     var cs = getComputedStyle(title);
     var fs = parseFloat(cs.fontSize) || 60;
     var cH = measureCap(cs);
     geom.hrLeft = hr.left;
     geom.hrTop = hr.top;
+    geom.topRowBottom = trb;
     geom.fs = fs;
     geom.cap = cH;
     geom.lets = [];
@@ -116,8 +120,13 @@
   }
   document.addEventListener('introdone', function(){
     geom.valid = false;
-    setTimeout(function(){ geom.valid = false; }, 350);
-    setTimeout(function(){ geom.valid = false; }, 950);
+    setTimeout(function(){ geom.valid = false; }, 280);
+    setTimeout(function(){ geom.valid = false; }, 820);
+    if (!rd) {
+      air.y = -28;
+      air.vy = 0;
+      set('wave', 1700);
+    }
     b.classList.remove('hop'); void b.offsetWidth; b.classList.add('hop');
   }, { once: true });
 
@@ -156,7 +165,7 @@
     jump.y0 = curY;
     jump.t0 = performance.now();
     jump.dur = Math.min(620, 330 + dist * 50);
-    jump.arc = Math.min(102, 36 + dist * 11);
+    jump.arc = innerWidth <= 700 ? Math.min(34, 16 + dist * 5) : Math.min(102, 36 + dist * 11);
     jump.fromIdx = seatIdx;
     jump.toIdx = idx;
     seatIdx = idx;
@@ -177,7 +186,7 @@
   window.__zkBuddySeatIdx = function() { return seatIdx; };
 
   // Unified loop (head tracking + sitting/jumping physics without forced reflows)
-  var pgElB = document.getElementById('pg');
+  var pgElB = document.getElementById('pg'), lastFrameB = 0;
   function frame(now) {
     if (document.hidden ||
         root.classList.contains('intro-on') ||
@@ -186,6 +195,13 @@
       requestAnimationFrame(frame);
       return;
     }
+
+    // Throttle idle RAF to ~30fps on coarse touch screens to keep mobile cool; full 60fps while jumping
+    if (isCoarse && !jump.on && Math.abs(air.y) < 0.2 && Math.abs(air.vy) < 0.2 && (now - lastFrameB) < 33) {
+      requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameB = now;
 
     var curL = ensureSeat();
     if (!curL) { requestAnimationFrame(frame); return; }
@@ -230,8 +246,10 @@
     var wavePhase = ((now * 0.001) - seatIdx * 0.32) / 3.6 * Math.PI * 2;
     var waveY = rd ? 0 : -Math.cos(wavePhase) * (fs * 0.055);
     var sit = (lg.bottom + waveY) - geom.cap - fs * 0.14;
-    var availH = Math.max((sit - geom.hrTop - 2) / 0.82, fs * 0.82);
-    var h = Math.max(0, Math.min(availH, Math.max(fs * 1.35, 96), 188));
+    var ceilingY = Math.max(geom.hrTop + 2, geom.topRowBottom ? (geom.topRowBottom + 3) : (geom.hrTop + 2));
+    var availH = Math.max(0, (sit - ceilingY) / Math.max(0.7, seat));
+    var minFloor = (innerWidth <= 700 && innerHeight <= 740) ? 58 : 96;
+    var h = Math.max(0, Math.min(availH, Math.max(fs * 1.35, minFloor), 188));
 
     if (h < 44) {
       b.style.visibility = 'hidden';

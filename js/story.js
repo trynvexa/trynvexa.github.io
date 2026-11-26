@@ -127,7 +127,9 @@
   function ask(){if(!raf)raf=requestAnimationFrame(update);}
   function later(){build();setTimeout(build,450);setTimeout(build,1400);}
   pg.addEventListener("scroll",ask,{passive:true});
-  window.addEventListener("resize",function(){build();});
+  /* Toolbar browser HP naik-turun saat digulir hanya mengubah tinggi viewport; benang SVG tidak boleh dibangun ulang (berkedip) untuk itu */
+  var lastBuildW=window.innerWidth;
+  window.addEventListener("resize",function(){if(window.innerWidth===lastBuildW)return;lastBuildW=window.innerWidth;build();});
   window.addEventListener("st-relayout",function(){requestAnimationFrame(build);});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){build();});
   new MutationObserver(function(){if(pgb.querySelector(".st-wrap")&&(!S||S.wrap!==pgb.querySelector(".st-wrap")))later();}).observe(pgb,{childList:true});

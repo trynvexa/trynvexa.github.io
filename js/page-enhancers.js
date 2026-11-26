@@ -119,42 +119,78 @@
   });
 
   /* ========================================================================
-     p1: MUSIC — 3D Turntable Platter, Animated Tonearm & WebGL Audio Visualizer
+     p1: MUSIC — Sunlit Acoustic Resonance Stage & Fluid Harmonic Visualizer
      ======================================================================== */
   Z.registerPage(1, function (pg, pgb) {
     var cleanups = [];
     var bg = pgb.querySelector('.bg');
     if (!bg) return function () {};
 
-    pg.classList.add('has-vinyl3d');
+    var ticks = [];
+    for (var tk = 0; tk < 60; tk++) {
+      var deg = tk * 6;
+      var rad = (deg * Math.PI) / 180;
+      var major = tk % 5 === 0;
+      var r1 = major ? 156 : 162;
+      var r2 = major ? 170 : 167;
+      var x1 = (200 + Math.cos(rad) * r1).toFixed(2);
+      var y1 = (200 + Math.sin(rad) * r1).toFixed(2);
+      var x2 = (200 + Math.cos(rad) * r2).toFixed(2);
+      var y2 = (200 + Math.sin(rad) * r2).toFixed(2);
+      ticks.push(
+        '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+        '" stroke="var(--acc, #e0654f)" stroke-width="' + (major ? '1.35' : '0.8') +
+        '" stroke-linecap="round" opacity="' + (major ? '0.42' : '0.2') + '"/>'
+      );
+    }
+
     var stage = document.createElement('div');
-    stage.className = 'vinyl-stage-3d';
+    stage.className = 'music-aura-stage';
     stage.setAttribute('aria-hidden', 'true');
     stage.innerHTML =
-      '<canvas class="vinyl-viz-canvas"></canvas>' +
-      '<div class="vinyl-platter"></div>' +
-      '<div class="vinyl-arm">' +
-        '<svg viewBox="0 0 180 340" fill="none">' +
+      '<div class="music-sun"></div>' +
+      '<div class="music-rosette">' +
+        '<svg viewBox="0 0 400 400" fill="none">' +
           '<defs>' +
-            '<linearGradient id="armMetal" x1="0" y1="0" x2="1" y2="1">' +
-              '<stop offset="0%" stop-color="#f5efe6"/>' +
-              '<stop offset="48%" stop-color="#9e958a"/>' +
-              '<stop offset="100%" stop-color="#3a332d"/>' +
+            '<radialGradient id="zkRosetteHalo" cx="46%" cy="42%" r="56%">' +
+              '<stop offset="0%" stop-color="#fffdf8" stop-opacity="0.72"/>' +
+              '<stop offset="52%" stop-color="#f7e5ce" stop-opacity="0.28"/>' +
+              '<stop offset="84%" stop-color="var(--acc2, #f59a72)" stop-opacity="0.1"/>' +
+              '<stop offset="100%" stop-color="var(--acc, #e0654f)" stop-opacity="0"/>' +
+            '</radialGradient>' +
+            '<linearGradient id="zkRosetteArc" x1="0%" y1="0%" x2="100%" y2="100%">' +
+              '<stop offset="0%" stop-color="var(--acc, #e0654f)" stop-opacity="0.58"/>' +
+              '<stop offset="55%" stop-color="var(--acc2, #f59a72)" stop-opacity="0.24"/>' +
+              '<stop offset="100%" stop-color="#ffffff" stop-opacity="0.52"/>' +
             '</linearGradient>' +
           '</defs>' +
-          '<circle cx="140" cy="48" r="30" fill="#1b1714" stroke="url(#armMetal)" stroke-width="4"/>' +
-          '<circle cx="140" cy="48" r="14" fill="url(#armMetal)"/>' +
-          '<path d="M140 48 L128 190 Q125 228 96 266 L72 296" stroke="url(#armMetal)" stroke-width="7.5" stroke-linecap="round"/>' +
-          '<rect x="52" y="286" width="28" height="44" rx="5" transform="rotate(36 66 308)" fill="#181412" stroke="#f3e7d1" stroke-width="1.8"/>' +
-          '<circle cx="56" cy="316" r="3.5" fill="#e0463a"/>' +
+          '<g class="music-rosette-core">' +
+            '<circle cx="200" cy="200" r="144" fill="url(#zkRosetteHalo)"/>' +
+            '<circle cx="200" cy="200" r="144" stroke="#ffffff" stroke-width="1.2" opacity="0.62"/>' +
+            '<circle cx="200" cy="200" r="136" stroke="var(--acc, #e0654f)" stroke-width="0.9" opacity="0.22"/>' +
+            '<circle cx="200" cy="200" r="106" stroke="var(--acc2, #f59a72)" stroke-width="0.85" stroke-dasharray="2 7" opacity="0.34"/>' +
+          '</g>' +
+          '<g class="music-rosette-outer">' +
+            '<circle cx="200" cy="200" r="176" stroke="var(--acc, #e0654f)" stroke-width="0.85" stroke-dasharray="10 14 2 14" opacity="0.3"/>' +
+            ticks.join('') +
+            '<circle cx="200" cy="24" r="2.6" fill="var(--acc, #e0654f)" opacity="0.55"/>' +
+            '<circle cx="376" cy="200" r="2.6" fill="var(--acc2, #f59a72)" opacity="0.55"/>' +
+            '<circle cx="200" cy="376" r="2.6" fill="var(--acc, #e0654f)" opacity="0.55"/>' +
+            '<circle cx="24" cy="200" r="2.6" fill="var(--acc2, #f59a72)" opacity="0.55"/>' +
+          '</g>' +
+          '<g class="music-rosette-inner">' +
+            '<path d="M 88 156 A 120 120 0 0 1 256 94" stroke="url(#zkRosetteArc)" stroke-width="1.6" stroke-linecap="round"/>' +
+            '<path d="M 312 244 A 120 120 0 0 1 144 306" stroke="url(#zkRosetteArc)" stroke-width="1.6" stroke-linecap="round"/>' +
+          '</g>' +
         '</svg>' +
-      '</div>';
+      '</div>' +
+      '<canvas class="music-viz-canvas"></canvas>';
 
     var cutImg = bg.querySelector('img.cut');
     if (cutImg) bg.insertBefore(stage, cutImg);
     else bg.appendChild(stage);
 
-    var vizCanvas = stage.querySelector('.vinyl-viz-canvas');
+    var vizCanvas = stage.querySelector('.music-viz-canvas');
     var getAudio = function (t) {
       return window.__zkMusicAudio ? window.__zkMusicAudio.getState(t) : null;
     };
@@ -163,25 +199,51 @@
       cleanups.push(Z.mountMusicVisualizer(vizCanvas, getAudio));
     }
 
-    // Drive smooth --beat CSS custom property for platter & mini-player pulse (throttled ~25fps)
-    var alive = true, bRaf = 0, sBeat = 0, lastBeat = 0;
-    function beatLoop(now) {
-      if (!alive || !stage.isConnected) return;
-      bRaf = requestAnimationFrame(beatLoop);
-      if (document.hidden || now - lastBeat < 40) return;
-      lastBeat = now;
-      var st = getAudio(now * 0.001);
-      var target = (st && st.playing) ? st.bass : 0;
-      if (Math.abs(target - sBeat) < 0.004 && target === 0) return;
-      sBeat += (target - sBeat) * 0.28;
-      pg.style.setProperty('--beat', sBeat.toFixed(3));
+    // Gentle desktop pointer parallax + beat reactive CSS custom property
+    var tx = 0, ty = 0, px = 0, py = 0;
+    if (Z.isFine && !Z.isReduced) {
+      var onMove = function (e) {
+        if (window.innerWidth <= 820) return;
+        var nx = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+        var ny = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+        tx = nx * -14;
+        ty = ny * -10;
+      };
+      var onLeave = function () { tx = 0; ty = 0; };
+      window.addEventListener('pointermove', onMove, { passive: true });
+      window.addEventListener('pointerleave', onLeave, { passive: true });
+      cleanups.push(function () {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerleave', onLeave);
+      });
     }
-    bRaf = requestAnimationFrame(beatLoop);
+
+    var alive = true, bRaf = 0, sBeat = 0, lastBeat = 0;
+    if (!Z.isReduced) {
+      function beatLoop(now) {
+        if (!alive || !stage.isConnected) return;
+        bRaf = requestAnimationFrame(beatLoop);
+        if (document.hidden || now - lastBeat < 32) return;
+        lastBeat = now;
+        var st = getAudio(now * 0.001);
+        var target = (st && st.playing) ? st.bass : 0;
+        if (Math.abs(target - sBeat) >= 0.003 || target !== 0) {
+          sBeat += (target - sBeat) * 0.24;
+          pg.style.setProperty('--beat', sBeat.toFixed(3));
+        }
+        if (Math.abs(tx - px) > 0.08 || Math.abs(ty - py) > 0.08) {
+          px += (tx - px) * 0.08;
+          py += (ty - py) * 0.08;
+          stage.style.setProperty('--ma-x', px.toFixed(2) + 'px');
+          stage.style.setProperty('--ma-y', py.toFixed(2) + 'px');
+        }
+      }
+      bRaf = requestAnimationFrame(beatLoop);
+    }
 
     cleanups.push(function () {
       alive = false;
       if (bRaf) cancelAnimationFrame(bRaf);
-      pg.classList.remove('has-vinyl3d');
       pg.style.removeProperty('--beat');
       if (stage.parentNode) stage.parentNode.removeChild(stage);
     });

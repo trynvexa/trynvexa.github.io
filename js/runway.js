@@ -203,6 +203,7 @@
       clearTimeout(this._resizeTimer);
       clearTimeout(this._revFallback);
       clearTimeout(this._lbClearTimer);
+      clearTimeout(this._lbSwapTimer);
       if (this._revObs) { this._revObs.disconnect(); this._revObs = null; }
       if (this._visObs) { this._visObs.disconnect(); this._visObs = null; }
       if (this._resObs) { this._resObs.disconnect(); this._resObs = null; }
@@ -386,7 +387,7 @@
       el.style.visibility = opacity < 0.01 ? 'hidden' : 'visible';
       el.style.pointerEvents = opacity < 0.5 ? 'none' : 'auto';
 
-      var bVal = this._useBlur && blur > 0.05 ? 'blur(' + (Math.round(blur * 10) / 10).toFixed(1) + 'px)' : '';
+      var bVal = this._useBlur && !this._isMobile && blur > 0.05 ? 'blur(' + (Math.round(blur * 10) / 10).toFixed(1) + 'px)' : '';
       if (bVal !== s.lastBlur) {
         s.lastBlur = bVal;
         el.style.filter = bVal;
@@ -632,7 +633,7 @@
       }
 
       if (!silent) {
-        if (this._zoomed) this._closeLightbox();
+        if (this._zoomed && !this._lbSwapping) this._closeLightbox(false, true);
         if (this._isMobile) this._closeSheet(false);
         this._clearHot();
 
@@ -807,6 +808,8 @@
       if (this._lbName) this._lbName.textContent = hero.getAttribute('data-name') || '';
 
       this._zoomed = true;
+      this._lbOpenIdx = this._index;
+      this.classList.remove('rw--lb-fast');
       this.classList.add('rw--zoom');
       this._lb.setAttribute('aria-hidden', 'false');
 
@@ -835,14 +838,103 @@
       if (closeBtn) closeBtn.focus({ preventScroll: true });
     }
 
-    _closeLightbox(restoreFocus) {
+    _switchLightboxLook(targetIdx) {
+      if (!this._zoomed || !this._lb || !this._lbStage) return;
+      targetIdx = this._mod(targetIdx, this._n);
+      var hero = this._heroes[targetIdx];
+      if (!hero) return;
+      var heroFig = hero.querySelector('.rw__figure');
+      if (!heroFig) return;
+
+      clearTimeout(this._lbClearTimer);
+      clearTimeout(this._lbSwapTimer);
+      this._clearHot();
+
+      // Sync carousel & side panel cleanly underneath without closing zoom
+      var delta = this._mod(targetIdx - this._index, this._n);
+      if (delta > this._n / 2) delta -= this._n;
+      this._target = Math.round(this._target) + delta;
+      this._cur = this._target;
+      this._vel = 0;
+      for (var b = 0; b < this._bodies.length; b++) {
+        var sb = this._bodies[b];
+        var gb = this._wrapN(sb.a - this._target);
+        sb.x = gb; sb.g = gb; sb.goal = gb; sb.v = 0; sb.trip = false;
+      }
+      this._lbSwapping = true;
+      this._setIndex(targetIdx, false);
+      this._lbSwapping = false;
+      this._setStill(true);
+      this._renderAll();
+
+      var self = this;
+      var oldWrap = this._lbStage.querySelector('.rw__lb-model');
+      var mountNew = function () {
+        if (!self._zoomed || !self._lbStage) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'rw__lb-model is-swap-in';
+        var footVal = hero.style.getPropertyValue('--rw-foot');
+        if (footVal) wrap.style.setProperty('--rw-foot', footVal);
+
+        var sh = hero.querySelector('.rw__shadow');
+        if (sh) wrap.appendChild(sh.cloneNode(true));
+        var figClone = heroFig.cloneNode(true);
+        var zm = figClone.querySelector('[data-rw-zoom]');
+        if (zm) zm.remove();
+
+        var pins = figClone.querySelectorAll('[data-rw-pin]');
+        for (var p = 0; p < pins.length; p++) pins[p].tabIndex = 0;
+        var imgs = figClone.querySelectorAll('img');
+        for (var m = 0; m < imgs.length; m++) {
+          imgs[m].setAttribute('loading', 'eager');
+          imgs[m].classList.add('is-decoded');
+        }
+
+        wrap.appendChild(figClone);
+        self._lbStage.innerHTML = '';
+        self._lbStage.appendChild(wrap);
+
+        var stRect = self._lbStage.getBoundingClientRect();
+        var h = Math.max(160, Math.min(stRect.height || 560, (stRect.width || 400) / 0.5625));
+        wrap.style.setProperty('--rw-model-h', Math.round(h) + 'px');
+        var szAttr = Math.round(h * 0.5625) + 'px';
+        for (var q = 0; q < imgs.length; q++) imgs[q].setAttribute('sizes', szAttr);
+
+        var word = self._lb.getAttribute('data-word') || 'Look';
+        if (self._lbKicker) self._lbKicker.textContent = word + ' 0' + (targetIdx + 1);
+        if (self._lbName) self._lbName.textContent = hero.getAttribute('data-name') || '';
+
+        if (!isReduced()) {
+          void wrap.offsetWidth;
+          wrap.classList.remove('is-swap-in');
+        } else {
+          wrap.classList.remove('is-swap-in');
+        }
+      };
+
+      if (oldWrap && !isReduced()) {
+        oldWrap.classList.add('is-swap-out');
+        this._lbSwapTimer = setTimeout(mountNew, 145);
+      } else {
+        mountNew();
+      }
+    }
+
+    _closeLightbox(restoreFocus, instant) {
       if (!this._zoomed || !this._lb) return;
       var hadFocus = restoreFocus && this._lb.contains(document.activeElement);
+      clearTimeout(this._lbSwapTimer);
+      clearTimeout(this._lbClearTimer);
       this._zoomed = false;
       this._clearHot();
 
+      var skipFlip = !!instant || this._index !== this._lbOpenIdx;
       var wrap = this._lbStage ? this._lbStage.querySelector('.rw__lb-model') : null;
-      if (wrap && !isReduced() && wrap.dataset.atTransform) {
+
+      if (skipFlip) {
+        this.classList.add('rw--lb-fast');
+        if (wrap) wrap.classList.add('is-swap-out');
+      } else if (wrap && !isReduced() && wrap.dataset.atTransform) {
         wrap.style.transform = wrap.dataset.atTransform;
       }
 
@@ -850,10 +942,13 @@
       this._lb.setAttribute('aria-hidden', 'true');
 
       var self = this;
-      clearTimeout(this._lbClearTimer);
+      var clearDelay = isReduced() ? 0 : (skipFlip ? 220 : 820);
       this._lbClearTimer = setTimeout(function () {
-        if (!self._zoomed && self._lbStage) self._lbStage.innerHTML = '';
-      }, isReduced() ? 0 : 950);
+        if (!self._zoomed) {
+          self.classList.remove('rw--lb-fast');
+          if (self._lbStage) self._lbStage.innerHTML = '';
+        }
+      }, clearDelay);
 
       if (hadFocus && this._stage) {
         this._stage.focus({ preventScroll: true });
@@ -1032,16 +1127,20 @@
         return;
       }
       if (t.closest('[data-rw-next]')) {
-        this.next();
+        if (this._zoomed) this._switchLightboxLook(this._index + 1);
+        else this.next();
         return;
       }
       if (t.closest('[data-rw-prev]')) {
-        this.prev();
+        if (this._zoomed) this._switchLightboxLook(this._index - 1);
+        else this.prev();
         return;
       }
       var tk = t.closest('[data-rw-tick]');
       if (tk) {
-        this.go(parseInt(tk.getAttribute('data-rw-tick'), 10) || 0);
+        var tIdx = parseInt(tk.getAttribute('data-rw-tick'), 10) || 0;
+        if (this._zoomed) this._switchLightboxLook(tIdx);
+        else this.go(tIdx);
         return;
       }
       if (t.closest('[data-rw-auto]')) {
@@ -1104,7 +1203,7 @@
       if (allBtn) {
         this._engage();
         if (this._zoomed) {
-          this.next();
+          this._switchLightboxLook(this._index + 1);
         } else {
           this._openLightbox();
         }
@@ -1287,12 +1386,19 @@
 
       this._onWinKeyDown = function (e) {
         if (!self.isConnected) return;
-        if (self._zoomed || self._openSheetCard) return;
+        if (self._openSheetCard) return;
         var tag = document.activeElement && document.activeElement.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
         if (document.activeElement === self._stage) return;
-        if (e.key === 'ArrowRight') { e.preventDefault(); self.next(); }
-        else if (e.key === 'ArrowLeft') { e.preventDefault(); self.prev(); }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (self._zoomed) self._switchLightboxLook(self._index + 1);
+          else self.next();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (self._zoomed) self._switchLightboxLook(self._index - 1);
+          else self.prev();
+        }
       };
       document.addEventListener('keydown', this._onWinKeyDown);
 

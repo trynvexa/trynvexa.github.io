@@ -26,193 +26,249 @@
   /* Home backdrop runs purely via lightweight CSS ambient layers (no heavy WebGL wireframe) */
 
   /* ========================================================================
-     SCENE 2: MUSIC 3D AUDIO-REACTIVE RING (WebGL + Canvas 2D Auto-Fallback)
+     SCENE 2: MUSIC ACOUSTIC RESONANCE — HiDPI Fluid Harmonic Waves & Ripples
      ======================================================================== */
-  function mountMusicVisualizer(canvas, getAudioState) {
-    if (!canvas || Z.isReduced) return function () {};
-    var alive = true, raf = 0;
+  function parseHexRgb(hex, fallback) {
+    if (!hex || typeof hex !== 'string') return fallback;
+    var h = hex.replace('#', '').trim();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (h.length !== 6) return fallback;
+    var n = parseInt(h, 16);
+    if (isNaN(n)) return fallback;
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
 
-    // WebGL 3D path (throttled for cool, lightweight playback)
-    if (Z.tier === 'webgl' && Z.hasThree()) {
-      var THREE = window.THREE;
-      var renderer;
-      try {
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
-      } catch (e) {
-        renderer = null;
-      }
-      if (renderer) {
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 60);
-        camera.position.set(0, 0, 8.6);
+  function rgbaStr(rgb, a) {
+    return 'rgba(' + Math.round(rgb[0]) + ',' + Math.round(rgb[1]) + ',' + Math.round(rgb[2]) + ',' + a.toFixed(3) + ')';
+  }
 
-        var group = new THREE.Group();
-        scene.add(group);
-
-        var barCount = 48;
-        var radius = 2.68;
-        var bars = [];
-        var barGeo = new THREE.BoxGeometry(0.075, 1, 0.11);
-        barGeo.translate(0, 0.5, 0);
-        var barMat = new THREE.MeshBasicMaterial({
-          color: 0xe0654f,
-          transparent: true,
-          opacity: 0.82
-        });
-
-        for (var i = 0; i < barCount; i++) {
-          var ang = (i / barCount) * Math.PI * 2;
-          var m = new THREE.Mesh(barGeo, barMat);
-          m.position.set(Math.cos(ang) * radius, Math.sin(ang) * radius, 0);
-          m.rotation.z = ang - Math.PI / 2;
-          group.add(m);
-          bars.push(m);
-        }
-
-        // Outer glowing reactive halo torus
-        var torusGeo = new THREE.TorusGeometry(radius + 0.12, 0.025, 8, 64);
-        var torusMat = new THREE.MeshBasicMaterial({
-          color: 0xf59a72,
-          transparent: true,
-          opacity: 0.6
-        });
-        var torus = new THREE.Mesh(torusGeo, torusMat);
-        group.add(torus);
-
-        // Second inner accent pulse ring
-        var torus2Geo = new THREE.TorusGeometry(radius - 0.08, 0.014, 8, 56);
-        var torus2Mat = new THREE.MeshBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.35
-        });
-        var torus2 = new THREE.Mesh(torus2Geo, torus2Mat);
-        group.add(torus2);
-
-        var colA = new THREE.Color('#e0654f');
-        var colB = new THREE.Color('#f59a72');
-        var smoothBins = new Float32Array(barCount);
-
-        function resizeGL() {
-          if (!canvas.isConnected) return;
-          var w = Math.min(520, Math.max(120, canvas.clientWidth));
-          var h = Math.min(520, Math.max(120, canvas.clientHeight));
-          camera.aspect = w / h;
-          camera.updateProjectionMatrix();
-          renderer.setPixelRatio(1);
-          renderer.setSize(w, h, false);
-        }
-        resizeGL();
-        window.addEventListener('resize', resizeGL, { passive: true });
-
-        var lastGL = 0;
-        function loopGL(now) {
-          if (!alive || !canvas.isConnected) return;
-          raf = requestAnimationFrame(loopGL);
-          if (document.hidden) return;
-          var t = now * 0.001;
-          var st = getAudioState ? getAudioState(t) : null;
-          var playing = !!(st && st.playing);
-          if (now - lastGL < (playing ? 32 : 66)) return;
-          lastGL = now;
-          var bass = st ? st.bass : 0;
-          var bins = st ? st.bins : null;
-
-          if (st && st.acc) colA.lerp(new THREE.Color(st.acc), 0.12);
-          if (st && st.acc2) colB.lerp(new THREE.Color(st.acc2), 0.12);
-          barMat.color.copy(colA);
-          barMat.opacity = playing ? 0.88 : 0.32;
-          torusMat.color.copy(colB);
-          torusMat.opacity = playing ? (0.48 + bass * 0.45) : 0.22;
-
-          for (var b = 0; b < barCount; b++) {
-            var raw = bins && bins.length ? bins[b % bins.length] : 0;
-            var targetH = playing ? (0.12 + raw * 1.18) : (0.08 + Math.sin(t * 2.2 + b * 0.35) * 0.03);
-            smoothBins[b] += (targetH - smoothBins[b]) * 0.30;
-            bars[b].scale.y = Math.max(0.05, smoothBins[b]);
-            bars[b].scale.z = 1 + smoothBins[b] * 0.9;
-          }
-
-          group.rotation.z = t * (playing ? 0.22 : 0.05);
-          group.rotation.x = Math.sin(t * 0.7) * 0.08;
-          torus.scale.setScalar(1 + bass * 0.08);
-          torus2.scale.setScalar(1 + bass * 0.14);
-
-          renderer.render(scene, camera);
-        }
-        raf = requestAnimationFrame(loopGL);
-
-        return function () {
-          alive = false;
-          if (raf) cancelAnimationFrame(raf);
-          window.removeEventListener('resize', resizeGL);
-          barGeo.dispose(); barMat.dispose();
-          torusGeo.dispose(); torusMat.dispose();
-          torus2Geo.dispose(); torus2Mat.dispose();
-          renderer.dispose();
-        };
-      }
+  function traceSmoothClosedLoop(ctx, xs, ys, count) {
+    var lastX = (xs[count - 1] + xs[0]) * 0.5;
+    var lastY = (ys[count - 1] + ys[0]) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    for (var i = 0; i < count; i++) {
+      var ni = (i + 1) % count;
+      var mx = (xs[i] + xs[ni]) * 0.5;
+      var my = (ys[i] + ys[ni]) * 0.5;
+      ctx.quadraticCurveTo(xs[i], ys[i], mx, my);
     }
+    ctx.closePath();
+  }
 
-    // Canvas 2D fallback (lite tier / WebGL unavailable)
+  function mountMusicVisualizer(canvas, getAudioState) {
+    if (!canvas) return function () {};
     var ctx = canvas.getContext('2d');
     if (!ctx) return function () {};
-    var smooth2d = new Float32Array(44);
-    var last2d = 0;
 
-    function loop2D(now) {
-      if (!alive || !canvas.isConnected) return;
-      raf = requestAnimationFrame(loop2D);
-      if (document.hidden) return;
-      var t = now * 0.001;
-      var st = getAudioState ? getAudioState(t) : null;
-      var playing = !!(st && st.playing);
-      if (now - last2d < (playing ? 32 : 66)) return;
-      last2d = now;
-      var w = canvas.clientWidth, h = canvas.clientHeight;
-      if (!w || !h) return;
-      if (canvas.width !== Math.round(w) || canvas.height !== Math.round(h)) {
-        canvas.width = Math.round(w);
-        canvas.height = Math.round(h);
+    var alive = true, raf = 0;
+    var SAMPLES = 56;
+    var xs = new Float32Array(SAMPLES);
+    var ys = new Float32Array(SAMPLES);
+    var smoothLow = new Float32Array(SAMPLES);
+    var smoothMid = new Float32Array(SAMPLES);
+    var smoothHigh = new Float32Array(SAMPLES);
+
+    var curA = [224, 101, 79];
+    var curB = [245, 154, 114];
+    var sBass = 0, sMid = 0, sTreble = 0, prevBass = 0;
+    var ripples = [];
+    var lastPulse = 0;
+    var lastFrame = 0;
+    var motes = [];
+    for (var m = 0; m < 10; m++) {
+      motes.push({
+        ang: (m / 10) * Math.PI * 2,
+        speed: (m % 2 === 0 ? 1 : -1) * (0.09 + (m % 4) * 0.035),
+        band: m % 3,
+        size: 1.5 + (m % 3) * 0.65,
+        ph: m * 1.13
+      });
+    }
+
+    function syncSize() {
+      var w = canvas.clientWidth;
+      var h = canvas.clientHeight;
+      if (!w || !h) return null;
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      var pw = Math.round(w * dpr);
+      var ph = Math.round(h * dpr);
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
       }
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w: w, h: h };
+    }
+
+    function renderFrame(now, isStatic) {
+      var sz = syncSize();
+      if (!sz) return;
+      var w = sz.w, h = sz.h;
       ctx.clearRect(0, 0, w, h);
 
-      var bass = st ? st.bass : 0;
-      var bins = st ? st.bins : null;
-      var cx = w * 0.5, cy = h * 0.5, baseR = Math.min(w, h) * 0.39;
-      var acc = (st && st.acc) || '#e0654f';
-      var acc2 = (st && st.acc2) || '#f59a72';
+      var t = isStatic ? 1.4 : now * 0.001;
+      var st = getAudioState ? getAudioState(t) : null;
+      var playing = !isStatic && !!(st && st.playing);
+      var tgtA = parseHexRgb(st && st.acc, curA);
+      var tgtB = parseHexRgb(st && st.acc2, curB);
+      var colLerp = isStatic ? 1 : 0.09;
+      for (var c = 0; c < 3; c++) {
+        curA[c] += (tgtA[c] - curA[c]) * colLerp;
+        curB[c] += (tgtB[c] - curB[c]) * colLerp;
+      }
 
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(t * (playing ? 0.25 : 0.05));
-      ctx.strokeStyle = acc;
-      ctx.lineCap = 'round';
-      ctx.lineWidth = Math.max(2, baseR * 0.016);
-      ctx.globalAlpha = playing ? 0.85 : 0.3;
+      var rawBass = playing && st ? st.bass : 0;
+      var rawMid = playing && st ? st.mid : 0;
+      var rawTreble = playing && st ? st.treble : 0;
+      sBass += (rawBass - sBass) * 0.22;
+      sMid += (rawMid - sMid) * 0.22;
+      sTreble += (rawTreble - sTreble) * 0.24;
 
-      for (var i = 0; i < smooth2d.length; i++) {
-        var ang = (i / smooth2d.length) * Math.PI * 2;
-        var raw = bins && bins.length ? bins[i % bins.length] : 0;
-        var tgt = playing ? (6 + raw * baseR * 0.26) : (4 + Math.sin(t * 2 + i * 0.4) * 2);
-        smooth2d[i] += (tgt - smooth2d[i]) * 0.32;
-        var x1 = Math.cos(ang) * baseR, y1 = Math.sin(ang) * baseR;
-        var x2 = Math.cos(ang) * (baseR + smooth2d[i]), y2 = Math.sin(ang) * (baseR + smooth2d[i]);
+      var cx = w * 0.5;
+      var cy = h * 0.5;
+      var baseR = Math.min(w, h) * 0.36;
+      var bins = st && st.bins ? st.bins : null;
+
+      // Spawn expanding acoustic sound ripple on beat peaks
+      if (playing && sBass > 0.38 && sBass - prevBass > 0.028 && now - lastPulse > 380) {
+        lastPulse = now;
+        if (ripples.length < 5) {
+          ripples.push({ r: baseR * 0.96, maxR: baseR * 1.44, a: 0.42 });
+        }
+      }
+      prevBass = sBass;
+
+      // Update & draw acoustic sound ripples
+      for (var rp = ripples.length - 1; rp >= 0; rp--) {
+        var rip = ripples[rp];
+        rip.r += (rip.maxR - rip.r) * 0.048 + 0.65;
+        rip.a *= 0.952;
+        if (rip.a < 0.014 || rip.r >= rip.maxR) {
+          ripples.splice(rp, 1);
+          continue;
+        }
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+        ctx.arc(cx, cy, rip.r, 0, Math.PI * 2);
+        ctx.strokeStyle = rgbaStr(curA, rip.a);
+        ctx.lineWidth = 1.15;
         ctx.stroke();
       }
-      ctx.beginPath();
-      ctx.arc(0, 0, baseR * (1.01 + bass * 0.04), 0, Math.PI * 2);
-      ctx.strokeStyle = acc2;
-      ctx.lineWidth = 1.6;
-      ctx.globalAlpha = playing ? 0.65 : 0.24;
+
+      // Compute 3 smooth harmonic contours (low bass aura, mid silk wave, outer treble filament)
+      var ampScale = playing ? 1 : 0.24;
+      for (var i = 0; i < SAMPLES; i++) {
+        var frac = i / SAMPLES;
+        var ang = frac * Math.PI * 2;
+        // Mirror bin sampling symmetrically so 0 and 2pi join with zero seam discontinuity
+        var sym = frac < 0.5 ? frac * 2 : (1 - frac) * 2;
+        var bIdx = Math.min(63, Math.floor(sym * 28));
+        var binVal = playing && bins ? bins[bIdx] : 0;
+        var binMid = playing && bins ? bins[Math.min(63, 12 + Math.floor(sym * 30))] : 0;
+        var binHi = playing && bins ? bins[Math.min(63, 28 + Math.floor(sym * 34))] : 0;
+
+        var lowTarget =
+          (Math.sin(ang * 3 + t * 0.95) * 0.55 + Math.cos(ang * 5 - t * 0.7) * 0.45) * (playing ? 9 : 4.2) +
+          binVal * baseR * 0.135 * ampScale +
+          sBass * baseR * 0.055;
+        var midTarget =
+          (Math.sin(ang * 4 - t * 1.35 + 1.1) * 0.6 + Math.cos(ang * 6 + t * 0.9) * 0.4) * (playing ? 11 : 4.5) +
+          binMid * baseR * 0.155 * ampScale +
+          sMid * baseR * 0.045;
+        var hiTarget =
+          (Math.cos(ang * 7 + t * 1.7) * 0.55 + Math.sin(ang * 9 - t * 1.2) * 0.45) * (playing ? 7.5 : 3) +
+          binHi * baseR * 0.12 * ampScale +
+          sTreble * baseR * 0.035;
+
+        var k = isStatic ? 1 : 0.22;
+        smoothLow[i] += (lowTarget - smoothLow[i]) * k;
+        smoothMid[i] += (midTarget - smoothMid[i]) * k;
+        smoothHigh[i] += (hiTarget - smoothHigh[i]) * k;
+      }
+
+      // Layer 1: Soft translucent sunlit harmonic aura fill + outer bass contour
+      for (var j = 0; j < SAMPLES; j++) {
+        var a1 = (j / SAMPLES) * Math.PI * 2 + t * 0.04;
+        var r1 = baseR * 0.99 + smoothLow[j];
+        xs[j] = cx + Math.cos(a1) * r1;
+        ys[j] = cy + Math.sin(a1) * r1;
+      }
+      traceSmoothClosedLoop(ctx, xs, ys, SAMPLES);
+      var fillGrad = ctx.createRadialGradient(cx, cy, baseR * 0.38, cx, cy, baseR * 1.22);
+      fillGrad.addColorStop(0, rgbaStr(curB, playing ? 0.04 : 0.02));
+      fillGrad.addColorStop(0.72, rgbaStr(curB, playing ? 0.13 : 0.065));
+      fillGrad.addColorStop(1, rgbaStr(curA, playing ? 0.06 : 0.02));
+      ctx.fillStyle = fillGrad;
+      ctx.fill();
+      ctx.strokeStyle = rgbaStr(curA, playing ? 0.62 : 0.28);
+      ctx.lineWidth = 1.75;
       ctx.stroke();
-      ctx.restore();
+
+      // Layer 2: Mid-frequency silk melody ribbon
+      for (var m1 = 0; m1 < SAMPLES; m1++) {
+        var a2 = (m1 / SAMPLES) * Math.PI * 2 - t * 0.06;
+        var r2 = baseR * 1.035 + smoothMid[m1];
+        xs[m1] = cx + Math.cos(a2) * r2;
+        ys[m1] = cy + Math.sin(a2) * r2;
+      }
+      traceSmoothClosedLoop(ctx, xs, ys, SAMPLES);
+      ctx.strokeStyle = rgbaStr(curB, playing ? 0.76 : 0.32);
+      ctx.lineWidth = 1.35;
+      ctx.stroke();
+
+      // Layer 3: Outer warm champagne / treble shimmer filament
+      for (var h1 = 0; h1 < SAMPLES; h1++) {
+        var a3 = (h1 / SAMPLES) * Math.PI * 2 + t * 0.09;
+        var r3 = baseR * 1.08 + smoothHigh[h1];
+        xs[h1] = cx + Math.cos(a3) * r3;
+        ys[h1] = cy + Math.sin(a3) * r3;
+      }
+      traceSmoothClosedLoop(ctx, xs, ys, SAMPLES);
+      ctx.strokeStyle = playing ? 'rgba(255,250,242,0.72)' : 'rgba(255,250,242,0.42)';
+      ctx.lineWidth = 1.05;
+      ctx.stroke();
+
+      // Layer 4: Subtle luminous orbital harmonic motes
+      for (var d = 0; d < motes.length; d++) {
+        var mt = motes[d];
+        var mAng = mt.ang + t * mt.speed * (playing ? 1.8 : 0.55);
+        var norm = (((mAng % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2);
+        var idx = Math.floor(norm * SAMPLES) % SAMPLES;
+        var radOff = mt.band === 0 ? baseR * 0.99 + smoothLow[idx]
+                   : mt.band === 1 ? baseR * 1.035 + smoothMid[idx]
+                   : baseR * 1.08 + smoothHigh[idx];
+        var mx = cx + Math.cos(mAng) * radOff;
+        var my = cy + Math.sin(mAng) * radOff;
+        var pulse = 0.55 + 0.45 * Math.sin(t * 2.6 + mt.ph);
+        var alpha = (playing ? 0.78 : 0.34) * pulse;
+        ctx.beginPath();
+        ctx.arc(mx, my, mt.size + (playing ? sTreble * 1.3 : 0), 0, Math.PI * 2);
+        ctx.fillStyle = mt.band === 2 ? 'rgba(255,252,246,' + alpha.toFixed(3) + ')' : rgbaStr(mt.band === 0 ? curA : curB, alpha);
+        ctx.fill();
+      }
     }
-    raf = requestAnimationFrame(loop2D);
+
+    if (Z.isReduced) {
+      renderFrame(0, true);
+      var onResizeReduced = function () { renderFrame(0, true); };
+      window.addEventListener('resize', onResizeReduced, { passive: true });
+      return function () {
+        alive = false;
+        window.removeEventListener('resize', onResizeReduced);
+      };
+    }
+
+    function loop(now) {
+      if (!alive || !canvas.isConnected) return;
+      raf = requestAnimationFrame(loop);
+      if (document.hidden) return;
+      var stCheck = getAudioState ? getAudioState(now * 0.001) : null;
+      var isPlaying = !!(stCheck && stCheck.playing);
+      if (now - lastFrame < (isPlaying ? 16 : 42)) return;
+      lastFrame = now;
+      renderFrame(now, false);
+    }
+    raf = requestAnimationFrame(loop);
 
     return function () {
       alive = false;

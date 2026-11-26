@@ -213,7 +213,7 @@
     var lw = 0, lh = 0, L = {};
     if (rm) st.classList.add('ready');
 
-    var DPR = Math.min(3, window.devicePixelRatio || 1);
+    var DPR = Math.min(2, window.devicePixelRatio || 1);
     function hiRes(k, i) {
       var im = k.querySelector('img.art'), src = window.GAL_FULL && window.GAL_FULL[i];
       if (!im || !src || im._hi) return; im._hi = 1;
@@ -301,12 +301,19 @@
 
     function frame(t) {
       if (!st.isConnected) { cleanup(); return; }
+      var wrapEl = st.parentElement;
+      if (document.hidden || (wrapEl && wrapEl.classList.contains('is-grid'))) {
+        last = t;
+        requestAnimationFrame(frame);
+        return;
+      }
       var dt = Math.min(.05, (t - last) / 1000); last = t;
       var W = st.clientWidth, H = st.clientHeight;
+      if (!W || !H) { requestAnimationFrame(frame); return; }
       if (W !== lw || H !== lh) {
         lw = W; lh = H;
-        L.ph = W < 600 ? Math.min(.74, W * .92 / H) : .9; L.top = H * (1 - L.ph);
-        L.cw = Math.max(100, Math.min(178, W * (W < 600 ? .29 : .17))); L.ch = L.cw * 1.4; L.Rx = Math.min(W * .4, 450);
+        L.ph = W < 600 ? Math.min(.84, Math.max(.68, W * 1.35 / H)) : .9; L.top = H * (1 - L.ph);
+        L.cw = Math.max(96, Math.min(178, W * (W < 600 ? .285 : .17))); L.ch = L.cw * 1.4; L.Rx = Math.min(W * .4, 450);
         L.cy = L.top + L.ph * H * .27; var chin = L.top + L.ph * H * .47;
         var yF = Math.min(chin + L.ch * .53 + 6, H - L.ch * .53 - 4);
         L.RyF = Math.max(0, yF - L.cy); L.RyB = H * .07;
@@ -402,7 +409,8 @@
         var gCard = e.target.closest('.ggrid-card');
         if (!gCard) return;
         var gi = parseInt(gCard.getAttribute('data-gi'), 10) || 0;
-        if (window.galOpen) window.galOpen(gi, ks);
+        var gCards = wrap.querySelectorAll('.ggrid-card');
+        if (window.galOpen) window.galOpen(gi, gCards.length ? gCards : ks);
       });
     }
     requestAnimationFrame(function(t){ last = t; frame(t); st.classList.add('in'); });
