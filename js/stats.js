@@ -9,8 +9,8 @@
   var API_BASE = "https://abacus.jasoncameron.dev";
   var NOTIF_ENDPOINT = "https://portofolio-notif.zikriganteng2023.workers.dev";
   var NAMESPACE = "trynvexa.github.io";
-  var VIEWS_KEY = "views_v4";
-  var STARS_KEY = "stars_v4";
+  var VIEWS_KEY = "views_v5";
+  var STARS_KEY = "stars_v5";
 
   var viewsEl = document.getElementById("statViewsVal");
   var starsEl = document.getElementById("statStarsVal");
@@ -76,14 +76,14 @@
 
   /* ---- cached restore for instant display ---- */
   try {
-    var cv = localStorage.getItem("zk_v4_views");
-    var cs = localStorage.getItem("zk_v4_stars");
+    var cv = localStorage.getItem("zk_v5_views");
+    var cs = localStorage.getItem("zk_v5_stars");
     if (cv !== null) viewsEl.textContent = formatNum(cv);
     if (cs !== null) starsEl.textContent = formatNum(cs);
   } catch (e) {}
 
   /* ---- starred state ---- */
-  var isStarred = hasPersistentFlag("zk_v4_starred");
+  var isStarred = hasPersistentFlag("zk_v5_starred");
   function syncStarredUI() {
     if (isStarred) {
       starBtn.classList.add("is-starred");
@@ -253,7 +253,7 @@
     if (isLikelyBot(ua)) return;
 
     try {
-      if (sessionStorage.getItem("zk_v4_notif_sent") === "1") return;
+      if (sessionStorage.getItem("zk_v5_notif_sent") === "1") return;
     } catch (e) {}
 
     var startedAt = Date.now();
@@ -309,8 +309,8 @@
       document.removeEventListener("click", onClick, { capture: true });
 
       try {
-        if (sessionStorage.getItem("zk_v4_notif_sent") === "1") return;
-        sessionStorage.setItem("zk_v4_notif_sent", "1");
+        if (sessionStorage.getItem("zk_v5_notif_sent") === "1") return;
+        sessionStorage.setItem("zk_v5_notif_sent", "1");
       } catch (e) {}
 
       var themeNow = document.documentElement.getAttribute("data-theme") || "light";
@@ -343,20 +343,26 @@
     });
   }
 
-  /* ---- views (unique new visitors only) ---- */
+  /* ---- views (unique new visitors only, ignore bots & prerenders) ---- */
   var viewInitStarted = false;
   function initViews() {
     if (viewInitStarted) return;
+    if (document.visibilityState === "prerender") {
+      document.addEventListener("visibilitychange", initViews, { once: true });
+      return;
+    }
     viewInitStarted = true;
 
-    var alreadyCounted = hasPersistentFlag("zk_v4_view_counted");
+    var ua = navigator.userAgent || "";
+    var isBot = isLikelyBot(ua);
+    var alreadyCounted = hasPersistentFlag("zk_v5_view_counted");
     notifyVisit(alreadyCounted);
-    var shouldHit = !isLocal && !alreadyCounted;
+    var shouldHit = !isLocal && !isBot && !alreadyCounted;
 
     // Prevent concurrent double-hit in the same session while fetch is in flight
     if (shouldHit) {
       try {
-        sessionStorage.setItem("zk_v4_view_counted", "1");
+        sessionStorage.setItem("zk_v5_view_counted", "1");
       } catch (e) {}
     }
 
@@ -364,15 +370,15 @@
       if (typeof v !== "number") {
         // Gagal total (jaringan putus) — hapus flag session supaya bisa retry di kunjungan berikutnya
         if (shouldHit) {
-          try { sessionStorage.removeItem("zk_v4_view_counted"); } catch (e) {}
+          try { sessionStorage.removeItem("zk_v5_view_counted"); } catch (e) {}
         }
         return;
       }
       // Berhasil — simpan permanen
       if (shouldHit) {
-        setPersistentFlag("zk_v4_view_counted");
+        setPersistentFlag("zk_v5_view_counted");
       }
-      try { localStorage.setItem("zk_v4_views", v); } catch (e) {}
+      try { localStorage.setItem("zk_v5_views", v); } catch (e) {}
       viewsEl.textContent = formatNum(v);
     });
   }
@@ -382,7 +388,7 @@
     apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
       if (typeof v !== "number") return;
       try {
-        localStorage.setItem("zk_v4_stars", v);
+        localStorage.setItem("zk_v5_stars", v);
       } catch (e) {}
       starsEl.textContent = formatNum(v);
     });
@@ -510,7 +516,7 @@
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     if (starInFlight) return;
-    if (!isStarred && hasPersistentFlag("zk_v4_starred")) {
+    if (!isStarred && hasPersistentFlag("zk_v5_starred")) {
       isStarred = true;
       syncStarredUI();
     }
@@ -542,9 +548,9 @@
           showToast("Koneksi lambat, coba ketuk bintang lagi.", 3200);
           return;
         }
-        setPersistentFlag("zk_v4_starred");
+        setPersistentFlag("zk_v5_starred");
         try {
-          localStorage.setItem("zk_v4_stars", v);
+          localStorage.setItem("zk_v5_stars", v);
         } catch (e) {}
         starsEl.textContent = formatNum(v);
       });
@@ -556,12 +562,12 @@
   /* ---- sync across browser tabs ---- */
   window.addEventListener("storage", function (ev) {
     if (!ev) return;
-    if (ev.key === "zk_v4_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
+    if (ev.key === "zk_v5_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
       isStarred = true;
       syncStarredUI();
-    } else if (ev.key === "zk_v4_stars" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v5_stars" && ev.newValue !== null) {
       starsEl.textContent = formatNum(ev.newValue);
-    } else if (ev.key === "zk_v4_views" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v5_views" && ev.newValue !== null) {
       viewsEl.textContent = formatNum(ev.newValue);
     }
   });
