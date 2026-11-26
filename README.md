@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://trynvexa.github.io/assets/images/mascot-head.webp" width="100" alt="Mascot" />
+<img src="assets/images/mascot-animated.svg" width="120" alt="Mascot" />
 
 # M. Zikri Al-Bukhori
 
