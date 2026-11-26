@@ -47,7 +47,7 @@
   } catch (e) {}
   if (isStarred) {
     starBtn.classList.add("is-starred");
-    starBtn.setAttribute("title", "Kamu sudah memberi bintang! Terima kasih ✨");
+    starBtn.setAttribute("title", "Sudah memberi bintang");
   }
 
   /* ---- fetch ---- */
@@ -131,16 +131,41 @@
   }
 
   /* ================================================================
-     LUXURY TOAST SYSTEM — Dynamic Island / Premium Capsule
-     - Frosted porcelain / obsidian glass (no pure black)
-     - Animated 3D-effect icon badge with glowing ambience
-     - Shimmer light sweep, uppercase category tag, bold headline
-     - Interactive close button + animated gradient progress bar
-     - Spring bounce entrance (cubic-bezier)
+     MINIMALIST GLASSMORPHISM TOAST
+     - Clean frosted glass capsule
+     - Mascot head SVG avatar (with eyes)
+     - Plain, natural copy
   ================================================================ */
   var toastEl = null;
   var toastTimer = null;
-  var toastProgressAnim = null;
+
+  var HEAD_ICON_SVG =
+    '<svg class="toast-avatar" viewBox="0 0 1330 1182" width="32" height="29" aria-hidden="true">' +
+    "<defs>" +
+    '<radialGradient id="tIr" cx=".5" cy=".45" r=".55">' +
+    '<stop offset="0" stop-color="#2b2b2f"/>' +
+    '<stop offset=".75" stop-color="#4a4a50"/>' +
+    '<stop offset="1" stop-color="#1c1c20"/>' +
+    "</radialGradient>" +
+    '<clipPath id="thcL"><polygon points="473,787 535,790 585,795 640,806 662,818 618,838 570,842 520,838 485,815"/></clipPath>' +
+    '<clipPath id="thcR"><polygon points="820,815 870,813 920,816 965,822 965,829 940,851 890,859 850,857 820,842 812,830"/></clipPath>' +
+    "</defs>" +
+    '<g clip-path="url(#thcL)">' +
+    '<polygon points="473,787 535,790 585,795 640,806 662,818 618,838 570,842 520,838 485,815" fill="#fafafa"/>' +
+    '<circle cx="582" cy="800" r="47" fill="url(#tIr)"/>' +
+    '<circle cx="582" cy="804" r="23" fill="#0c0c0e"/>' +
+    '<circle cx="592" cy="806" r="6" fill="#fff"/>' +
+    '<circle cx="570" cy="819" r="3" fill="#fff" opacity=".7"/>' +
+    "</g>" +
+    '<g clip-path="url(#thcR)">' +
+    '<polygon points="820,815 870,813 920,816 965,822 965,829 940,851 890,859 850,857 820,842 812,830" fill="#fafafa"/>' +
+    '<circle cx="872" cy="819" r="41" fill="url(#tIr)"/>' +
+    '<circle cx="872" cy="823" r="20" fill="#0c0c0e"/>' +
+    '<circle cx="881" cy="824" r="5" fill="#fff"/>' +
+    '<circle cx="862" cy="835" r="2" fill="#fff" opacity=".7"/>' +
+    "</g>" +
+    '<image href="assets/images/mascot-head.webp" width="1330" height="1182"/>' +
+    "</svg>";
 
   function getToast() {
     if (!toastEl) {
@@ -159,168 +184,37 @@
     toastEl.classList.remove("show");
     toastEl.classList.add("hide");
     clearTimeout(toastTimer);
-    if (toastProgressAnim) {
-      toastProgressAnim.cancel && toastProgressAnim.cancel();
-      toastProgressAnim = null;
-    }
   }
 
   /**
-   * @param {object} opts
-   * @param {string}  opts.tag      — category tag e.g. "BINTANG BARU ⭐"
-   * @param {string}  opts.icon     — emoji displayed in the squircle
-   * @param {string}  opts.title    — punchy bold headline
-   * @param {string}  opts.sub      — charming message subtitle
-   * @param {string}  [opts.type]   — "star" | "welcome" | "already"
-   * @param {number}  [opts.dur]    — display duration ms (default 4000)
+   * @param {string} text — simple, natural message
+   * @param {number} [dur] — duration in ms (default 3400)
    */
-  function showToast(opts) {
-    var dur = opts.dur || 4000;
+  function showToast(text, dur) {
+    dur = dur || 3400;
     var toast = getToast();
 
-    /* reset classes */
-    toast.className = "stat-toast" + (opts.type ? " " + opts.type : "");
-
-    /* build inner HTML */
-    var iconHtml =
-      '<div class="toast-icon-wrap">' +
-      '<div class="toast-icon">' +
-      opts.icon +
-      "</div>" +
-      '<div class="toast-icon-glow"></div>' +
-      "</div>";
-
-    var contentHtml =
-      '<div class="toast-content">' +
-      '<div class="toast-meta">' +
-      '<span class="toast-tag">' +
-      (opts.tag || "Notifikasi") +
-      "</span>" +
-      '<span class="toast-dot">•</span>' +
-      '<span class="toast-time">baru saja</span>' +
-      "</div>" +
-      '<div class="toast-title">' +
-      opts.title +
-      "</div>" +
-      (opts.sub ? '<div class="toast-sub">' + opts.sub + "</div>" : "") +
-      "</div>";
-
-    var closeBtnHtml =
-      '<button class="toast-close" type="button" aria-label="Tutup">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">' +
-      '<line x1="18" y1="6" x2="6" y2="18"></line>' +
-      '<line x1="6" y1="6" x2="18" y2="18"></line>' +
-      "</svg>" +
-      "</button>";
-
-    var progressHtml =
-      '<div class="toast-progress-track">' + '<div class="toast-progress-bar"></div>' + "</div>";
-
+    toast.className = "stat-toast";
     toast.innerHTML =
-      '<div class="toast-card">' +
-      '<div class="toast-shimmer"></div>' +
-      '<div class="toast-inner">' +
-      iconHtml +
-      contentHtml +
-      closeBtnHtml +
-      "</div>" +
-      progressHtml +
+      '<div class="toast-pill">' +
+      HEAD_ICON_SVG +
+      '<span class="toast-text">' +
+      text +
+      "</span>" +
       "</div>";
 
-    /* attach close button click */
-    var closeBtn = toast.querySelector(".toast-close");
-    if (closeBtn) {
-      closeBtn.onclick = function (e) {
-        e.stopPropagation();
-        hideToast();
-      };
-    }
+    toast.onclick = function () {
+      hideToast();
+    };
 
-    /* clear existing timers */
     clearTimeout(toastTimer);
-    if (toastProgressAnim) {
-      toastProgressAnim.cancel && toastProgressAnim.cancel();
-      toastProgressAnim = null;
-    }
-
-    /* trigger reflow for smooth animation entry */
     void toast.offsetWidth;
     toast.classList.remove("hide");
     toast.classList.add("show");
 
-    /* animate progress bar draining */
-    var bar = toast.querySelector(".toast-progress-bar");
-    if (bar && bar.animate) {
-      toastProgressAnim = bar.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], {
-        duration: dur,
-        easing: "linear",
-        fill: "forwards",
-      });
-    }
-
-    /* auto-hide after dur */
     toastTimer = setTimeout(function () {
       hideToast();
     }, dur);
-  }
-
-  /* ---- cute & cheerful message banks ---- */
-  var starMsgs = [
-    {
-      tag: "Bintang Diterima ⭐",
-      icon: "⭐",
-      title: "Makasih Bintangnya! 💖",
-      sub: "Bikin Zikri senyum 7 hari 7 malam nih 😆",
-    },
-    {
-      tag: "Auto Semangat 🔥",
-      icon: "🚀",
-      title: "Yeay, Dapat Bintang! ✨",
-      sub: "Zikri langsung auto semangat ngoding sampai subuh!",
-    },
-    {
-      tag: "Hati Berbunga 🌸",
-      icon: "🌸",
-      title: "Aww, Hati Meleleh! 💫",
-      sub: "Apresiasi darimu bikin hari Zikri jadi luar biasa!",
-    },
-    {
-      tag: "Tamu Spesial 😎",
-      icon: "😎",
-      title: "Resmi Masuk VIP Zikri! 🎉",
-      sub: "Daftar orang paling keren hari ini bertambah 1!",
-    },
-    {
-      tag: "Terima Kasih Banyak 🥰",
-      icon: "🥰",
-      title: "Bintang Paling Bermakna ✨",
-      sub: "Makasih udah luangin waktu apresiasi karya ini yaa!",
-    },
-  ];
-
-  var alreadyMsgs = [
-    {
-      tag: "Bintangmu Aman 💛",
-      icon: "💛",
-      title: "Bintangmu Udah Tersimpan ✨",
-      sub: "Aman di hati Zikri selamanya, makasih banyaak!",
-    },
-    {
-      tag: "Apresiasi Hangat 🤗",
-      icon: "🤗",
-      title: "Kamu Sudah Beri Bintang! 💫",
-      sub: "Satu bintang darimu udah bikin Zikri bahagia banget!",
-    },
-    {
-      tag: "Bintang Spesial 🌟",
-      icon: "🌟",
-      title: "Bintangmu Selalu Bersinar 💖",
-      sub: "Terima kasih banyak atas dukungannya yaa!",
-    },
-  ];
-
-  function pick(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
   }
 
   /* ---- welcome toast on intro done ---- */
@@ -330,15 +224,8 @@
       sessionStorage.setItem("zk_welcomed", "1");
     } catch (e) {}
     setTimeout(function () {
-      showToast({
-        tag: "Selamat Datang 👋",
-        icon: "👋",
-        title: "Halo! Senang Kamu Mampir ✨",
-        sub: "Ini Ruang Karya Zikri — silakan jelajahi & nikmati!",
-        type: "welcome",
-        dur: 4400,
-      });
-    }, 700);
+      showToast("Halo, selamat datang.", 3400);
+    }, 650);
   }
 
   /* ---- star button ---- */
@@ -361,15 +248,7 @@
       } catch (e) {}
 
       spawnParticles(starBtn);
-      var m = pick(starMsgs);
-      showToast({
-        tag: m.tag,
-        icon: m.icon,
-        title: m.title,
-        sub: m.sub,
-        type: "star",
-        dur: 4200,
-      });
+      showToast("Terima kasih atas bintangnya.", 3200);
 
       apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
         if (typeof v !== "number") return;
@@ -384,15 +263,7 @@
         starBtn.classList.remove("pulse");
       }, 400);
       spawnParticles(starBtn);
-      var am = pick(alreadyMsgs);
-      showToast({
-        tag: am.tag,
-        icon: am.icon,
-        title: am.title,
-        sub: am.sub,
-        type: "already",
-        dur: 3800,
-      });
+      showToast("Sudah diberi bintang, terima kasih.", 3000);
     }
   });
 
