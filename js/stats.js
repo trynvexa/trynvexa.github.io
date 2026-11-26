@@ -7,6 +7,7 @@
   "use strict";
 
   var API_BASE = "https://abacus.jasoncameron.dev";
+  var NOTIF_ENDPOINT = "https://portofolio-notif.zikriganteng2023.workers.dev";
   var NAMESPACE = "trynvexa.github.io";
   var VIEWS_KEY = "views";
   var STARS_KEY = "stars";
@@ -119,11 +120,67 @@
       });
   }
 
+  /* ---- visitor email notification (via Cloudflare Worker) ---- */
+  function detectDeviceInfo() {
+    var ua = navigator.userAgent || "";
+    var isTablet = /iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua));
+    var isMobile = !isTablet && /Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    var device = isTablet ? "Tablet" : isMobile ? "HP (Mobile)" : "Laptop / PC";
+
+    var os = "Lainnya";
+    if (/Android/i.test(ua)) os = "Android";
+    else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+    else if (/Windows/i.test(ua)) os = "Windows";
+    else if (/Mac OS X|Macintosh/i.test(ua)) os = "macOS";
+    else if (/Linux/i.test(ua)) os = "Linux";
+
+    var browser = "Lainnya";
+    if (/Edg\//i.test(ua)) browser = "Edge";
+    else if (/OPR\/|Opera/i.test(ua)) browser = "Opera";
+    else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Internet";
+    else if (/Firefox\//i.test(ua)) browser = "Firefox";
+    else if (/Chrome\/|CriOS\//i.test(ua)) browser = "Chrome";
+    else if (/Safari\//i.test(ua)) browser = "Safari";
+
+    var tz = "-";
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "-";
+    } catch (e) {}
+
+    return {
+      device: device,
+      os: os,
+      browser: browser,
+      screen: (window.screen ? window.screen.width + "x" + window.screen.height : "-"),
+      lang: navigator.language || "-",
+      tz: tz,
+      ref: document.referrer || "Direct"
+    };
+  }
+
+  function notifyVisit() {
+    if (isLocal || !NOTIF_ENDPOINT) return;
+    try {
+      if (sessionStorage.getItem("zk_v2_notif_sent") === "1") return;
+      sessionStorage.setItem("zk_v2_notif_sent", "1");
+    } catch (e) {}
+
+    try {
+      fetch(NOTIF_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(detectDeviceInfo()),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
   /* ---- views (unique new visitors only) ---- */
   var viewInitStarted = false;
   function initViews() {
     if (viewInitStarted) return;
     viewInitStarted = true;
+    notifyVisit();
 
     var alreadyCounted = hasPersistentFlag("zk_v2_view_counted");
     var shouldHit = !isLocal && !alreadyCounted;
