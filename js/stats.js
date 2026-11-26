@@ -17,7 +17,7 @@
 
   if (!viewsEl || !starsEl || !starBtn) return;
 
-  // Format numbers (e.g. 1200 -> 1.2k, 0 -> 0)
+  /* ---- helpers ---- */
   function formatNum(n) {
     var num = parseInt(n, 10);
     if (isNaN(num) || num < 0) return "0";
@@ -26,36 +26,34 @@
     return String(num);
   }
 
-  // Check if we are running in local development mode
   var isLocal =
     location.hostname === "localhost" ||
     location.hostname === "127.0.0.1" ||
     location.protocol === "file:" ||
     location.hostname === "";
 
-  // Restore cached values from localStorage for instant smooth render
+  /* ---- cached restore for instant display ---- */
   try {
-    var cachedViews = localStorage.getItem("zk_v2_views");
-    var cachedStars = localStorage.getItem("zk_v2_stars");
-    if (cachedViews !== null) viewsEl.textContent = formatNum(cachedViews);
-    if (cachedStars !== null) starsEl.textContent = formatNum(cachedStars);
+    var cv = localStorage.getItem("zk_v2_views");
+    var cs = localStorage.getItem("zk_v2_stars");
+    if (cv !== null) viewsEl.textContent = formatNum(cv);
+    if (cs !== null) starsEl.textContent = formatNum(cs);
   } catch (e) {}
 
-  // Check if visitor has already given a star
+  /* ---- starred state ---- */
   var isStarred = false;
   try {
     isStarred = localStorage.getItem("zk_v2_starred") === "true";
   } catch (e) {}
-
   if (isStarred) {
     starBtn.classList.add("is-starred");
     starBtn.setAttribute("title", "Kamu sudah memberi bintang! Terima kasih ✨");
   }
 
-  // Safe fetch helper with timeout and error handling
+  /* ---- fetch ---- */
   function apiFetch(path) {
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    var timer = ctrl
+    var t = ctrl
       ? setTimeout(function () {
           ctrl.abort();
         }, 6000)
@@ -64,80 +62,67 @@
       signal: ctrl ? ctrl.signal : undefined,
       headers: { Accept: "application/json" },
     })
-      .then(function (res) {
-        if (timer) clearTimeout(timer);
-        return res.json();
+      .then(function (r) {
+        if (t) clearTimeout(t);
+        return r.json();
       })
-      .then(function (data) {
-        if (data && typeof data.value === "number") return data.value;
-        return 0; // default to 0 if key not found yet
+      .then(function (d) {
+        return d && typeof d.value === "number" ? d.value : 0;
       })
       .catch(function () {
-        if (timer) clearTimeout(timer);
+        if (t) clearTimeout(t);
         return null;
       });
   }
 
-  // 1. Manage Views: Real visitor gets +1; local dev and repeated refreshes do not increment
+  /* ---- views ---- */
   function initViews() {
-    var hasViewed = false;
+    var seen = false;
     try {
-      hasViewed = sessionStorage.getItem("zk_v2_view_counted") === "1";
+      seen = sessionStorage.getItem("zk_v2_view_counted") === "1";
     } catch (e) {}
-
-    // In local dev, NEVER call /hit so developer testing won't increment the counter.
-    // In production, call /hit once per session.
-    var shouldHit = !isLocal && !hasViewed;
-    var endpoint = shouldHit
-      ? "/hit/" + NAMESPACE + "/" + VIEWS_KEY
-      : "/get/" + NAMESPACE + "/" + VIEWS_KEY;
-
-    apiFetch(endpoint).then(function (val) {
-      if (typeof val === "number") {
-        if (shouldHit) {
-          try {
-            sessionStorage.setItem("zk_v2_view_counted", "1");
-          } catch (e) {}
-        }
+    var hit = !isLocal && !seen;
+    apiFetch((hit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY).then(function (v) {
+      if (typeof v !== "number") return;
+      if (hit) {
         try {
-          localStorage.setItem("zk_v2_views", val);
+          sessionStorage.setItem("zk_v2_view_counted", "1");
         } catch (e) {}
-        viewsEl.textContent = formatNum(val);
       }
+      try {
+        localStorage.setItem("zk_v2_views", v);
+      } catch (e) {}
+      viewsEl.textContent = formatNum(v);
     });
   }
 
-  // 2. Manage Likes / Stars: Fetch global star count
+  /* ---- stars/likes ---- */
   function initLikes() {
-    apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (val) {
-      if (typeof val === "number") {
-        try {
-          localStorage.setItem("zk_v2_stars", val);
-        } catch (e) {}
-        starsEl.textContent = formatNum(val);
-      }
+    apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
+      if (typeof v !== "number") return;
+      try {
+        localStorage.setItem("zk_v2_stars", v);
+      } catch (e) {}
+      starsEl.textContent = formatNum(v);
     });
   }
 
-  // Sparkles particle animation on star click
-  function spawnStarParticles(btn) {
-    var count = 6;
-    for (var i = 0; i < count; i++) {
+  /* ---- sparkle particles ---- */
+  function spawnParticles(btn) {
+    for (var i = 0; i < 7; i++) {
       var p = document.createElement("span");
       p.className = "star-particle";
-      p.textContent = i % 2 === 0 ? "★" : "✦";
-      var angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-      var dist = 20 + Math.random() * 18;
-      var tx = Math.cos(angle) * dist;
-      var ty = Math.sin(angle) * dist - 14;
-      p.style.setProperty("--tx", tx.toFixed(1) + "px");
-      p.style.setProperty("--ty", ty.toFixed(1) + "px");
-      p.style.setProperty("--dur", (0.55 + Math.random() * 0.25).toFixed(2) + "s");
+      p.textContent = i % 3 === 0 ? "✦" : i % 3 === 1 ? "★" : "⭐";
+      var ang = (Math.PI * 2 * i) / 7 + (Math.random() * 0.5 - 0.25);
+      var d = 22 + Math.random() * 20;
+      p.style.setProperty("--tx", (Math.cos(ang) * d).toFixed(1) + "px");
+      p.style.setProperty("--ty", (Math.sin(ang) * d - 16).toFixed(1) + "px");
+      p.style.setProperty("--dur", (0.5 + Math.random() * 0.3).toFixed(2) + "s");
       btn.appendChild(p);
       setTimeout(
         (function (el) {
           return function () {
-            if (el && el.parentNode) el.parentNode.removeChild(el);
+            el && el.parentNode && el.parentNode.removeChild(el);
           };
         })(p),
         850
@@ -145,108 +130,273 @@
     }
   }
 
-  // Toast feedback notification system
+  /* ================================================================
+     LUXURY TOAST SYSTEM — Dynamic Island / Premium Capsule
+     - Frosted porcelain / obsidian glass (no pure black)
+     - Animated 3D-effect icon badge with glowing ambience
+     - Shimmer light sweep, uppercase category tag, bold headline
+     - Interactive close button + animated gradient progress bar
+     - Spring bounce entrance (cubic-bezier)
+  ================================================================ */
+  var toastEl = null;
   var toastTimer = null;
-  function showToast(htmlMsg, duration) {
-    var toast = document.getElementById("statToast");
-    if (!toast) {
-      toast = document.createElement("div");
-      toast.id = "statToast";
-      toast.className = "stat-toast";
-      toast.setAttribute("role", "status");
-      toast.setAttribute("aria-live", "polite");
-      document.body.appendChild(toast);
+  var toastProgressAnim = null;
+
+  function getToast() {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.id = "statToast";
+      toastEl.className = "stat-toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      document.body.appendChild(toastEl);
     }
-    toast.innerHTML = htmlMsg;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      toast.classList.remove("show");
-    }, duration || 3400);
+    return toastEl;
   }
 
-  // Cute & funny thank you messages
-  var cuteThanks = [
-    "Makasih bintangnya! ✨ Bikin Zikri senyum 7 hari 7 malam 😆",
-    "Aww makasih! ⭐ Zikri auto semangat ngoding sampai subuh 🚀",
-    "Wih dapet bintang! Makasih yaa, kamu baik banget (⁠≧⁠▽⁠≦⁠) ⭐",
-    "Makasih bintangnya! Resmi masuk daftar orang keren hari ini 😎✨",
-    "Yay dapet star! ⭐ Hati Zikri langsung berbunga-bunga 🌸",
+  function hideToast() {
+    if (!toastEl) return;
+    toastEl.classList.remove("show");
+    toastEl.classList.add("hide");
+    clearTimeout(toastTimer);
+    if (toastProgressAnim) {
+      toastProgressAnim.cancel && toastProgressAnim.cancel();
+      toastProgressAnim = null;
+    }
+  }
+
+  /**
+   * @param {object} opts
+   * @param {string}  opts.tag      — category tag e.g. "BINTANG BARU ⭐"
+   * @param {string}  opts.icon     — emoji displayed in the squircle
+   * @param {string}  opts.title    — punchy bold headline
+   * @param {string}  opts.sub      — charming message subtitle
+   * @param {string}  [opts.type]   — "star" | "welcome" | "already"
+   * @param {number}  [opts.dur]    — display duration ms (default 4000)
+   */
+  function showToast(opts) {
+    var dur = opts.dur || 4000;
+    var toast = getToast();
+
+    /* reset classes */
+    toast.className = "stat-toast" + (opts.type ? " " + opts.type : "");
+
+    /* build inner HTML */
+    var iconHtml =
+      '<div class="toast-icon-wrap">' +
+      '<div class="toast-icon">' +
+      opts.icon +
+      "</div>" +
+      '<div class="toast-icon-glow"></div>' +
+      "</div>";
+
+    var contentHtml =
+      '<div class="toast-content">' +
+      '<div class="toast-meta">' +
+      '<span class="toast-tag">' +
+      (opts.tag || "Notifikasi") +
+      "</span>" +
+      '<span class="toast-dot">•</span>' +
+      '<span class="toast-time">baru saja</span>' +
+      "</div>" +
+      '<div class="toast-title">' +
+      opts.title +
+      "</div>" +
+      (opts.sub ? '<div class="toast-sub">' + opts.sub + "</div>" : "") +
+      "</div>";
+
+    var closeBtnHtml =
+      '<button class="toast-close" type="button" aria-label="Tutup">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">' +
+      '<line x1="18" y1="6" x2="6" y2="18"></line>' +
+      '<line x1="6" y1="6" x2="18" y2="18"></line>' +
+      "</svg>" +
+      "</button>";
+
+    var progressHtml =
+      '<div class="toast-progress-track">' + '<div class="toast-progress-bar"></div>' + "</div>";
+
+    toast.innerHTML =
+      '<div class="toast-card">' +
+      '<div class="toast-shimmer"></div>' +
+      '<div class="toast-inner">' +
+      iconHtml +
+      contentHtml +
+      closeBtnHtml +
+      "</div>" +
+      progressHtml +
+      "</div>";
+
+    /* attach close button click */
+    var closeBtn = toast.querySelector(".toast-close");
+    if (closeBtn) {
+      closeBtn.onclick = function (e) {
+        e.stopPropagation();
+        hideToast();
+      };
+    }
+
+    /* clear existing timers */
+    clearTimeout(toastTimer);
+    if (toastProgressAnim) {
+      toastProgressAnim.cancel && toastProgressAnim.cancel();
+      toastProgressAnim = null;
+    }
+
+    /* trigger reflow for smooth animation entry */
+    void toast.offsetWidth;
+    toast.classList.remove("hide");
+    toast.classList.add("show");
+
+    /* animate progress bar draining */
+    var bar = toast.querySelector(".toast-progress-bar");
+    if (bar && bar.animate) {
+      toastProgressAnim = bar.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], {
+        duration: dur,
+        easing: "linear",
+        fill: "forwards",
+      });
+    }
+
+    /* auto-hide after dur */
+    toastTimer = setTimeout(function () {
+      hideToast();
+    }, dur);
+  }
+
+  /* ---- cute & cheerful message banks ---- */
+  var starMsgs = [
+    {
+      tag: "Bintang Diterima ⭐",
+      icon: "⭐",
+      title: "Makasih Bintangnya! 💖",
+      sub: "Bikin Zikri senyum 7 hari 7 malam nih 😆",
+    },
+    {
+      tag: "Auto Semangat 🔥",
+      icon: "🚀",
+      title: "Yeay, Dapat Bintang! ✨",
+      sub: "Zikri langsung auto semangat ngoding sampai subuh!",
+    },
+    {
+      tag: "Hati Berbunga 🌸",
+      icon: "🌸",
+      title: "Aww, Hati Meleleh! 💫",
+      sub: "Apresiasi darimu bikin hari Zikri jadi luar biasa!",
+    },
+    {
+      tag: "Tamu Spesial 😎",
+      icon: "😎",
+      title: "Resmi Masuk VIP Zikri! 🎉",
+      sub: "Daftar orang paling keren hari ini bertambah 1!",
+    },
+    {
+      tag: "Terima Kasih Banyak 🥰",
+      icon: "🥰",
+      title: "Bintang Paling Bermakna ✨",
+      sub: "Makasih udah luangin waktu apresiasi karya ini yaa!",
+    },
   ];
 
-  var alreadyStarredMsgs = [
-    "Bintangmu udah aman di hati Zikri kok! ✨ (⁠ ⁠ꈍ⁠ᴗ⁠ꈍ⁠)",
-    "Udah dapet bintang darimu sebelumnya, makasih banyak yaa! ⭐",
-    "Satu bintang darimu udah bikin Zikri bahagia banget! 🥰✨",
+  var alreadyMsgs = [
+    {
+      tag: "Bintangmu Aman 💛",
+      icon: "💛",
+      title: "Bintangmu Udah Tersimpan ✨",
+      sub: "Aman di hati Zikri selamanya, makasih banyaak!",
+    },
+    {
+      tag: "Apresiasi Hangat 🤗",
+      icon: "🤗",
+      title: "Kamu Sudah Beri Bintang! 💫",
+      sub: "Satu bintang darimu udah bikin Zikri bahagia banget!",
+    },
+    {
+      tag: "Bintang Spesial 🌟",
+      icon: "🌟",
+      title: "Bintangmu Selalu Bersinar 💖",
+      sub: "Terima kasih banyak atas dukungannya yaa!",
+    },
   ];
 
-  function pickRandom(arr) {
+  function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  // Welcome notification when visitor enters Home
-  function triggerWelcomeToast() {
+  /* ---- welcome toast on intro done ---- */
+  function triggerWelcome() {
     try {
-      if (sessionStorage.getItem("zk_home_welcomed") === "1") return;
-      sessionStorage.setItem("zk_home_welcomed", "1");
+      if (sessionStorage.getItem("zk_welcomed") === "1") return;
+      sessionStorage.setItem("zk_welcomed", "1");
     } catch (e) {}
-
     setTimeout(function () {
-      showToast(
-        '<span class="toast-wave">👋</span> Halo! Selamat datang di Ruang Karya Zikri ✨',
-        3800
-      );
-    }, 750);
+      showToast({
+        tag: "Selamat Datang 👋",
+        icon: "👋",
+        title: "Halo! Senang Kamu Mampir ✨",
+        sub: "Ini Ruang Karya Zikri — silakan jelajahi & nikmati!",
+        type: "welcome",
+        dur: 4400,
+      });
+    }, 700);
   }
 
-  // Handle star button interaction
+  /* ---- star button ---- */
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-
     if (!isStarred) {
       isStarred = true;
       try {
         localStorage.setItem("zk_v2_starred", "true");
       } catch (e) {}
-
-      starBtn.classList.add("is-starred");
-      starBtn.classList.add("pulse");
+      starBtn.classList.add("is-starred", "pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
       }, 500);
 
-      // Instant optimistic UI update
-      var curVal = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
-      var nextVal = curVal + 1;
-      starsEl.textContent = formatNum(nextVal);
+      var cur = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
+      starsEl.textContent = formatNum(cur + 1);
       try {
-        localStorage.setItem("zk_v2_stars", nextVal);
+        localStorage.setItem("zk_v2_stars", cur + 1);
       } catch (e) {}
 
-      spawnStarParticles(starBtn);
-      showToast(pickRandom(cuteThanks), 3800);
+      spawnParticles(starBtn);
+      var m = pick(starMsgs);
+      showToast({
+        tag: m.tag,
+        icon: m.icon,
+        title: m.title,
+        sub: m.sub,
+        type: "star",
+        dur: 4200,
+      });
 
-      // Persist to server
-      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (val) {
-        if (typeof val === "number") {
-          try {
-            localStorage.setItem("zk_v2_stars", val);
-          } catch (e) {}
-          starsEl.textContent = formatNum(val);
-        }
+      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
+        if (typeof v !== "number") return;
+        try {
+          localStorage.setItem("zk_v2_stars", v);
+        } catch (e) {}
+        starsEl.textContent = formatNum(v);
       });
     } else {
-      // Already starred: cheerful pulse with cute message
       starBtn.classList.add("pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
       }, 400);
-      spawnStarParticles(starBtn);
-      showToast(pickRandom(alreadyStarredMsgs), 3400);
+      spawnParticles(starBtn);
+      var am = pick(alreadyMsgs);
+      showToast({
+        tag: am.tag,
+        icon: am.icon,
+        title: am.title,
+        sub: am.sub,
+        type: "already",
+        dur: 3800,
+      });
     }
   });
 
-  // Run on load
+  /* ---- init on load ---- */
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       initViews();
@@ -257,14 +407,12 @@
     initLikes();
   }
 
-  // Hook into home entrance for the welcome notification
+  /* ---- welcome trigger ---- */
   if (document.documentElement.classList.contains("intro-on")) {
-    document.addEventListener("introdone", triggerWelcomeToast, { once: true });
+    document.addEventListener("introdone", triggerWelcome, { once: true });
+  } else if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", triggerWelcome);
   } else {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", triggerWelcomeToast);
-    } else {
-      triggerWelcomeToast();
-    }
+    triggerWelcome();
   }
 })();
