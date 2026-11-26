@@ -197,7 +197,7 @@
     lang = "id";
   try {
     var sv = localStorage.getItem("zk-lang");
-    if (sv && (sv === "id" || sv in I)) lang = sv;
+    if (sv && (sv === "id" || Object.prototype.hasOwnProperty.call(I, sv))) lang = sv;
   } catch (e) {}
   var K = function (s) {
     return s.replace(/\s+/g, " ").trim();

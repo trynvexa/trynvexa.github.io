@@ -44,8 +44,9 @@
 
   function writeCookie(name, val) {
     try {
+      var secure = location.protocol === "https:" ? "; Secure" : "";
       document.cookie =
-        name + "=" + encodeURIComponent(val) + "; max-age=315360000; path=/; SameSite=Lax";
+        name + "=" + encodeURIComponent(val) + "; max-age=315360000; path=/; SameSite=Lax" + secure;
     } catch (e) {}
   }
 
@@ -110,7 +111,7 @@
         return r.json();
       })
       .then(function (d) {
-        return d && typeof d.value === "number" ? d.value : 0;
+        return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
       })
       .catch(function () {
         if (t) clearTimeout(t);
@@ -245,13 +246,9 @@
     var toast = getToast();
 
     toast.className = "stat-toast";
-    toast.innerHTML =
-      '<div class="toast-pill">' +
-      HEAD_ICON_SVG +
-      '<span class="toast-text">' +
-      text +
-      "</span>" +
-      "</div>";
+    toast.innerHTML = '<div class="toast-pill">' + HEAD_ICON_SVG + '<span class="toast-text"></span></div>';
+    var txtEl = toast.querySelector(".toast-text");
+    if (txtEl) txtEl.textContent = String(text == null ? "" : text);
 
     toast.onclick = function () {
       hideToast();

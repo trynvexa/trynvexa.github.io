@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' blob: https://abacus.jasoncameron.dev; object-src 'none'; base-uri 'self'; form-action 'none';"
+    />
     <meta name="theme-color" id="themeColor" content="#eeebe2" />
     <title>M. Zikri Al-Bukhori — Portofolio | Front-End Developer &amp; UI Designer</title>
     <meta
@@ -52,6 +57,7 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Serif:ital@0;1&family=Pixelify+Sans:wght@400..700&family=Inter:wght@600&family=Inter+Tight:wght@100..900&family=Caveat+Brush&family=Anton&family=Noto+Serif+KR:wght@400&family=Noto+Sans+KR:wght@500;700&display=swap"
       rel="stylesheet"
+      referrerpolicy="no-referrer"
     />
     <script type="application/ld+json">
       {
@@ -74,10 +80,7 @@
         ]
       }
     </script>
-    <script>
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-        document.documentElement.classList.add("intro-on");
-    </script>
+    <script src="js/intro-init.js?v=433"></script>
     <link rel="stylesheet" href="css/base.css?v=430" />
     <link rel="stylesheet" href="css/layout.css?v=430" />
     <link rel="stylesheet" href="css/pages.css?v=430" />
@@ -1345,19 +1348,25 @@
     </template>
 
     <!-- Modular Application Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"
+      integrity="sha384-RRHfJ6w1mTlKUBMYT/hvnRiOzEB/vyRV3DrQOseb6oYfvaZSfdd0byS4bHps0k2R"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      defer
+    ></script>
     <script src="js/intro.js?v=420" defer></script>
     <script src="js/theme.js?v=400" defer></script>
-    <script src="js/stats.js?v=432" defer></script>
+    <script src="js/stats.js?v=433" defer></script>
     <script src="js/clock.js?v=400" defer></script>
     <script src="js/mascot.js?v=400" defer></script>
     <script src="js/buddy.js?v=422" defer></script>
-    <script src="js/i18n.js?v=400" defer></script>
+    <script src="js/i18n.js?v=433" defer></script>
     <script src="js/skills.js?v=420" defer></script>
     <script src="js/gallery.js?v=421" defer></script>
     <script src="js/music.js?v=400" defer></script>
     <script src="js/story.js?v=401" defer></script>
-    <script src="js/contact.js?v=420" defer></script>
+    <script src="js/contact.js?v=433" defer></script>
     <script src="js/projects.js?v=400" defer></script>
     <script src="js/runway-data.js?v=400" defer></script>
     <script src="js/carousel.js?v=422" defer></script>

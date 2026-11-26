@@ -1289,12 +1289,19 @@
       return word("tplWeb");
     }
 
+    function cleanInput(str, maxLen) {
+      return String(str || "")
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+        .trim()
+        .slice(0, maxLen);
+    }
+
     function getDraft() {
       var onPill = comp.querySelector(".prc-topic.on");
       var topicCode = onPill ? onPill.getAttribute("data-topic") || "web" : "web";
       var topicText = onPill ? onPill.textContent.trim() : word("tWeb");
-      var nm = nameIn && nameIn.value.trim() ? nameIn.value.trim() : "";
-      var ms = msgIn && msgIn.value.trim() ? msgIn.value.trim() : "";
+      var nm = nameIn ? cleanInput(nameIn.value, 80) : "";
+      var ms = msgIn ? cleanInput(msgIn.value, 1200) : "";
       var sender = nm || word("guest");
       var body = ms || topicDefault(topicCode);
       return { topicCode: topicCode, topicText: topicText, nm: nm, sender: sender, body: body };
