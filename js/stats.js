@@ -95,35 +95,45 @@
   }
   syncStarredUI();
 
-  /* ---- fetch (with 15s timeout & 1 retry for slow mobile networks) ---- */
-  function apiFetch(path, isHit, retriesLeft) {
-    if (typeof retriesLeft !== "number") retriesLeft = 1;
+  /* ---- fetch via Cloudflare Worker proxy (IPv6+IPv4 safe) with direct fallback ---- */
+  function fetchJsonWithTimeout(url, isHit, timeoutMs) {
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var t = ctrl
       ? setTimeout(function () {
           ctrl.abort();
-        }, 15000)
+        }, timeoutMs)
       : null;
-    return fetch(API_BASE + path, {
+    return fetch(url, {
       signal: ctrl ? ctrl.signal : undefined,
       keepalive: !!isHit,
       headers: { Accept: "application/json" },
-    })
-      .then(function (r) {
-        if (t) clearTimeout(t);
-        // 404 = key belum ada di server (counter baru), anggap nilainya 0
-        if (r.status === 404) return 0;
-        return r.json().then(function (d) {
-          return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
-        });
-      })
-      .catch(function () {
-        if (t) clearTimeout(t);
-        if (retriesLeft > 0) {
-          return apiFetch(path, isHit, retriesLeft - 1);
-        }
-        return null;
+    }).then(function (r) {
+      if (t) clearTimeout(t);
+      if (r.status === 404) return 0;
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json().then(function (d) {
+        return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
       });
+    }, function (err) {
+      if (t) clearTimeout(t);
+      throw err;
+    });
+  }
+
+  function apiFetch(path, isHit, retriesLeft) {
+    if (typeof retriesLeft !== "number") retriesLeft = 1;
+    var primaryUrl = (!isLocal && NOTIF_ENDPOINT) ? (NOTIF_ENDPOINT + "/abacus" + path) : (API_BASE + path);
+    return fetchJsonWithTimeout(primaryUrl, isHit, 12000).catch(function () {
+      if (primaryUrl !== API_BASE + path) {
+        return fetchJsonWithTimeout(API_BASE + path, isHit, 12000).catch(function () {
+          return retriesLeft > 0 ? apiFetch(path, isHit, retriesLeft - 1) : null;
+        });
+      }
+      if (retriesLeft > 0) {
+        return apiFetch(path, isHit, retriesLeft - 1);
+      }
+      return null;
+    });
   }
 
   /* ---- visitor email notification (via Cloudflare Worker) ---- */
