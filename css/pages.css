@@ -4572,3 +4572,180 @@ html:has(#pg.open) .card.on {
     }
   }
 }
+
+
+/* ============================================================
+   MOBILE BUG FIXES v430 — pages.css
+   ============================================================ */
+
+/* FIX BUG 1: .pg (detail pages) - iOS smooth scroll */
+.pg {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* FIX BUG 10: iOS Safari momentum scrolling untuk .pgb dan scrollable containers */
+.pgb,
+.pl,
+.sk-in2,
+.sk-panel {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* FIX BUG 11: lang-menu z-index lebih tinggi dari .pg (z 100) saat di mobile */
+@media (max-width: 640px) {
+  .lang-menu {
+    z-index: 105 !important;
+  }
+  .lang-scrim {
+    z-index: 104 !important;
+  }
+  .hd.lang-on {
+    z-index: 110 !important;
+  }
+}
+
+/* FIX BUG 1: playlist max-height on tiny screens - tambah guard min-height */
+@media (max-width: 820px) {
+  .pl {
+    min-height: 100px;
+    max-height: max(140px, calc(100svh - 520px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Tambah padding bawah extra untuk konten di atas mini-player yang fixed */
+  .pg.p1 .pgb {
+    padding-bottom: max(180px, calc(env(safe-area-inset-bottom, 0px) + 180px)) !important;
+  }
+}
+
+/* FIX BUG 8: .sk-cats pada HP sangat sempit */
+@media (max-width: 380px) {
+  .pg.p4.open .bd > .sk-cats {
+    right: 2px !important;
+    padding: 6px 3px !important;
+  }
+  .sk-cats .sk-tab.sk-dk {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+/* FIX BUG 9: .pr-big horizontal overflow — pastikan tidak meluber */
+.pr-big {
+  max-width: 100%;
+  overflow: hidden;
+}
+/* Sembunyikan .pr-big lebih awal pada mobile portrait sempit */
+@media (max-width: 600px) {
+  .pr-big {
+    display: none !important;
+  }
+}
+
+/* FIX BUG 12: meta-author + stats-badge wrap pada layar sangat kecil */
+.meta-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+@media (max-width: 360px) {
+  .meta-author {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .stats-badge {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+/* FIX: Scroll dan touch tambahan untuk estate/runway/projects pages */
+.ep-scroll,
+.rw-body,
+.dp-body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* FIX: Mencegah horizontal overflow secara global pada mobile */
+@media (max-width: 820px) {
+  .pg.p6 .bg {
+    overflow: hidden;
+  }
+  .pg.p6 .pgb {
+    overflow-x: hidden;
+  }
+}
+
+/* FIX: gstage di dalam halaman Frame (p3) - pastikan touch gesture bekerja */
+@media (max-width: 820px) {
+  .p3 .gstage {
+    touch-action: none;
+  }
+}
+
+/* FIX BUG: Tombol di .gidx harus bisa diklik (pointer-events sebelumnya none) */
+.gidx {
+  pointer-events: none; /* container tetap none */
+}
+.gidx button,
+.gidx-btn,
+.gidx a {
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FIX: lbx (lightbox) touch gestures */
+.lbx-stage {
+  touch-action: pan-y;
+}
+.lbx-img {
+  touch-action: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* FIX: prevent horizontal scroll on very narrow screens */
+@media (max-width: 375px) {
+  .np {
+    left: 8px !important;
+    right: 8px !important;
+    padding: 10px 10px 8px !important;
+  }
+  .npr {
+    gap: 8px !important;
+  }
+  .npv {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .npv.npp {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* FIX: skill panel overflow di landscape orientation pendek */
+@supports (height: 100dvh) {
+  @media (max-width: 820px) and (max-height: 500px) {
+    .pg.p4.open .bd > .sk-panel {
+      max-height: calc(100dvh - 120px) !important;
+    }
+    .sk-in2 {
+      max-height: calc(100dvh - 180px) !important;
+    }
+  }
+}
+
+/* FIX: Tombol kembali di halaman detail - min tap target 44px */
+.bk {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

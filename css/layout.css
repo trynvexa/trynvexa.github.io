@@ -4297,3 +4297,112 @@ html.intro-on .bwrap {
 }
 
 /* ============================================== */
+
+
+/* ============================================================
+   MOBILE BUG FIXES v430
+   Komprehensif: semua bug mobile yang ditemukan
+   ============================================================ */
+
+/* FIX BUG 4: .gidx pointer-events: none memblokir tombol di dalam */
+.gidx button,
+.gidx a {
+  pointer-events: auto;
+}
+
+/* FIX BUG 5: .gstage touch-action di mobile - pan-y menghalangi drag horizontal 3D gallery ring */
+@media (max-width: 820px) {
+  .gstage {
+    touch-action: none;
+  }
+}
+
+/* FIX BUG 7: .arr position fixed 55% mungkin terlalu tinggi di device dengan URL bar dinamis */
+@media (max-width: 700px) {
+  .arr {
+    top: calc(50% + 20px) !important;
+  }
+}
+
+/* FIX: Mencegah overflow horizontal pada .ggrid (gallery editorial grid) */
+.ggrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+@media (min-width: 600px) {
+  .ggrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.ggrid-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ggrid-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.ggrid-no {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  opacity: 0.7;
+  font-family: "Unbounded", system-ui, sans-serif;
+}
+.ggrid-meta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 10px 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+.ggrid-nm {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ggrid-sub {
+  display: block;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+.ggrid-ar {
+  display: block;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* FIX: Intro SVG pan - cegah text clipping di layar sangat kecil (< 360px) */
+@media (max-width: 360px) {
+  .intro .scene {
+    --pan: 0px !important;
+  }
+  .intro .scene.pan {
+    transform: none !important;
+  }
+}
