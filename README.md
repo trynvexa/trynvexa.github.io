@@ -18,9 +18,27 @@
 
 ## ✦ Tentang Proyek
 
-Portofolio interaktif penuh yang dibangun **100% tanpa framework** — murni HTML5, CSS modern, dan Vanilla JavaScript. Setiap halaman adalah *panggung* tersendiri dengan efek 3D, fisika, WebGL, dan audio yang berjalan langsung di browser tanpa build step.
+<table>
+<tr>
+<td width="50%">
 
-> **8 halaman × 8 bahasa × 0 dependensi NPM** — hanya teknologi web native.
+**Portofolio interaktif** yang dibangun sepenuhnya dengan teknologi web native — tanpa framework, tanpa build step, tanpa dependensi NPM. Setiap halaman dirancang sebagai *panggung* tersendiri dengan pengalaman visual yang imersif.
+
+</td>
+<td width="50%">
+
+| | |
+|---|---|
+| 📄 **Halaman** | 8 scene interaktif |
+| 🌍 **Bahasa** | 8 bahasa + RTL |
+| 📦 **Dependencies** | 0 npm packages |
+| ⚙️ **Build Step** | Tidak diperlukan |
+| 🏠 **Hosting** | GitHub Pages |
+| 📱 **Responsive** | Mobile-first |
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -156,15 +174,47 @@ Lalu buka **`http://localhost:8080`** di browser.
 
 <div align="center">
 
-| Platform | Link |
-|:---:|:---|
-| 📱 WhatsApp | [+62 813-6738-1826](https://wa.me/6281367381826) |
-| 📧 Email | [zikriganteng2023@gmail.com](mailto:zikriganteng2023@gmail.com) |
-| 🐙 GitHub | [@trynvexa](https://github.com/trynvexa) |
-| 📸 Instagram | [@yo144484](https://www.instagram.com/yo144484/) |
-| 🎵 TikTok | [@frince_nael7](https://www.tiktok.com/@frince_nael7) |
+> Terbuka untuk **peluang freelance**, **kolaborasi proyek**, dan **diskusi kreatif.**
+> Respons dalam waktu **< 24 jam** via WhatsApp atau Email.
 
 </div>
+
+<br/>
+
+<table align="center">
+<tr>
+  <td align="center" width="160">
+    <a href="https://wa.me/6281367381826">
+      <img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp"/><br/>
+      <sub><b>+62 813-6738-1826</b></sub>
+    </a>
+  </td>
+  <td align="center" width="160">
+    <a href="mailto:zikriganteng2023@gmail.com">
+      <img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/><br/>
+      <sub><b>zikriganteng2023@gmail.com</b></sub>
+    </a>
+  </td>
+  <td align="center" width="160">
+    <a href="https://github.com/trynvexa">
+      <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/><br/>
+      <sub><b>@trynvexa</b></sub>
+    </a>
+  </td>
+  <td align="center" width="160">
+    <a href="https://www.instagram.com/yo144484/">
+      <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram"/><br/>
+      <sub><b>@yo144484</b></sub>
+    </a>
+  </td>
+  <td align="center" width="160">
+    <a href="https://www.tiktok.com/@frince_nael7">
+      <img src="https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white" alt="TikTok"/><br/>
+      <sub><b>@frince_nael7</b></sub>
+    </a>
+  </td>
+</tr>
+</table>
 
 ---
 
