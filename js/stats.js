@@ -95,16 +95,18 @@
   }
   syncStarredUI();
 
-  /* ---- fetch ---- */
-  function apiFetch(path) {
+  /* ---- fetch (with 15s timeout & 1 retry for slow mobile networks) ---- */
+  function apiFetch(path, isHit, retriesLeft) {
+    if (typeof retriesLeft !== "number") retriesLeft = 1;
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var t = ctrl
       ? setTimeout(function () {
           ctrl.abort();
-        }, 6000)
+        }, 15000)
       : null;
     return fetch(API_BASE + path, {
       signal: ctrl ? ctrl.signal : undefined,
+      keepalive: !!isHit,
       headers: { Accept: "application/json" },
     })
       .then(function (r) {
@@ -116,6 +118,9 @@
       })
       .catch(function () {
         if (t) clearTimeout(t);
+        if (retriesLeft > 0) {
+          return apiFetch(path, isHit, retriesLeft - 1);
+        }
         return null;
       });
   }
@@ -192,8 +197,15 @@
       } catch (e) {}
     }
 
-    apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY).then(function (v) {
-      if (typeof v !== "number") return;
+    apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY, shouldHit).then(function (v) {
+      if (typeof v !== "number") {
+        if (shouldHit) {
+          try {
+            sessionStorage.removeItem("zk_v3_view_counted");
+          } catch (e) {}
+        }
+        return;
+      }
       if (shouldHit) {
         setPersistentFlag("zk_v3_view_counted");
       }
@@ -333,33 +345,43 @@
   }
 
   /* ---- star button (one star per visitor) ---- */
+  var starInFlight = false;
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
+    if (starInFlight) return;
     if (!isStarred && hasPersistentFlag("zk_v3_starred")) {
       isStarred = true;
       syncStarredUI();
     }
 
     if (!isStarred) {
+      starInFlight = true;
       isStarred = true;
-      setPersistentFlag("zk_v3_starred");
       syncStarredUI();
       starBtn.classList.add("pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
       }, 500);
 
-      var cur = parseInt(starsEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
+      var prevText = starsEl.textContent;
+      var cur = parseInt(prevText.replace(/[^0-9]/g, "") || "0", 10);
       starsEl.textContent = formatNum(cur + 1);
-      try {
-        localStorage.setItem("zk_v3_stars", cur + 1);
-      } catch (e) {}
 
       spawnParticles(starBtn);
       showToast("Terima kasih atas bintangnya.", 3200);
 
-      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
-        if (typeof v !== "number") return;
+      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY, true).then(function (v) {
+        starInFlight = false;
+        if (typeof v !== "number") {
+          isStarred = false;
+          starBtn.classList.remove("is-starred");
+          starBtn.removeAttribute("title");
+          syncStarredUI();
+          starsEl.textContent = prevText;
+          showToast("Koneksi lambat, coba ketuk bintang lagi.", 3200);
+          return;
+        }
+        setPersistentFlag("zk_v3_starred");
         try {
           localStorage.setItem("zk_v3_stars", v);
         } catch (e) {}
