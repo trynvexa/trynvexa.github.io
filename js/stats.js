@@ -218,25 +218,108 @@
     };
   }
 
+  function formatDuration(ms) {
+    var sec = Math.max(1, Math.round(ms / 1000));
+    if (sec < 60) return sec + " detik";
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return m + " menit" + (s ? " " + s + " detik" : "");
+  }
+
   function notifyVisit(isReturning) {
     if (isLocal || !NOTIF_ENDPOINT) return;
     var ua = navigator.userAgent || "";
     if (isLikelyBot(ua)) return;
 
-    var payload = detectDeviceInfo(isReturning);
     try {
       if (sessionStorage.getItem("zk_v3_notif_sent") === "1") return;
-      sessionStorage.setItem("zk_v3_notif_sent", "1");
     } catch (e) {}
 
-    try {
-      fetch(NOTIF_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        keepalive: true
-      }).catch(function () {});
-    } catch (e) {}
+    var startedAt = Date.now();
+    var actions = [];
+    var maxScrollPct = 0;
+    var sent = false;
+
+    var baseInfo = detectDeviceInfo(isReturning);
+
+    function addAction(label) {
+      var clean = String(label || "").replace(/\s+/g, " ").trim().slice(0, 36);
+      if (!clean || actions.indexOf(clean) !== -1 || actions.length >= 12) return;
+      actions.push(clean);
+    }
+
+    function updateScroll() {
+      try {
+        var docH = Math.max(document.documentElement.scrollHeight - window.innerHeight, 0);
+        if (docH > 0) {
+          var pct = Math.min(100, Math.max(0, Math.round((window.scrollY / docH) * 100)));
+          if (pct > maxScrollPct) maxScrollPct = pct;
+        }
+      } catch (e) {}
+    }
+
+    function onClick(ev) {
+      try {
+        var t = ev.target && ev.target.closest ? ev.target.closest('a, button, [role="button"], [data-card]') : null;
+        if (!t) return;
+        var href = t.getAttribute("href") || "";
+        var label = "";
+        if (/wa\.me|whatsapp/i.test(href)) label = "WhatsApp";
+        else if (/^mailto:/i.test(href)) label = "Email";
+        else if (/instagram\.com/i.test(href)) label = "Instagram";
+        else if (/github\.com/i.test(href)) label = "GitHub";
+        else if (/linkedin\.com/i.test(href)) label = "LinkedIn";
+        else if (/tiktok\.com/i.test(href)) label = "TikTok";
+        else if (t.id === "statStarBtn") label = "Beri Bintang";
+        else if (t.id === "themeToggle") label = "Ganti Tema";
+        else label = t.getAttribute("aria-label") || t.getAttribute("title") || t.textContent || "";
+        addAction(label);
+      } catch (e) {}
+    }
+
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    document.addEventListener("click", onClick, { capture: true, passive: true });
+
+    function flushNotif() {
+      if (sent) return;
+      sent = true;
+      updateScroll();
+      window.removeEventListener("scroll", updateScroll);
+      document.removeEventListener("click", onClick, { capture: true });
+
+      try {
+        if (sessionStorage.getItem("zk_v3_notif_sent") === "1") return;
+        sessionStorage.setItem("zk_v3_notif_sent", "1");
+      } catch (e) {}
+
+      var themeNow = document.documentElement.getAttribute("data-theme") || "light";
+      var langNow = document.documentElement.getAttribute("lang") || "id";
+      baseInfo.pref = (themeNow === "dark" ? "Dark" : "Light") + " · " + langNow.toUpperCase();
+      baseInfo.duration = formatDuration(Date.now() - startedAt);
+      baseInfo.scroll = maxScrollPct + "%";
+      baseInfo.actions = actions.length ? actions.join(" · ") : "Hanya melihat halaman";
+
+      try {
+        fetch(NOTIF_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(baseInfo),
+          keepalive: true
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    var fallbackTimer = setTimeout(flushNotif, 25000);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") {
+        clearTimeout(fallbackTimer);
+        flushNotif();
+      }
+    });
+    window.addEventListener("pagehide", function () {
+      clearTimeout(fallbackTimer);
+      flushNotif();
+    });
   }
 
   /* ---- views (unique new visitors only) ---- */
