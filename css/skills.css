@@ -94,20 +94,35 @@ html {
 }
 
 .pg.p4 .fx64 .b1 {
-  background: radial-gradient(circle, color-mix(in srgb, var(--bgc, #14181f) 20%, transparent), transparent 66%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bgc, #14181f) 20%, transparent),
+    transparent 66%
+  );
 }
 
 .pg.p4 .fx64 .b2 {
-  background: radial-gradient(circle, color-mix(in srgb, var(--bgd, #8a94a6) 22%, transparent), transparent 66%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bgd, #8a94a6) 22%, transparent),
+    transparent 66%
+  );
 }
 
 .pg.p4 .fx64 .b3 {
-  background: radial-gradient(circle, color-mix(in srgb, var(--bgc, #14181f) 16%, transparent), transparent 66%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bgc, #14181f) 16%, transparent),
+    transparent 66%
+  );
 }
 
 .pg.p4 .fx64 .dots {
   opacity: 0.34;
-  background-image: radial-gradient(color-mix(in srgb, var(--sk-ink) 26%, transparent) 1px, transparent 1.3px);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--sk-ink) 26%, transparent) 1px,
+    transparent 1.3px
+  );
   background-size: 26px 26px;
 }
 
@@ -220,7 +235,10 @@ html {
   border: 1px solid var(--sk-glass-border);
   box-shadow: 0 12px 28px -16px rgba(16, 18, 26, 0.34);
   animation: skFloat 5.6s ease-in-out infinite;
-  transition: opacity 0.3s ease, border-color 0.25s ease, background 0.25s ease;
+  transition:
+    opacity 0.3s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
 }
 
 /* Restore crisp architectural index number 01..04 */
@@ -273,20 +291,44 @@ html {
 }
 
 /* Clean symmetric left & right placement outside figure silhouette on Desktop */
-.pg.p4 .sk-tags li:nth-child(1) { left: -46%; top: 50%; animation-delay: -0.5s; }
-.pg.p4 .sk-tags li:nth-child(2) { right: -46%; top: 44%; animation-delay: -1.8s; }
-.pg.p4 .sk-tags li:nth-child(3) { left: -44%; top: 71%; animation-delay: -3.1s; }
-.pg.p4 .sk-tags li:nth-child(4) { right: -44%; top: 68%; animation-delay: -4.2s; }
+.pg.p4 .sk-tags li:nth-child(1) {
+  left: -46%;
+  top: 50%;
+  animation-delay: -0.5s;
+}
+.pg.p4 .sk-tags li:nth-child(2) {
+  right: -46%;
+  top: 44%;
+  animation-delay: -1.8s;
+}
+.pg.p4 .sk-tags li:nth-child(3) {
+  left: -44%;
+  top: 71%;
+  animation-delay: -3.1s;
+}
+.pg.p4 .sk-tags li:nth-child(4) {
+  right: -44%;
+  top: 68%;
+  animation-delay: -4.2s;
+}
 
 /* Subtle hairline connector + glowing anchor dot */
 .pg.p4 .sk-tags li::after {
   width: 24px;
   height: 1px;
-  background: linear-gradient(90deg, var(--sk-line-hi), color-mix(in srgb, var(--cc) 55%, transparent));
+  background: linear-gradient(
+    90deg,
+    var(--sk-line-hi),
+    color-mix(in srgb, var(--cc) 55%, transparent)
+  );
 }
 
 .pg.p4 .sk-tags li:nth-child(even)::after {
-  background: linear-gradient(270deg, var(--sk-line-hi), color-mix(in srgb, var(--cc) 55%, transparent));
+  background: linear-gradient(
+    270deg,
+    var(--sk-line-hi),
+    color-mix(in srgb, var(--cc) 55%, transparent)
+  );
 }
 
 .pg.p4 .sk-tags li::before {
@@ -297,27 +339,47 @@ html {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc) 22%, transparent);
 }
 
-.pg.p4 .sk-tags li:nth-child(odd)::before { left: calc(100% + 24px); }
-.pg.p4 .sk-tags li:nth-child(even)::before { right: calc(100% + 24px); }
+.pg.p4 .sk-tags li:nth-child(odd)::before {
+  left: calc(100% + 24px);
+}
+.pg.p4 .sk-tags li:nth-child(even)::before {
+  right: calc(100% + 24px);
+}
 
 @media (max-width: 1180px) and (min-width: 821px) {
   .pg.p4 .sk-tags li:nth-child(1),
-  .pg.p4 .sk-tags li:nth-child(3) { left: -34%; }
+  .pg.p4 .sk-tags li:nth-child(3) {
+    left: -34%;
+  }
   .pg.p4 .sk-tags li:nth-child(2),
-  .pg.p4 .sk-tags li:nth-child(4) { right: -34%; }
+  .pg.p4 .sk-tags li:nth-child(4) {
+    right: -34%;
+  }
   .pg.p4 .sk-tags li::after,
-  .pg.p4 .sk-tags li::before { width: 16px; }
-  .pg.p4 .sk-tags li:nth-child(odd)::before { left: calc(100% + 16px); }
-  .pg.p4 .sk-tags li:nth-child(even)::before { right: calc(100% + 16px); }
+  .pg.p4 .sk-tags li::before {
+    width: 16px;
+  }
+  .pg.p4 .sk-tags li:nth-child(odd)::before {
+    left: calc(100% + 16px);
+  }
+  .pg.p4 .sk-tags li:nth-child(even)::before {
+    right: calc(100% + 16px);
+  }
 }
 
 @media (max-width: 960px) and (min-width: 821px) {
   .pg.p4 .sk-tags li:nth-child(1),
-  .pg.p4 .sk-tags li:nth-child(3) { left: -24%; }
+  .pg.p4 .sk-tags li:nth-child(3) {
+    left: -24%;
+  }
   .pg.p4 .sk-tags li:nth-child(2),
-  .pg.p4 .sk-tags li:nth-child(4) { right: -24%; }
+  .pg.p4 .sk-tags li:nth-child(4) {
+    right: -24%;
+  }
   .pg.p4 .sk-tags li::after,
-  .pg.p4 .sk-tags li::before { display: none; }
+  .pg.p4 .sk-tags li::before {
+    display: none;
+  }
 }
 
 /* ==========================================================================
@@ -332,8 +394,17 @@ html {
 .pg.p4 .sk-orbit::before {
   inset: -20%;
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--cc) 18%, transparent) 0%, color-mix(in srgb, var(--cc) 5%, transparent) 44%, transparent 68%),
-    repeating-radial-gradient(circle, transparent 0 8%, color-mix(in srgb, var(--sk-ink) 4.5%, transparent) 8% 8.3%);
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--cc) 18%, transparent) 0%,
+      color-mix(in srgb, var(--cc) 5%, transparent) 44%,
+      transparent 68%
+    ),
+    repeating-radial-gradient(
+      circle,
+      transparent 0 8%,
+      color-mix(in srgb, var(--sk-ink) 4.5%, transparent) 8% 8.3%
+    );
 }
 
 /* Luminous comet arc sweeping the outer bezel */
@@ -352,12 +423,18 @@ html {
 /* Calibrated dial ticks adapted to light & dark */
 .pg.p4 .sk-ticks {
   inset: -5.5%;
-  background: repeating-conic-gradient(color-mix(in srgb, var(--sk-ink) 32%, transparent) 0 0.55deg, transparent 0.55deg 4deg);
+  background: repeating-conic-gradient(
+    color-mix(in srgb, var(--sk-ink) 32%, transparent) 0 0.55deg,
+    transparent 0.55deg 4deg
+  );
 }
 
 .pg.p4 .sk-ticks.big {
   inset: -5.5%;
-  background: repeating-conic-gradient(color-mix(in srgb, var(--sk-ink) 62%, transparent) 0 0.9deg, transparent 0.9deg 30deg);
+  background: repeating-conic-gradient(
+    color-mix(in srgb, var(--sk-ink) 62%, transparent) 0 0.9deg,
+    transparent 0.9deg 30deg
+  );
 }
 
 /* 3 Precision Concentric Tracks */
@@ -368,7 +445,11 @@ html {
 .pg.p4 .sk-inn {
   inset: 20%;
   border: 1px dashed color-mix(in srgb, var(--cc) 58%, transparent);
-  background: radial-gradient(circle, color-mix(in srgb, var(--cc) 9%, transparent), transparent 72%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--cc) 9%, transparent),
+    transparent 72%
+  );
 }
 
 .pg.p4 .sk-core {
@@ -377,15 +458,27 @@ html {
 }
 
 .pg.p4 .sk-out::before {
-  background: repeating-conic-gradient(from -0.2deg, color-mix(in srgb, var(--sk-ink) 10%, transparent) 0 0.4deg, transparent 0.4deg 45deg);
+  background: repeating-conic-gradient(
+    from -0.2deg,
+    color-mix(in srgb, var(--sk-ink) 10%, transparent) 0 0.4deg,
+    transparent 0.4deg 45deg
+  );
 }
 
 .pg.p4 .sk-inn::before {
-  background: repeating-conic-gradient(from 22.3deg, color-mix(in srgb, var(--cc) 26%, transparent) 0 0.4deg, transparent 0.4deg 90deg);
+  background: repeating-conic-gradient(
+    from 22.3deg,
+    color-mix(in srgb, var(--cc) 26%, transparent) 0 0.4deg,
+    transparent 0.4deg 90deg
+  );
 }
 
 .pg.p4 .sk-core::before {
-  background: repeating-conic-gradient(from -0.2deg, color-mix(in srgb, var(--sk-ink) 14%, transparent) 0 0.4deg, transparent 0.4deg 120deg);
+  background: repeating-conic-gradient(
+    from -0.2deg,
+    color-mix(in srgb, var(--sk-ink) 14%, transparent) 0 0.4deg,
+    transparent 0.4deg 120deg
+  );
 }
 
 /* Cleaner, subtler constellation filaments */
@@ -399,14 +492,25 @@ html {
 }
 
 /* Balanced icon node proportions across all 3 rings (zero crowding!) */
-.pg.p4 .sk-out .sk-icw { width: 17.5%; }
-.pg.p4 .sk-inn .sk-icw { width: 25.5%; }
-.pg.p4 .sk-core .sk-icw { width: 35%; }
+.pg.p4 .sk-out .sk-icw {
+  width: 17.5%;
+}
+.pg.p4 .sk-inn .sk-icw {
+  width: 25.5%;
+}
+.pg.p4 .sk-core .sk-icw {
+  width: 35%;
+}
 
 /* Modern Luminous Glass Core Hub (Replaces flat red sticker dot!) */
 .pg.p4 .sk-hub {
   width: 9.5%;
-  background: radial-gradient(circle at 32% 30%, #ffffff 0%, var(--cc) 52%, color-mix(in srgb, var(--cc) 72%, #000000) 100%);
+  background: radial-gradient(
+    circle at 32% 30%,
+    #ffffff 0%,
+    var(--cc) 52%,
+    color-mix(in srgb, var(--cc) 72%, #000000) 100%
+  );
   box-shadow:
     0 0 0 3px var(--sk-surf-solid),
     0 0 0 4.5px color-mix(in srgb, var(--cc) 52%, transparent),
@@ -504,7 +608,10 @@ html {
   backdrop-filter: blur(18px) saturate(1.45);
   border: 1px solid var(--sk-glass-border);
   box-shadow: var(--sk-shadow);
-  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease;
+  transition:
+    opacity 0.28s ease,
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease;
 }
 
 /* Keep Floating Dock always interactive while scrolling; hide ONLY when detail sheet opens */
@@ -546,7 +653,9 @@ html {
   flex: 0 0 auto;
   cursor: pointer;
   transform: none;
-  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+  transition:
+    transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.22s ease;
 }
 
 .pg.p4 .sk-cats .sk-tab.sk-dk img,
@@ -612,12 +721,17 @@ html {
   border-radius: 8px;
   background: var(--sk-ink);
   color: var(--sk-bg);
-  font: 600 10.5px/1 "Unbounded", system-ui, sans-serif;
+  font:
+    600 10.5px/1 "Unbounded",
+    system-ui,
+    sans-serif;
   letter-spacing: 0.03em;
   white-space: nowrap;
   opacity: 0;
   box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
-  transition: opacity 0.16s ease, translate 0.16s ease;
+  transition:
+    opacity 0.16s ease,
+    translate 0.16s ease;
   pointer-events: none;
 }
 
@@ -633,13 +747,19 @@ html {
 }
 
 .pg.p4 .sk-n b {
-  font: 700 13px/1 "Unbounded", system-ui, sans-serif;
+  font:
+    700 13px/1 "Unbounded",
+    system-ui,
+    sans-serif;
   font-variant-numeric: tabular-nums;
   color: var(--cc);
 }
 
 .pg.p4 .sk-n small {
-  font: 600 8.5px/1 "Unbounded", system-ui, sans-serif;
+  font:
+    600 8.5px/1 "Unbounded",
+    system-ui,
+    sans-serif;
   letter-spacing: 0.04em;
   color: var(--sk-mute);
 }
@@ -656,7 +776,10 @@ html {
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .pg.p4 .sk-snd:hover {
@@ -678,7 +801,10 @@ html {
 /* Scroll hint cleanly hides whenever scrolled or panel open */
 .pg.p4.open .bd > .sk-hint {
   bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px));
-  transition: opacity 0.28s ease, visibility 0.28s ease, transform 0.28s ease;
+  transition:
+    opacity 0.28s ease,
+    visibility 0.28s ease,
+    transform 0.28s ease;
 }
 
 .pg.p4.sk-scrolled .bd > .sk-hint,
@@ -718,7 +844,10 @@ html {
   backdrop-filter: none;
   box-shadow: none;
   overflow: visible;
-  transition: opacity 0.28s ease, border-color 0.25s ease, padding-left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 0.28s ease,
+    border-color 0.25s ease,
+    padding-left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pg.p4 .sk-bars .sk-bar::before,
@@ -874,7 +1003,9 @@ html {
   width: 0;
   border-radius: 2px;
   background: var(--sk-ink) !important;
-  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s), background 0.25s ease;
+  transition:
+    width 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s),
+    background 0.25s ease;
 }
 
 .pg.p4 .sk-bars .sk-bar.is-hl .sk-fil {
@@ -917,29 +1048,72 @@ html {
 /* ==========================================================================
    6. FULL DARK MODE PARITY ACROSS ALL OTHER SKILLS SECTIONS & DETAIL PANEL
    ========================================================================== */
-:root[data-theme="dark"] .pg.p4 .sk-eyebrow::before { background: var(--cc); }
-:root[data-theme="dark"] .pg.p4 .sk-stats { border-top-color: var(--sk-line-hi); }
-:root[data-theme="dark"] .pg.p4 .sk-stat { color: var(--sk-ink); }
+:root[data-theme="dark"] .pg.p4 .sk-eyebrow::before {
+  background: var(--cc);
+}
+:root[data-theme="dark"] .pg.p4 .sk-stats {
+  border-top-color: var(--sk-line-hi);
+}
+:root[data-theme="dark"] .pg.p4 .sk-stat {
+  color: var(--sk-ink);
+}
 :root[data-theme="dark"] .pg.p4 .sk-grid .sk-card,
-:root[data-theme="dark"] .pg.p4 .sk-grid .sk-card.ai { color: var(--sk-ink); border-bottom-color: var(--sk-line); }
-:root[data-theme="dark"] .pg.p4 .sk-marq.alt { background: color-mix(in srgb, var(--cc) 14%, #141720); color: var(--sk-ink); }
-:root[data-theme="dark"] .pg.p4 .sk-pr .sk-pc { border-top-color: var(--sk-line-hi); }
-:root[data-theme="dark"] .pg.p4 .sk-sec.sk-end { border-top-color: var(--sk-line-hi); }
-:root[data-theme="dark"] .pg.p4 .sk-cta { background: var(--sk-ink); color: var(--sk-bg); border-color: var(--sk-ink); }
-:root[data-theme="dark"] .pg.p4 .sk-cta:hover { background: var(--cc); border-color: var(--cc); color: #0c0e14; }
+:root[data-theme="dark"] .pg.p4 .sk-grid .sk-card.ai {
+  color: var(--sk-ink);
+  border-bottom-color: var(--sk-line);
+}
+:root[data-theme="dark"] .pg.p4 .sk-marq.alt {
+  background: color-mix(in srgb, var(--cc) 14%, #141720);
+  color: var(--sk-ink);
+}
+:root[data-theme="dark"] .pg.p4 .sk-pr .sk-pc {
+  border-top-color: var(--sk-line-hi);
+}
+:root[data-theme="dark"] .pg.p4 .sk-sec.sk-end {
+  border-top-color: var(--sk-line-hi);
+}
+:root[data-theme="dark"] .pg.p4 .sk-cta {
+  background: var(--sk-ink);
+  color: var(--sk-bg);
+  border-color: var(--sk-ink);
+}
+:root[data-theme="dark"] .pg.p4 .sk-cta:hover {
+  background: var(--cc);
+  border-color: var(--cc);
+  color: #0c0e14;
+}
 :root[data-theme="dark"] .pg.p4.open .bd > .sk-panel {
   background: rgba(16, 19, 27, 0.94);
   border-color: var(--sk-line-hi);
   color: var(--sk-ink);
 }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-row { border-top-color: var(--sk-line); }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x { border-color: var(--sk-line-hi); color: var(--sk-ink); }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x:hover { background: var(--sk-ink); color: var(--sk-bg); }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-rl { color: var(--sk-ink); border-bottom-color: var(--sk-line-hi); }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav { border-top-color: var(--sk-line-hi); }
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav button { color: var(--sk-ink); }
-:root[data-theme="dark"] .pg.p4 .sk-mtr { background: rgba(255, 255, 255, 0.14); }
-:root[data-theme="dark"] .pg.p4 .sk-grab { background: rgba(255, 255, 255, 0.28); }
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-row {
+  border-top-color: var(--sk-line);
+}
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x {
+  border-color: var(--sk-line-hi);
+  color: var(--sk-ink);
+}
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x:hover {
+  background: var(--sk-ink);
+  color: var(--sk-bg);
+}
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-rl {
+  color: var(--sk-ink);
+  border-bottom-color: var(--sk-line-hi);
+}
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav {
+  border-top-color: var(--sk-line-hi);
+}
+:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav button {
+  color: var(--sk-ink);
+}
+:root[data-theme="dark"] .pg.p4 .sk-mtr {
+  background: rgba(255, 255, 255, 0.14);
+}
+:root[data-theme="dark"] .pg.p4 .sk-grab {
+  background: rgba(255, 255, 255, 0.28);
+}
 
 /* ==========================================================================
    7. MOBILE & TABLET RESPONSIVE (<= 820px — iOS 390px, Android 360px, iPad)
@@ -980,7 +1154,9 @@ html {
     gap: 6px;
     z-index: 4;
     pointer-events: none;
-    transition: opacity 0.28s ease, transform 0.28s ease;
+    transition:
+      opacity 0.28s ease,
+      transform 0.28s ease;
   }
 
   .pg.p4.sk-scrolled .sk-tags,
@@ -1135,14 +1311,19 @@ html {
     border-radius: 99px;
     background: var(--sk-ink);
     color: var(--sk-bg);
-    font: 700 9.5px/1.15 "Unbounded", system-ui, sans-serif;
+    font:
+      700 9.5px/1.15 "Unbounded",
+      system-ui,
+      sans-serif;
     letter-spacing: 0.06em;
     white-space: nowrap;
     opacity: 0;
     z-index: 20;
     pointer-events: none;
     box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.35);
-    transition: opacity 0.2s ease, transform 0.22s ease;
+    transition:
+      opacity 0.2s ease,
+      transform 0.22s ease;
   }
 
   .pg.p4 .sk-dock-toast.is-show {

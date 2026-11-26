@@ -7,7 +7,8 @@
 
 @font-face {
   font-family: "Archivo X";
-  src: url("https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q8EsLydOxI.woff2") format("woff2");
+  src: url("https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q8EsLydOxI.woff2")
+    format("woff2");
   font-weight: 800 900;
   font-stretch: 125%;
   font-style: normal;
@@ -24,7 +25,8 @@
 
 @font-face {
   font-family: "Instrument Serif";
-  src: url("https://fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7M.woff2") format("woff2");
+  src: url("https://fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7M.woff2")
+    format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -32,16 +34,16 @@
 
 /* ---------- Page p5 Full-Bleed Terracotta Isolation ---------- */
 .pg.p5 {
-  --dp-page: #E27657;
-  --dp-word: #F6EDE1;
-  --dp-ui: #FFFFFF;
-  --dp-accent: #F0653F;
-  --dp-inside: #161A28;
+  --dp-page: #e27657;
+  --dp-word: #f6ede1;
+  --dp-ui: #ffffff;
+  --dp-accent: #f0653f;
+  --dp-inside: #161a28;
   --dp-body-ink: rgba(255, 255, 255, 0.88);
   --dp-chip-line: rgba(255, 255, 255, 0.24);
   --dp-pill-line: rgba(255, 255, 255, 0.85);
-  --pbg: #E27657 !important;
-  --pink: #FFFFFF !important;
+  --pbg: #e27657 !important;
+  --pink: #ffffff !important;
   position: fixed !important;
   inset: 0 !important;
   width: 100% !important;
@@ -50,9 +52,14 @@
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  background: #E27657 !important;
-  color: #FFFFFF !important;
-  font-family: "Manrope", "Noto Sans KR", system-ui, -apple-system, sans-serif !important;
+  background: #e27657 !important;
+  color: #ffffff !important;
+  font-family:
+    "Manrope",
+    "Noto Sans KR",
+    system-ui,
+    -apple-system,
+    sans-serif !important;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -73,8 +80,8 @@
   gap: 0 !important;
   display: block !important;
   overflow: hidden !important;
-  background: #E27657 !important;
-  color: #FFFFFF !important;
+  background: #e27657 !important;
+  color: #ffffff !important;
 }
 
 .pg.p5 > .pgb > .bg,
@@ -110,7 +117,12 @@
   overflow: hidden;
   background: var(--dp-page);
   color: var(--dp-ui);
-  font-family: "Manrope", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Manrope",
+    "Noto Sans KR",
+    system-ui,
+    -apple-system,
+    sans-serif;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -176,21 +188,25 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.24s ease, visibility 0s linear 0.24s;
+  transition:
+    opacity 0.24s ease,
+    visibility 0s linear 0.24s;
 }
 
 .dp-scrim.on {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity 0.24s ease, visibility 0s linear 0s;
+  transition:
+    opacity 0.24s ease,
+    visibility 0s linear 0s;
 }
 
 /* ---------- Layer 3: Projected Interior Showcase Card (Desktop) ---------- */
 .dp-card {
   --c: 1px;
-  --ct: #1D2C59;
-  --ca: #F0653F;
+  --ct: #1d2c59;
+  --ca: #f0653f;
   position: absolute;
   z-index: 6;
   display: flex;
@@ -205,7 +221,9 @@
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.22s ease-out, visibility 0s linear 0.22s;
+  transition:
+    opacity 0.22s ease-out,
+    visibility 0s linear 0.22s;
   overflow: hidden;
   user-select: text;
   -webkit-user-select: text;
@@ -215,7 +233,9 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity 0.22s ease-out, visibility 0s linear 0s;
+  transition:
+    opacity 0.22s ease-out,
+    visibility 0s linear 0s;
 }
 
 .dp-card > * {
@@ -231,8 +251,12 @@
   transform: translateY(0);
 }
 
-.dp-card.on > :nth-child(1) { transition-delay: 0s; }
-.dp-card.on > :nth-child(2) { transition-delay: 0.05s; }
+.dp-card.on > :nth-child(1) {
+  transition-delay: 0s;
+}
+.dp-card.on > :nth-child(2) {
+  transition-delay: 0.05s;
+}
 
 /* Card Top Meta & Controls Bar */
 .dp-card-bar {
@@ -291,10 +315,15 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.07);
   color: rgba(255, 255, 255, 0.92);
-  font: 700 max(14px, calc(16 * var(--c)))/1 "Manrope", sans-serif;
+  font:
+    700 max(14px, calc(16 * var(--c)))/1 "Manrope",
+    sans-serif;
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease;
 }
 
 .dp-card-ico:hover {
@@ -304,7 +333,7 @@
 }
 
 .dp-card-ico:focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
@@ -404,13 +433,17 @@
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .dp-btn-pri {
   border: 1px solid transparent;
   background: var(--dp-accent);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dp-btn-pri:hover {
@@ -421,7 +454,7 @@
 .dp-btn-sec {
   border: 1px solid rgba(255, 255, 255, 0.42);
   background: rgba(255, 255, 255, 0.07);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dp-btn-sec:hover {
@@ -432,7 +465,7 @@
 
 .dp-btn-pri:focus-visible,
 .dp-btn-sec:focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
@@ -458,7 +491,9 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .dp-mini-shot:hover {
@@ -467,7 +502,7 @@
 }
 
 .dp-mini-shot:focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
@@ -493,9 +528,15 @@
   display: block;
 }
 
-.dp-mini-dots i:nth-child(1) { background: #ff5f56; }
-.dp-mini-dots i:nth-child(2) { background: #ffbd2e; }
-.dp-mini-dots i:nth-child(3) { background: #27c93f; }
+.dp-mini-dots i:nth-child(1) {
+  background: #ff5f56;
+}
+.dp-mini-dots i:nth-child(2) {
+  background: #ffbd2e;
+}
+.dp-mini-dots i:nth-child(3) {
+  background: #27c93f;
+}
 
 .dp-mini-dom {
   font-size: 9px;
@@ -540,7 +581,7 @@
   justify-content: center;
   background: rgba(15, 18, 30, 0.84);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -577,7 +618,7 @@
 .dp-steps span {
   font-size: max(10.5px, calc(11.5 * var(--c)));
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
   line-height: 1.2;
 }
 
@@ -594,9 +635,12 @@
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #FFFFFF;
+  color: #ffffff;
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
 }
 
 .dp-spec-tile:hover {
@@ -618,7 +662,7 @@
   font-weight: 900;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dp-spec-sub {
@@ -662,7 +706,7 @@
   padding: 14px 16px 16px;
   gap: 12px;
   border-radius: 18px;
-  background: linear-gradient(168deg, #191E30 0%, #131726 100%);
+  background: linear-gradient(168deg, #191e30 0%, #131726 100%);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-top: 4px solid var(--ct);
   box-shadow:
@@ -904,7 +948,7 @@
 
 .dp-logo:focus-visible,
 .dp-nav-link:focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #ffffff;
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -989,8 +1033,10 @@
   appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: transparent;
-  color: #FFFFFF;
-  font: 700 12px/1 "Manrope", sans-serif;
+  color: #ffffff;
+  font:
+    700 12px/1 "Manrope",
+    sans-serif;
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
@@ -1017,25 +1063,29 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.26s ease, visibility 0s linear 0.26s;
+  transition:
+    opacity 0.26s ease,
+    visibility 0s linear 0.26s;
 }
 
 .dp-modal.open {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity 0.26s ease, visibility 0s linear 0s;
+  transition:
+    opacity 0.26s ease,
+    visibility 0s linear 0s;
 }
 
 .dp-modal-panel {
-  --ca: #F0653F;
+  --ca: #f0653f;
   position: relative;
   width: min(980px, 100%);
   max-height: min(90dvh, 880px);
   display: flex;
   flex-direction: column;
   background: #141724;
-  color: #F6F5F1;
+  color: #f6f5f1;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
@@ -1104,11 +1154,13 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .dp-modal-close:hover {
@@ -1170,7 +1222,7 @@
   font-size: clamp(30px, 4.4vw, 52px);
   line-height: 1.02;
   letter-spacing: -0.04em;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dp-modal-stack {
@@ -1206,7 +1258,7 @@
 .dp-modal-desc p:first-child {
   font-size: 17px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .dp-modal-browser {
@@ -1240,9 +1292,15 @@
   display: block;
 }
 
-.dp-modal-dots i:nth-child(1) { background: #ff5f56; }
-.dp-modal-dots i:nth-child(2) { background: #ffbd2e; }
-.dp-modal-dots i:nth-child(3) { background: #27c93f; }
+.dp-modal-dots i:nth-child(1) {
+  background: #ff5f56;
+}
+.dp-modal-dots i:nth-child(2) {
+  background: #ffbd2e;
+}
+.dp-modal-dots i:nth-child(3) {
+  background: #27c93f;
+}
 
 .dp-modal-url {
   flex: 1;
@@ -1356,7 +1414,9 @@
   gap: 6px;
   color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .dp-sw-btn:hover {
@@ -1435,7 +1495,7 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: "Manrope", "Noto Sans KR", sans-serif;
   font-weight: 700;
   font-size: 14px;

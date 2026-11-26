@@ -7,29 +7,29 @@
    ========================================================================== */
 (function () {
   var COLORS = {
-    navy: 0x1D2C59,
-    mustard: 0xE5A935,
-    ivory: 0xF3ECE0,
-    sky: 0x88C1E6,
-    inside: 0x161A28,
-    steel: 0xE8E5DF,
-    bolts: 0x99948C,
-    lockRods: 0xDFDBD3,
-    cable: 0xDDD9D2
+    navy: 0x1d2c59,
+    mustard: 0xe5a935,
+    ivory: 0xf3ece0,
+    sky: 0x88c1e6,
+    inside: 0x161a28,
+    steel: 0xe8e5df,
+    bolts: 0x99948c,
+    lockRods: 0xdfdbd3,
+    cable: 0xddd9d2,
   };
 
   var HEX_MAP = {
-    0x1D2C59: '#1D2C59',
-    0xE5A935: '#E5A935',
-    0xF3ECE0: '#F3ECE0',
-    0x88C1E6: '#88C1E6'
+    0x1d2c59: "#1D2C59",
+    0xe5a935: "#E5A935",
+    0xf3ece0: "#F3ECE0",
+    0x88c1e6: "#88C1E6",
   };
 
   /* Balanced ISO shipping container proportions (zero cramped cubes) */
   var SIZES = {
     hero: [384, 144, 128],
-    std:  [240, 112, 112],
-    mid:  [224, 108, 112]
+    std: [240, 112, 112],
+    mid: [224, 108, 112],
   };
 
   var T = 4;
@@ -43,86 +43,145 @@
   var BOLT_STEP = 72;
 
   /* Ordered 01..07 for prev/next navigation & keyboard stepping */
-  var NAV_ORDER = ['work', 'about', 'kit', 'hello', 'process', 'do', 'archive'];
+  var NAV_ORDER = ["work", "about", "kit", "hello", "process", "do", "archive"];
 
   /* Mathematically verified 0-collision Desktop & Portrait container yard specs */
   var PILE_SPECS = [
     {
-      id: 'work', num: '01', iso: '40HC',
-      color: COLORS.navy, ink: '#FFFFFF', accent: '#F0653F', size: 'hero',
-      desktop:  { pos: [582, 672,   8], rot: [0,  0.04, 0] },
-      portrait: { pos: [310, 968,   8], rot: [0,  0.02, 0] },
-      projectId: 'mono'
+      id: "work",
+      num: "01",
+      iso: "40HC",
+      color: COLORS.navy,
+      ink: "#FFFFFF",
+      accent: "#F0653F",
+      size: "hero",
+      desktop: { pos: [582, 672, 8], rot: [0, 0.04, 0] },
+      portrait: { pos: [310, 968, 8], rot: [0, 0.02, 0] },
+      projectId: "mono",
     },
     {
-      id: 'about', num: '02', iso: '20ST',
-      color: COLORS.mustard, ink: '#162040', accent: '#E5A935', size: 'mid',
-      desktop:  { pos: [524, 545,  10], rot: [0,  0.05, 0] },
-      portrait: { pos: [188, 841,   4], rot: [0,  0.04, 0] },
-      projectId: 'gigi'
+      id: "about",
+      num: "02",
+      iso: "20ST",
+      color: COLORS.mustard,
+      ink: "#162040",
+      accent: "#E5A935",
+      size: "mid",
+      desktop: { pos: [524, 545, 10], rot: [0, 0.05, 0] },
+      portrait: { pos: [188, 841, 4], rot: [0, 0.04, 0] },
+      projectId: "gigi",
     },
     {
-      id: 'kit', num: '03', iso: '20ST',
-      color: COLORS.sky, ink: '#162040', accent: '#88C1E6', size: 'mid',
-      desktop:  { pos: [530, 436,   6], rot: [0,  0.02, 0] },
-      portrait: { pos: [432, 841,   4], rot: [0, -0.04, 0] },
-      projectId: 'compute'
+      id: "kit",
+      num: "03",
+      iso: "20ST",
+      color: COLORS.sky,
+      ink: "#162040",
+      accent: "#88C1E6",
+      size: "mid",
+      desktop: { pos: [530, 436, 6], rot: [0, 0.02, 0] },
+      portrait: { pos: [432, 841, 4], rot: [0, -0.04, 0] },
+      projectId: "compute",
     },
     {
-      id: 'hello', num: '04', iso: '20HC',
-      color: COLORS.sky, ink: '#162040', accent: '#88C1E6', size: 'std',
-      desktop:  { pos: [924, 575,  -4], rot: [0, -0.04, 0] },
-      portrait: { pos: [180, 730,   2], rot: [0,  0.04, 0] },
-      projectId: 'sweet'
+      id: "hello",
+      num: "04",
+      iso: "20HC",
+      color: COLORS.sky,
+      ink: "#162040",
+      accent: "#88C1E6",
+      size: "std",
+      desktop: { pos: [924, 575, -4], rot: [0, -0.04, 0] },
+      portrait: { pos: [180, 730, 2], rot: [0, 0.04, 0] },
+      projectId: "sweet",
     },
     {
-      id: 'process', num: '05', iso: '20ST',
-      color: COLORS.ivory, ink: '#1D2C59', accent: '#F3ECE0', size: 'std',
-      desktop:  { pos: [228, 688,  24], rot: [0,  0.14, 0] },
-      portrait: { pos: [180, 617,   0], rot: [0,  0.03, 0] }
+      id: "process",
+      num: "05",
+      iso: "20ST",
+      color: COLORS.ivory,
+      ink: "#1D2C59",
+      accent: "#F3ECE0",
+      size: "std",
+      desktop: { pos: [228, 688, 24], rot: [0, 0.14, 0] },
+      portrait: { pos: [180, 617, 0], rot: [0, 0.03, 0] },
     },
     {
-      id: 'do', num: '06', iso: '20ST',
-      color: COLORS.navy, ink: '#FFFFFF', accent: '#88C1E6', size: 'std',
-      desktop:  { pos: [1206, 688, 22], rot: [0, -0.14, 0] },
-      portrait: { pos: [440, 730,   2], rot: [0, -0.04, 0] },
-      github: 'https://github.com/trynvexa'
+      id: "do",
+      num: "06",
+      iso: "20ST",
+      color: COLORS.navy,
+      ink: "#FFFFFF",
+      accent: "#88C1E6",
+      size: "std",
+      desktop: { pos: [1206, 688, 22], rot: [0, -0.14, 0] },
+      portrait: { pos: [440, 730, 2], rot: [0, -0.04, 0] },
+      github: "https://github.com/trynvexa",
     },
     {
-      id: 'archive', num: '07', iso: '20ST',
-      color: COLORS.mustard, ink: '#162040', accent: '#E5A935', size: 'std',
-      desktop:  { pos: [930, 688,  -8], rot: [0, -0.07, 0] },
-      portrait: { pos: [440, 617,   0], rot: [0, -0.03, 0] },
-      contact: true
-    }
+      id: "archive",
+      num: "07",
+      iso: "20ST",
+      color: COLORS.mustard,
+      ink: "#162040",
+      accent: "#E5A935",
+      size: "std",
+      desktop: { pos: [930, 688, -8], rot: [0, -0.07, 0] },
+      portrait: { pos: [440, 617, 0], rot: [0, -0.03, 0] },
+      contact: true,
+    },
   ];
 
   /* Verified collision-free gravity drop rules for both layouts */
   var DESKTOP_DROPS = {
-    about:   [{ id: 'kit', dy: -109 }],
-    work:    [{ id: 'about', dy: -145 }, { id: 'kit', dy: -145 }],
-    archive: [{ id: 'hello', dy: -113 }]
+    about: [{ id: "kit", dy: -109 }],
+    work: [
+      { id: "about", dy: -145 },
+      { id: "kit", dy: -145 },
+    ],
+    archive: [{ id: "hello", dy: -113 }],
   };
 
   var PORTRAIT_DROPS = {
-    work:  [
-      { id: 'about', dy: -145 }, { id: 'kit', dy: -145 },
-      { id: 'hello', dy: -145 }, { id: 'do', dy: -145 },
-      { id: 'process', dy: -145 }, { id: 'archive', dy: -145 }
+    work: [
+      { id: "about", dy: -145 },
+      { id: "kit", dy: -145 },
+      { id: "hello", dy: -145 },
+      { id: "do", dy: -145 },
+      { id: "process", dy: -145 },
+      { id: "archive", dy: -145 },
     ],
-    about: [{ id: 'hello', dy: -109 }, { id: 'process', dy: -109 }],
-    kit:   [{ id: 'do', dy: -109 }, { id: 'archive', dy: -109 }],
-    hello: [{ id: 'process', dy: -113 }],
-    do:    [{ id: 'archive', dy: -113 }]
+    about: [
+      { id: "hello", dy: -109 },
+      { id: "process", dy: -109 },
+    ],
+    kit: [
+      { id: "do", dy: -109 },
+      { id: "archive", dy: -109 },
+    ],
+    hello: [{ id: "process", dy: -113 }],
+    do: [{ id: "archive", dy: -113 }],
   };
 
   var EASE = {
-    linear: function (t) { return t; },
-    inQuad: function (t) { return t * t; },
-    outQuad: function (t) { return 1 - (1 - t) * (1 - t); },
-    inOutQuad: function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; },
-    outCubic: function (t) { return 1 - Math.pow(1 - t, 3); },
-    inOutCubic: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+    linear: function (t) {
+      return t;
+    },
+    inQuad: function (t) {
+      return t * t;
+    },
+    outQuad: function (t) {
+      return 1 - (1 - t) * (1 - t);
+    },
+    inOutQuad: function (t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    },
+    outCubic: function (t) {
+      return 1 - Math.pow(1 - t, 3);
+    },
+    inOutCubic: function (t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    },
   };
 
   /* Zero-dependency RoundedBoxGeometry */
@@ -144,8 +203,12 @@
 
     for (var i = 0; i < pos.count; i++) {
       v.fromBufferAttribute(pos, i);
-      var ax = Math.abs(v.x), ay = Math.abs(v.y), az = Math.abs(v.z);
-      var sx = Math.sign(v.x), sy = Math.sign(v.y), sz = Math.sign(v.z);
+      var ax = Math.abs(v.x),
+        ay = Math.abs(v.y),
+        az = Math.abs(v.z);
+      var sx = Math.sign(v.x),
+        sy = Math.sign(v.y),
+        sz = Math.sign(v.z);
 
       var px = v.x * width;
       var py = v.y * height;
@@ -174,9 +237,9 @@
   }
 
   function getLang() {
-    var l = (window.ZK && window.ZK.lang) || 'id';
+    var l = (window.ZK && window.ZK.lang) || "id";
     var depot = window.ZK_PROJECTS && window.ZK_PROJECTS.DEPOT;
-    return depot && depot[l] ? l : 'id';
+    return depot && depot[l] ? l : "id";
   }
 
   function getDepotPack(lang) {
@@ -203,20 +266,22 @@
   }
 
   function escHtml(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   function loadDepotFonts() {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
-    var timeout = new Promise(function (r) { setTimeout(r, 1400); });
+    var timeout = new Promise(function (r) {
+      setTimeout(r, 1400);
+    });
     var loads = Promise.allSettled([
       document.fonts.load('900 40px "Archivo X"'),
       document.fonts.load('800 20px "Manrope"'),
-      document.fonts.load('italic 400 32px "Instrument Serif"')
+      document.fonts.load('italic 400 32px "Instrument Serif"'),
     ]);
     return Promise.race([loads, timeout]);
   }
@@ -225,10 +290,10 @@
   function makeCorrugationCanvas() {
     var w = 64;
     var h = 4;
-    var cv = document.createElement('canvas');
+    var cv = document.createElement("canvas");
     cv.width = w;
     cv.height = h;
-    var ctx = cv.getContext('2d');
+    var ctx = cv.getContext("2d");
     var img = ctx.createImageData(w, h);
     var d = img.data;
     for (var x = 0; x < w; x++) {
@@ -257,17 +322,17 @@
   }
 
   function setColorTextureSpace(THREE, tex) {
-    if ('colorSpace' in tex && THREE.SRGBColorSpace) {
+    if ("colorSpace" in tex && THREE.SRGBColorSpace) {
       tex.colorSpace = THREE.SRGBColorSpace;
-    } else if ('encoding' in tex && THREE.sRGBEncoding) {
+    } else if ("encoding" in tex && THREE.sRGBEncoding) {
       tex.encoding = THREE.sRGBEncoding;
     }
   }
 
   function setLinearTextureSpace(THREE, tex) {
-    if ('colorSpace' in tex && THREE.NoColorSpace !== undefined) {
+    if ("colorSpace" in tex && THREE.NoColorSpace !== undefined) {
       tex.colorSpace = THREE.NoColorSpace;
-    } else if ('encoding' in tex && THREE.LinearEncoding !== undefined) {
+    } else if ("encoding" in tex && THREE.LinearEncoding !== undefined) {
       tex.encoding = THREE.LinearEncoding;
     }
   }
@@ -275,13 +340,14 @@
   /* High-craft ISO stencil typography on container front doors */
   function createLabelTexture(THREE, spec, lines, isRtl) {
     var sz = SIZES[spec.size];
-    var L = sz[0], H = sz[1];
+    var L = sz[0],
+      H = sz[1];
     var cw = 1024;
     var ch = Math.max(320, Math.round(cw * ((H - 2 * F) / (L - 2 * F))));
-    var cv = document.createElement('canvas');
+    var cv = document.createElement("canvas");
     cv.width = cw;
     cv.height = ch;
-    var ctx = cv.getContext('2d');
+    var ctx = cv.getContext("2d");
     ctx.clearRect(0, 0, cw, ch);
 
     var ink = spec.ink;
@@ -289,20 +355,20 @@
     var padTop = ch * 0.14;
 
     /* Subtle center vertical door rubber gasket line */
-    ctx.fillStyle = ink === '#FFFFFF' ? 'rgba(0,0,0,0.22)' : 'rgba(22,32,64,0.14)';
+    ctx.fillStyle = ink === "#FFFFFF" ? "rgba(0,0,0,0.22)" : "rgba(22,32,64,0.14)";
     ctx.fillRect(cw * 0.5 - 2, ch * 0.03, 4, ch * 0.94);
 
     /* Top industrial header: ZK · 01 (left) & ISO code (right) */
     var metaFs = Math.max(24, ch * 0.095);
-    ctx.font = '800 ' + metaFs.toFixed(1) + 'px "Manrope", system-ui, sans-serif';
-    ctx.textBaseline = 'top';
+    ctx.font = "800 " + metaFs.toFixed(1) + 'px "Manrope", system-ui, sans-serif';
+    ctx.textBaseline = "top";
     ctx.fillStyle = ink;
     ctx.globalAlpha = 0.68;
-    ctx.textAlign = 'left';
-    ctx.fillText('ZK · ' + spec.num, padX, padTop);
+    ctx.textAlign = "left";
+    ctx.fillText("ZK · " + spec.num, padX, padTop);
 
     ctx.globalAlpha = 0.5;
-    ctx.textAlign = 'right';
+    ctx.textAlign = "right";
     ctx.fillText(spec.iso, cw - padX, padTop);
 
     /* Crisp thin structural rule under header */
@@ -312,19 +378,20 @@
 
     /* Main bold stencil title cleanly occupying lower 65% of door */
     ctx.globalAlpha = 1;
-    var safeLines = Array.isArray(lines) && lines.length ? lines : [String(lines || '')];
+    var safeLines = Array.isArray(lines) && lines.length ? lines : [String(lines || "")];
     var isTwo = safeLines.length >= 2;
-    var fontStack = '"Archivo X", "Archivo", "Unbounded", "Noto Sans KR", "Noto Sans SC", "Noto Sans JP", "Noto Sans Arabic", sans-serif';
+    var fontStack =
+      '"Archivo X", "Archivo", "Unbounded", "Noto Sans KR", "Noto Sans SC", "Noto Sans JP", "Noto Sans Arabic", sans-serif';
 
     var bodyTop = ruleY + ch * 0.065;
-    var bodyBot = ch * 0.90;
+    var bodyBot = ch * 0.9;
     var availH = bodyBot - bodyTop;
     var maxAllowedW = cw - padX * 2;
 
     var fs = isTwo ? availH * 0.52 : availH * 0.64;
 
     function measureMax(size) {
-      ctx.font = '900 ' + size.toFixed(1) + 'px ' + fontStack;
+      ctx.font = "900 " + size.toFixed(1) + "px " + fontStack;
       var m = 0;
       for (var i = 0; i < safeLines.length; i++) {
         var w = ctx.measureText(safeLines[i]).width;
@@ -337,20 +404,20 @@
     if (widest > maxAllowedW) {
       fs *= maxAllowedW / widest;
     }
-    var maxFsByH = isTwo ? (availH / 1.88) : (availH * 0.82);
+    var maxFsByH = isTwo ? availH / 1.88 : availH * 0.82;
     if (fs > maxFsByH) fs = maxFsByH;
 
-    ctx.font = '900 ' + fs.toFixed(1) + 'px ' + fontStack;
-    ctx.textBaseline = 'alphabetic';
-    ctx.direction = isRtl ? 'rtl' : 'ltr';
-    ctx.textAlign = isRtl ? 'right' : 'left';
+    ctx.font = "900 " + fs.toFixed(1) + "px " + fontStack;
+    ctx.textBaseline = "alphabetic";
+    ctx.direction = isRtl ? "rtl" : "ltr";
+    ctx.textAlign = isRtl ? "right" : "left";
 
     var lineH = fs * 0.94;
     var mSample = ctx.measureText(safeLines[0]);
     var capH = mSample.actualBoundingBoxAscent || fs * 0.72;
     var totalH = (safeLines.length - 1) * lineH + capH;
     var startY = bodyTop + (availH - totalH) * 0.5 + capH;
-    var drawX = isRtl ? (cw - padX) : padX;
+    var drawX = isRtl ? cw - padX : padX;
 
     for (var i = 0; i < safeLines.length; i++) {
       ctx.fillText(safeLines[i], drawX, startY + i * lineH);
@@ -364,33 +431,33 @@
   }
 
   function mountDepot(pg, pgb) {
-    var stage = pgb.querySelector('.dp-stage');
+    var stage = pgb.querySelector(".dp-stage");
     if (!stage) return function () {};
 
-    var wordSpan = stage.querySelector('#dpWord');
-    var canvas = stage.querySelector('#dpGl');
-    var cardEl = stage.querySelector('#dpCard');
-    var logoBtn = stage.querySelector('#dpLogo');
-    var homeBtn = stage.querySelector('#dpHome');
-    var talkBtn = stage.querySelector('#dpTalk');
-    var pillEl = stage.querySelector('#dpPill');
-    var eyebrowEl = stage.querySelector('#dpEyebrow');
-    var srMenu = stage.querySelector('#dpMenu');
-    var modalEl = stage.querySelector('#dpModal');
-    var modalPanel = stage.querySelector('#dpModalPanel');
+    var wordSpan = stage.querySelector("#dpWord");
+    var canvas = stage.querySelector("#dpGl");
+    var cardEl = stage.querySelector("#dpCard");
+    var logoBtn = stage.querySelector("#dpLogo");
+    var homeBtn = stage.querySelector("#dpHome");
+    var talkBtn = stage.querySelector("#dpTalk");
+    var pillEl = stage.querySelector("#dpPill");
+    var eyebrowEl = stage.querySelector("#dpEyebrow");
+    var srMenu = stage.querySelector("#dpMenu");
+    var modalEl = stage.querySelector("#dpModal");
+    var modalPanel = stage.querySelector("#dpModalPanel");
 
     if (!canvas || !wordSpan || !cardEl) return function () {};
 
     /* Mobile backdrop scrim behind docked showcase sheet */
-    var scrimEl = stage.querySelector('.dp-scrim');
+    var scrimEl = stage.querySelector(".dp-scrim");
     if (!scrimEl) {
-      scrimEl = document.createElement('div');
-      scrimEl.className = 'dp-scrim';
-      scrimEl.setAttribute('aria-hidden', 'true');
+      scrimEl = document.createElement("div");
+      scrimEl.className = "dp-scrim";
+      scrimEl.setAttribute("aria-hidden", "true");
       stage.insertBefore(scrimEl, cardEl);
     }
 
-    document.body.classList.add('dp-active');
+    document.body.classList.add("dp-active");
 
     /* Preload the 4 project preview images so interior browser thumbnails appear instantly */
     if (window.ZK_PROJECTS && window.ZK_PROJECTS.DATA) {
@@ -400,7 +467,7 @@
       }
     }
 
-    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var disposed = false;
     var lang = getLang();
     var activeModalProjectId = null;
@@ -411,7 +478,10 @@
       var data = window.ZK_PROJECTS.DATA;
       var idx = -1;
       for (var i = 0; i < data.length; i++) {
-        if (data[i].id === projectId) { idx = i; break; }
+        if (data[i].id === projectId) {
+          idx = i;
+          break;
+        }
       }
       if (idx < 0) return;
 
@@ -421,91 +491,179 @@
       var cPack = getCasePack(lang);
       var dPack = getDepotPack(lang);
       var pOv = cPack && cPack.projects && cPack.projects[p.id];
-      var demoUrl = window.ZK_PROJECTS.URL[p.id] || '#';
+      var demoUrl = window.ZK_PROJECTS.URL[p.id] || "#";
 
-      var rr = p.r.split('/');
+      var rr = p.r.split("/");
       var imgW = Number(rr[0]) || 1600;
       var imgH = Number(rr[1]) || 900;
 
-      var cropsHtml = extra.crops.map(function (c, ci) {
-        var cap = (pOv && pOv.crops && pOv.crops[ci]) || '';
-        var ar = (c.w * imgW).toFixed(1) + '/' + (c.h * imgH).toFixed(1);
-        return (
-          '<figure class="dp-modal-crop-fig' + (c.wide ? ' is-wide' : '') + '">' +
-            '<div class="dp-modal-crop-box" style="aspect-ratio:' + ar + '">' +
-              '<img src="' + escHtml(p.img) + '" alt="" decoding="async" style="width:' + (100 / c.w).toFixed(2) + '%;left:' + ((-c.x / c.w) * 100).toFixed(2) + '%;top:' + ((-c.y / c.h) * 100).toFixed(2) + '%">' +
-            '</div>' +
-            '<figcaption>' + escHtml(cap) + '</figcaption>' +
-          '</figure>'
-        );
-      }).join('');
+      var cropsHtml = extra.crops
+        .map(function (c, ci) {
+          var cap = (pOv && pOv.crops && pOv.crops[ci]) || "";
+          var ar = (c.w * imgW).toFixed(1) + "/" + (c.h * imgH).toFixed(1);
+          return (
+            '<figure class="dp-modal-crop-fig' +
+            (c.wide ? " is-wide" : "") +
+            '">' +
+            '<div class="dp-modal-crop-box" style="aspect-ratio:' +
+            ar +
+            '">' +
+            '<img src="' +
+            escHtml(p.img) +
+            '" alt="" decoding="async" style="width:' +
+            (100 / c.w).toFixed(2) +
+            "%;left:" +
+            ((-c.x / c.w) * 100).toFixed(2) +
+            "%;top:" +
+            ((-c.y / c.h) * 100).toFixed(2) +
+            '%">' +
+            "</div>" +
+            "<figcaption>" +
+            escHtml(cap) +
+            "</figcaption>" +
+            "</figure>"
+          );
+        })
+        .join("");
 
-      var palHtml = extra.pal.map(function (hex) {
-        var up = hex.toUpperCase();
-        return (
-          '<button type="button" class="dp-sw-btn" data-hex="' + up + '" aria-label="' + escHtml(cPack.copyColor) + ' ' + up + '">' +
-            '<i style="background:' + hex + '"></i>' +
-            '<span>' + up + '</span>' +
-          '</button>'
-        );
-      }).join('');
+      var palHtml = extra.pal
+        .map(function (hex) {
+          var up = hex.toUpperCase();
+          return (
+            '<button type="button" class="dp-sw-btn" data-hex="' +
+            up +
+            '" aria-label="' +
+            escHtml(cPack.copyColor) +
+            " " +
+            up +
+            '">' +
+            '<i style="background:' +
+            hex +
+            '"></i>' +
+            "<span>" +
+            up +
+            "</span>" +
+            "</button>"
+          );
+        })
+        .join("");
 
-      var rowsHtml = ((pOv && pOv.rows) || []).map(function (r) {
-        return '<div><dt>' + escHtml(r[0]) + '</dt><dd>' + escHtml(r[1]) + '</dd></div>';
-      }).join('');
+      var rowsHtml = ((pOv && pOv.rows) || [])
+        .map(function (r) {
+          return "<div><dt>" + escHtml(r[0]) + "</dt><dd>" + escHtml(r[1]) + "</dd></div>";
+        })
+        .join("");
 
-      modalPanel.style.setProperty('--ca', p.a);
+      modalPanel.style.setProperty("--ca", p.a);
       modalPanel.innerHTML =
         '<div class="dp-modal-top">' +
-          '<div class="dp-modal-meta">' +
-            '<span class="dp-modal-num">' + escHtml(p.num) + ' / 04</span>' +
-            '<span class="dp-modal-role">' + escHtml(cPack.role) + '</span>' +
-            '<span class="dp-modal-sep" aria-hidden="true">&bull;</span>' +
-            '<span class="dp-modal-yr">' + escHtml(p.year) + '</span>' +
-          '</div>' +
-          '<button type="button" class="dp-modal-close" data-dp-close-modal="1" aria-label="' + escHtml(dPack.closeModalAria) + '">&times;</button>' +
-        '</div>' +
+        '<div class="dp-modal-meta">' +
+        '<span class="dp-modal-num">' +
+        escHtml(p.num) +
+        " / 04</span>" +
+        '<span class="dp-modal-role">' +
+        escHtml(cPack.role) +
+        "</span>" +
+        '<span class="dp-modal-sep" aria-hidden="true">&bull;</span>' +
+        '<span class="dp-modal-yr">' +
+        escHtml(p.year) +
+        "</span>" +
+        "</div>" +
+        '<button type="button" class="dp-modal-close" data-dp-close-modal="1" aria-label="' +
+        escHtml(dPack.closeModalAria) +
+        '">&times;</button>' +
+        "</div>" +
         '<div class="dp-modal-body">' +
-          '<div class="dp-modal-head">' +
-            '<div>' +
-              '<div class="dp-modal-kind">' + escHtml((pOv && pOv.kind) || '') + '</div>' +
-              '<h2 class="dp-modal-title">' + escHtml(p.name) + '</h2>' +
-              '<div class="dp-modal-stack">' + p.stack.map(function (s) { return '<span>' + escHtml(trStack(cPack, s)) + '</span>'; }).join('') + '</div>' +
-            '</div>' +
-            '<div class="dp-modal-desc">' +
-              ((pOv && pOv.t) || []).map(function (par) { return '<p>' + escHtml(par) + '</p>'; }).join('') +
-            '</div>' +
-          '</div>' +
-          '<div class="dp-modal-browser">' +
-            '<div class="dp-modal-bar">' +
-              '<span class="dp-modal-dots" aria-hidden="true"><i></i><i></i><i></i></span>' +
-              '<span class="dp-modal-url">' + escHtml(p.domain) + '</span>' +
-              '<a class="dp-modal-open-link" href="' + escHtml(demoUrl) + '" target="_blank" rel="noopener noreferrer">' + escHtml(dPack.modalLightboxHint) + '</a>' +
-            '</div>' +
-            '<img class="dp-modal-shot" src="' + escHtml(p.img) + '" alt="' + escHtml((pOv && pOv.alt) || p.name) + '" decoding="async">' +
-          '</div>' +
-          '<section class="dp-modal-sec">' +
-            '<h3>' + escHtml(cPack.closeTitle) + '</h3>' +
-            '<div class="dp-modal-crops">' + cropsHtml + '</div>' +
-          '</section>' +
-          '<section class="dp-modal-sec dp-modal-two">' +
-            '<div>' +
-              '<h3>' + escHtml(cPack.palTitle) + ' <small>' + escHtml(cPack.palHint) + '</small></h3>' +
-              '<div class="dp-modal-pal">' + palHtml + '</div>' +
-            '</div>' +
-            '<div>' +
-              '<h3>' + escHtml(cPack.rowsTitle) + '</h3>' +
-              '<dl class="dp-modal-rows">' + rowsHtml + '</dl>' +
-            '</div>' +
-          '</section>' +
-        '</div>' +
+        '<div class="dp-modal-head">' +
+        "<div>" +
+        '<div class="dp-modal-kind">' +
+        escHtml((pOv && pOv.kind) || "") +
+        "</div>" +
+        '<h2 class="dp-modal-title">' +
+        escHtml(p.name) +
+        "</h2>" +
+        '<div class="dp-modal-stack">' +
+        p.stack
+          .map(function (s) {
+            return "<span>" + escHtml(trStack(cPack, s)) + "</span>";
+          })
+          .join("") +
+        "</div>" +
+        "</div>" +
+        '<div class="dp-modal-desc">' +
+        ((pOv && pOv.t) || [])
+          .map(function (par) {
+            return "<p>" + escHtml(par) + "</p>";
+          })
+          .join("") +
+        "</div>" +
+        "</div>" +
+        '<div class="dp-modal-browser">' +
+        '<div class="dp-modal-bar">' +
+        '<span class="dp-modal-dots" aria-hidden="true"><i></i><i></i><i></i></span>' +
+        '<span class="dp-modal-url">' +
+        escHtml(p.domain) +
+        "</span>" +
+        '<a class="dp-modal-open-link" href="' +
+        escHtml(demoUrl) +
+        '" target="_blank" rel="noopener noreferrer">' +
+        escHtml(dPack.modalLightboxHint) +
+        "</a>" +
+        "</div>" +
+        '<img class="dp-modal-shot" src="' +
+        escHtml(p.img) +
+        '" alt="' +
+        escHtml((pOv && pOv.alt) || p.name) +
+        '" decoding="async">' +
+        "</div>" +
+        '<section class="dp-modal-sec">' +
+        "<h3>" +
+        escHtml(cPack.closeTitle) +
+        "</h3>" +
+        '<div class="dp-modal-crops">' +
+        cropsHtml +
+        "</div>" +
+        "</section>" +
+        '<section class="dp-modal-sec dp-modal-two">' +
+        "<div>" +
+        "<h3>" +
+        escHtml(cPack.palTitle) +
+        " <small>" +
+        escHtml(cPack.palHint) +
+        "</small></h3>" +
+        '<div class="dp-modal-pal">' +
+        palHtml +
+        "</div>" +
+        "</div>" +
+        "<div>" +
+        "<h3>" +
+        escHtml(cPack.rowsTitle) +
+        "</h3>" +
+        '<dl class="dp-modal-rows">' +
+        rowsHtml +
+        "</dl>" +
+        "</div>" +
+        "</section>" +
+        "</div>" +
         '<div class="dp-modal-foot">' +
-          '<button type="button" class="dp-modal-next" data-dp-case="' + escHtml(nextP.id) + '">' + escHtml(cPack.nextLbl) + ' ' + escHtml(nextP.name) + ' &rarr;</button>' +
-          '<div class="dp-modal-foot-acts">' +
-            '<a class="dp-btn-pri" href="' + escHtml(demoUrl) + '" target="_blank" rel="noopener noreferrer">' + escHtml(dPack.demoBtn) + '</a>' +
-            '<button type="button" class="dp-btn-sec" data-dp-close-modal="1">' + escHtml(cPack.closeBtn) + '</button>' +
-          '</div>' +
-        '</div>';
+        '<button type="button" class="dp-modal-next" data-dp-case="' +
+        escHtml(nextP.id) +
+        '">' +
+        escHtml(cPack.nextLbl) +
+        " " +
+        escHtml(nextP.name) +
+        " &rarr;</button>" +
+        '<div class="dp-modal-foot-acts">' +
+        '<a class="dp-btn-pri" href="' +
+        escHtml(demoUrl) +
+        '" target="_blank" rel="noopener noreferrer">' +
+        escHtml(dPack.demoBtn) +
+        "</a>" +
+        '<button type="button" class="dp-btn-sec" data-dp-close-modal="1">' +
+        escHtml(cPack.closeBtn) +
+        "</button>" +
+        "</div>" +
+        "</div>";
     }
 
     function openCaseModal(projectId) {
@@ -514,19 +672,22 @@
       renderCaseModal(projectId);
       modalEl.hidden = false;
       requestAnimationFrame(function () {
-        if (!disposed) modalEl.classList.add('open');
+        if (!disposed) modalEl.classList.add("open");
       });
-      var closeBtn = modalEl.querySelector('[data-dp-close-modal]');
+      var closeBtn = modalEl.querySelector("[data-dp-close-modal]");
       if (closeBtn) closeBtn.focus({ preventScroll: true });
     }
 
     function closeCaseModal() {
       if (!modalEl || !activeModalProjectId) return false;
       activeModalProjectId = null;
-      modalEl.classList.remove('open');
-      setTimeout(function () {
-        if (!activeModalProjectId && modalEl) modalEl.hidden = true;
-      }, reducedMotion ? 0 : 260);
+      modalEl.classList.remove("open");
+      setTimeout(
+        function () {
+          if (!activeModalProjectId && modalEl) modalEl.hidden = true;
+        },
+        reducedMotion ? 0 : 260
+      );
       return true;
     }
 
@@ -539,7 +700,7 @@
           canvas: canvas,
           antialias: true,
           alpha: true,
-          powerPreference: 'high-performance'
+          powerPreference: "high-performance",
         });
       } catch (_) {
         renderer = null;
@@ -547,68 +708,90 @@
     }
 
     if (!THREE || !renderer) {
-      var fb = document.createElement('div');
-      fb.className = 'dp-fallback';
+      var fb = document.createElement("div");
+      fb.className = "dp-fallback";
       stage.appendChild(fb);
 
       function renderFallback() {
         lang = getLang();
         var pack = getDepotPack(lang);
         if (!pack) return;
-        var isRtl = lang === 'ar';
-        stage.setAttribute('data-lang', lang);
-        stage.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+        var isRtl = lang === "ar";
+        stage.setAttribute("data-lang", lang);
+        stage.setAttribute("dir", isRtl ? "rtl" : "ltr");
         wordSpan.textContent = pack.word;
-        if (homeBtn) homeBtn.textContent = isRtl ? pack.navHome + ' →' : '← ' + pack.navHome;
+        if (homeBtn) homeBtn.textContent = isRtl ? pack.navHome + " →" : "← " + pack.navHome;
         if (talkBtn) talkBtn.textContent = pack.navTalk;
         if (pillEl) pillEl.textContent = pack.pill;
         if (eyebrowEl) eyebrowEl.textContent = pack.eyebrow;
 
         fb.innerHTML = PILE_SPECS.map(function (s) {
           var c = pack.containers[s.id];
-          var bg = HEX_MAP[s.color] || '#1D2C59';
+          var bg = HEX_MAP[s.color] || "#1D2C59";
           return (
-            '<button type="button" class="dp-fb-box" data-fb-id="' + s.id + '" style="background:' + bg + ';color:' + s.ink + '">' +
-              '<small>' + escHtml(c.eb) + '</small>' +
-              '<strong>' + escHtml(c.label.join(' ')) + '</strong>' +
-              '<p>' + escHtml(c.body) + '</p>' +
-            '</button>'
+            '<button type="button" class="dp-fb-box" data-fb-id="' +
+            s.id +
+            '" style="background:' +
+            bg +
+            ";color:" +
+            s.ink +
+            '">' +
+            "<small>" +
+            escHtml(c.eb) +
+            "</small>" +
+            "<strong>" +
+            escHtml(c.label.join(" ")) +
+            "</strong>" +
+            "<p>" +
+            escHtml(c.body) +
+            "</p>" +
+            "</button>"
           );
-        }).join('');
+        }).join("");
         if (activeModalProjectId) renderCaseModal(activeModalProjectId);
       }
 
       var onFbClick = function (e) {
         var t = e.target;
         if (!t || !t.closest) return;
-        if (t === modalEl || t.closest('[data-dp-close-modal]')) { closeCaseModal(); return; }
-        var cBtn = t.closest('[data-dp-case]');
-        if (cBtn) { openCaseModal(cBtn.getAttribute('data-dp-case')); return; }
-        var box = t.closest('[data-fb-id]');
+        if (t === modalEl || t.closest("[data-dp-close-modal]")) {
+          closeCaseModal();
+          return;
+        }
+        var cBtn = t.closest("[data-dp-case]");
+        if (cBtn) {
+          openCaseModal(cBtn.getAttribute("data-dp-case"));
+          return;
+        }
+        var box = t.closest("[data-fb-id]");
         if (box) {
-          var id = box.getAttribute('data-fb-id');
-          var spec = PILE_SPECS.find(function (s) { return s.id === id; });
+          var id = box.getAttribute("data-fb-id");
+          var spec = PILE_SPECS.find(function (s) {
+            return s.id === id;
+          });
           if (spec && spec.projectId) openCaseModal(spec.projectId);
-          else if (spec && spec.github) window.open(spec.github, '_blank', 'noopener,noreferrer');
+          else if (spec && spec.github) window.open(spec.github, "_blank", "noopener,noreferrer");
           else if (spec && spec.contact && window.zkJumpPage) window.zkJumpPage(6);
         }
       };
-      stage.addEventListener('click', onFbClick);
-      window.addEventListener('zk-lang', renderFallback);
+      stage.addEventListener("click", onFbClick);
+      window.addEventListener("zk-lang", renderFallback);
       renderFallback();
-      window.__zkDepotEscape = function () { return closeCaseModal(); };
+      window.__zkDepotEscape = function () {
+        return closeCaseModal();
+      };
       return function () {
         disposed = true;
-        stage.removeEventListener('click', onFbClick);
-        window.removeEventListener('zk-lang', renderFallback);
-        document.body.classList.remove('dp-active');
+        stage.removeEventListener("click", onFbClick);
+        window.removeEventListener("zk-lang", renderFallback);
+        document.body.classList.remove("dp-active");
         delete window.__zkDepotEscape;
       };
     }
 
     /* ---------- Three.js Scene Setup (r149 & r160+ exact parity) ---------- */
-    var isLegacyLights = !('outputColorSpace' in renderer);
-    var lightMul = isLegacyLights ? (1 / Math.PI) : 1;
+    var isLegacyLights = !("outputColorSpace" in renderer);
+    var lightMul = isLegacyLights ? 1 / Math.PI : 1;
     function makeColor(hex) {
       var c = new THREE.Color(hex);
       if (isLegacyLights && c.convertSRGBToLinear) c.convertSRGBToLinear();
@@ -616,7 +799,7 @@
     }
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-    if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
+    if ("outputColorSpace" in renderer && THREE.SRGBColorSpace) {
       renderer.outputColorSpace = THREE.SRGBColorSpace;
     } else if (THREE.sRGBEncoding) {
       renderer.outputEncoding = THREE.sRGBEncoding;
@@ -631,9 +814,18 @@
     var geometries = new Set();
     var materials = new Set();
     var textures = new Set();
-    function trackGeo(g) { geometries.add(g); return g; }
-    function trackMat(m) { materials.add(m); return m; }
-    function trackTex(t) { textures.add(t); return t; }
+    function trackGeo(g) {
+      geometries.add(g);
+      return g;
+    }
+    function trackMat(m) {
+      materials.add(m);
+      return m;
+    }
+    function trackTex(t) {
+      textures.add(t);
+      return t;
+    }
 
     /* ---------- Layout Frame State ---------- */
     var frame = {
@@ -649,7 +841,7 @@
       railScreenY: 66,
       railY: -66,
       wordTop: 711,
-      c: new THREE.Vector3(720, -450, 0)
+      c: new THREE.Vector3(720, -450, 0),
     };
 
     function toWorld(sx, sy) {
@@ -660,21 +852,21 @@
       return frame.ty - wy * frame.k;
     }
 
-    var measureCv = document.createElement('canvas');
-    var measureCtx = measureCv.getContext('2d');
+    var measureCv = document.createElement("canvas");
+    var measureCtx = measureCv.getContext("2d");
 
     function layoutWordAndFrame() {
       var vw = stage.clientWidth || window.innerWidth || 1440;
       var vh = stage.clientHeight || window.innerHeight || 900;
       var portrait = vw / vh < 1.05;
       var pack = getDepotPack(lang);
-      var wordText = (pack && pack.word) || 'PROYEK';
-      var isCjkOrAr = lang === 'ar' || lang === 'zh' || lang === 'ja' || lang === 'ko';
+      var wordText = (pack && pack.word) || "PROYEK";
+      var isCjkOrAr = lang === "ar" || lang === "zh" || lang === "ja" || lang === "ko";
 
       frame.vw = vw;
       frame.vh = vh;
       frame.portrait = portrait;
-      stage.classList.toggle('is-portrait', portrait);
+      stage.classList.toggle("is-portrait", portrait);
 
       if (!portrait) {
         frame.k = Math.min(vw / 1440, vh / 900);
@@ -691,9 +883,9 @@
       var baseGap = portrait ? Math.max(26, 30 * frame.n) : 34 * frame.k;
       var refSize = 100;
       var fontStack = '"Archivo X", "Archivo", "Unbounded", "Noto Sans KR", system-ui, sans-serif';
-      measureCtx.font = '900 ' + refSize + 'px ' + fontStack;
+      measureCtx.font = "900 " + refSize + "px " + fontStack;
       try {
-        measureCtx.letterSpacing = isCjkOrAr ? '0.02em' : '-0.035em';
+        measureCtx.letterSpacing = isCjkOrAr ? "0.02em" : "-0.035em";
       } catch (_) {}
 
       var mRef = measureCtx.measureText(wordText);
@@ -701,9 +893,7 @@
       var fs = (refSize * (vw * 1.005)) / wRef;
 
       var aARef = mRef.actualBoundingBoxAscent || refSize * 0.72;
-      var maxCapH = portrait
-        ? Math.min(vw * 0.24, vh * 0.14)
-        : Math.min(180 * frame.k, vh * 0.23);
+      var maxCapH = portrait ? Math.min(vw * 0.24, vh * 0.14) : Math.min(180 * frame.k, vh * 0.23);
       var unclampedCapH = (aARef / refSize) * fs;
       var clamped = false;
       if (unclampedCapH > maxCapH) {
@@ -711,15 +901,15 @@
         clamped = true;
       }
 
-      measureCtx.font = '900 ' + fs.toFixed(2) + 'px ' + fontStack;
+      measureCtx.font = "900 " + fs.toFixed(2) + "px " + fontStack;
       var m = measureCtx.measureText(wordText);
       var fA = m.fontBoundingBoxAscent || fs * 0.85;
-      var fD = m.fontBoundingBoxDescent || fs * 0.20;
+      var fD = m.fontBoundingBoxDescent || fs * 0.2;
       var aA = m.actualBoundingBoxAscent || fs * 0.72;
       var aD = m.actualBoundingBoxDescent || 0;
       var renderedW = m.width;
 
-      var effectiveGap = lang === 'ar' ? Math.max(baseGap, aD + 12 * frame.n) : baseGap;
+      var effectiveGap = lang === "ar" ? Math.max(baseGap, aD + 12 * frame.n) : baseGap;
       var wordB = effectiveGap - ((fs - (fA + fD)) / 2 + fD);
       var wordX = clamped ? (vw - renderedW) / 2 : -vw * 0.004;
       var wordTop = vh - effectiveGap - aA;
@@ -732,7 +922,7 @@
         frame.ty = vh - 900 * frame.k;
       } else {
         frame.tx = vw / 2 - 310 * frame.k;
-        frame.ty = (wordTop + 14 * frame.k) - 1040 * frame.k;
+        frame.ty = wordTop + 14 * frame.k - 1040 * frame.k;
       }
 
       frame.railScreenY = portrait
@@ -741,13 +931,13 @@
       frame.railY = toWorld(0, frame.railScreenY).y;
       frame.c.copy(toWorld(vw / 2, vh / 2));
 
-      stage.style.setProperty('--k', frame.k.toFixed(4) + 'px');
-      stage.style.setProperty('--n', frame.n.toFixed(4) + 'px');
-      stage.style.setProperty('--rail', frame.railScreenY.toFixed(2) + 'px');
-      stage.style.setProperty('--wordFS', fs.toFixed(2) + 'px');
-      stage.style.setProperty('--wordX', wordX.toFixed(2) + 'px');
-      stage.style.setProperty('--wordB', wordB.toFixed(2) + 'px');
-      stage.style.setProperty('--wordH', wordH.toFixed(2) + 'px');
+      stage.style.setProperty("--k", frame.k.toFixed(4) + "px");
+      stage.style.setProperty("--n", frame.n.toFixed(4) + "px");
+      stage.style.setProperty("--rail", frame.railScreenY.toFixed(2) + "px");
+      stage.style.setProperty("--wordFS", fs.toFixed(2) + "px");
+      stage.style.setProperty("--wordX", wordX.toFixed(2) + "px");
+      stage.style.setProperty("--wordB", wordB.toFixed(2) + "px");
+      stage.style.setProperty("--wordH", wordH.toFixed(2) + "px");
     }
 
     /* ---------- Scene, Camera, Tactile Studio Lights, Shadow Catcher ---------- */
@@ -757,7 +947,11 @@
     var ambLight = new THREE.AmbientLight(makeColor(0xffffff), 1.55 * lightMul);
     scene.add(ambLight);
 
-    var hemiLight = new THREE.HemisphereLight(makeColor(0xfffaf3), makeColor(0xc96649), 0.48 * lightMul);
+    var hemiLight = new THREE.HemisphereLight(
+      makeColor(0xfffaf3),
+      makeColor(0xc96649),
+      0.48 * lightMul
+    );
     scene.add(hemiLight);
 
     var keyLight = new THREE.DirectionalLight(makeColor(0xfffaf2), 1.08 * lightMul);
@@ -788,7 +982,7 @@
 
     function getNormalMap(len, rotated) {
       var rep = Math.max(1, Math.round(len / 11));
-      var key = rep + '_' + (rotated ? 1 : 0);
+      var key = rep + "_" + (rotated ? 1 : 0);
       if (normalCache.has(key)) return normalCache.get(key);
       var tex = trackTex(new THREE.CanvasTexture(normalSourceCanvas));
       setLinearTextureSpace(THREE, tex);
@@ -804,58 +998,68 @@
 
     function getCorrugatedMat(hexColor, len, rotated) {
       var rep = Math.max(1, Math.round(len / 11));
-      var key = hexColor + '_' + rep + '_' + (rotated ? 1 : 0);
+      var key = hexColor + "_" + rep + "_" + (rotated ? 1 : 0);
       if (matCache.has(key)) return matCache.get(key);
-      var mat = trackMat(new THREE.MeshStandardMaterial({
-        color: makeColor(hexColor),
-        roughness: 0.54,
-        metalness: 0.06,
-        normalMap: getNormalMap(len, rotated),
-        normalScale: new THREE.Vector2(0.72, 0.72)
-      }));
+      var mat = trackMat(
+        new THREE.MeshStandardMaterial({
+          color: makeColor(hexColor),
+          roughness: 0.54,
+          metalness: 0.06,
+          normalMap: getNormalMap(len, rotated),
+          normalScale: new THREE.Vector2(0.72, 0.72),
+        })
+      );
       matCache.set(key, mat);
       return mat;
     }
 
     function getFrameMat(hexColor) {
-      var key = 'frame_' + hexColor;
+      var key = "frame_" + hexColor;
       if (matCache.has(key)) return matCache.get(key);
       var c = new THREE.Color(hexColor).multiplyScalar(0.86);
       if (isLegacyLights && c.convertSRGBToLinear) c.convertSRGBToLinear();
-      var mat = trackMat(new THREE.MeshStandardMaterial({
-        color: c,
-        roughness: 0.42,
-        metalness: 0.12
-      }));
+      var mat = trackMat(
+        new THREE.MeshStandardMaterial({
+          color: c,
+          roughness: 0.42,
+          metalness: 0.12,
+        })
+      );
       matCache.set(key, mat);
       return mat;
     }
 
     function getCornerMat(hexColor) {
-      var key = 'corner_' + hexColor;
+      var key = "corner_" + hexColor;
       if (matCache.has(key)) return matCache.get(key);
       var c = new THREE.Color(hexColor).multiplyScalar(0.76);
       if (isLegacyLights && c.convertSRGBToLinear) c.convertSRGBToLinear();
-      var mat = trackMat(new THREE.MeshStandardMaterial({
-        color: c,
-        roughness: 0.36,
-        metalness: 0.22
-      }));
+      var mat = trackMat(
+        new THREE.MeshStandardMaterial({
+          color: c,
+          roughness: 0.36,
+          metalness: 0.22,
+        })
+      );
       matCache.set(key, mat);
       return mat;
     }
 
-    var lockRodMat = trackMat(new THREE.MeshStandardMaterial({
-      color: makeColor(COLORS.lockRods),
-      roughness: 0.34,
-      metalness: 0.28
-    }));
+    var lockRodMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: makeColor(COLORS.lockRods),
+        roughness: 0.34,
+        metalness: 0.28,
+      })
+    );
 
-    var lockCamMat = trackMat(new THREE.MeshStandardMaterial({
-      color: makeColor(COLORS.bolts),
-      roughness: 0.4,
-      metalness: 0.32
-    }));
+    var lockCamMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: makeColor(COLORS.bolts),
+        roughness: 0.4,
+        metalness: 0.32,
+      })
+    );
 
     /* ---------- Build the 7 Precision ISO Shipping Containers ---------- */
     var containers = [];
@@ -864,11 +1068,13 @@
 
     function buildContainer(spec) {
       var sz = SIZES[spec.size];
-      var L = sz[0], H = sz[1], D = sz[2];
+      var L = sz[0],
+        H = sz[1],
+        D = sz[2];
       var group = new THREE.Group();
       var initPose = spec.desktop;
       var homePos = new THREE.Vector3(initPose.pos[0], -initPose.pos[1], initPose.pos[2]);
-      var homeEuler = new THREE.Euler(initPose.rot[0], initPose.rot[1], initPose.rot[2], 'XYZ');
+      var homeEuler = new THREE.Euler(initPose.rot[0], initPose.rot[1], initPose.rot[2], "XYZ");
       var homeQuat = new THREE.Quaternion().setFromEuler(homeEuler);
       group.position.copy(homePos);
       group.quaternion.copy(homeQuat);
@@ -900,11 +1106,41 @@
       var innerD = D - 2 * F + 2;
 
       /* Back wall, roof, floor, left wall, right wall */
-      addPart(new THREE.BoxGeometry(innerW, innerH, T), [outL, outL, outL, outL, inL, outL], 0, 0, -D / 2 + T / 2 + 1.5);
-      addPart(new THREE.BoxGeometry(innerW, T, innerD), [outD, outD, outRoof, inRoof, outL, outL], 0, H / 2 - T / 2 - 1.5, 0);
-      addPart(new THREE.BoxGeometry(innerW, T, innerD), [outD, outD, inRoof, outRoof, outL, outL], 0, -H / 2 + T / 2 + 1.5, 0);
-      addPart(new THREE.BoxGeometry(T, innerH, innerD), [inD, outD, outD, outD, outD, outD], -L / 2 + T / 2 + 1.5, 0, 0);
-      addPart(new THREE.BoxGeometry(T, innerH, innerD), [outD, inD, outD, outD, outD, outD], L / 2 - T / 2 - 1.5, 0, 0);
+      addPart(
+        new THREE.BoxGeometry(innerW, innerH, T),
+        [outL, outL, outL, outL, inL, outL],
+        0,
+        0,
+        -D / 2 + T / 2 + 1.5
+      );
+      addPart(
+        new THREE.BoxGeometry(innerW, T, innerD),
+        [outD, outD, outRoof, inRoof, outL, outL],
+        0,
+        H / 2 - T / 2 - 1.5,
+        0
+      );
+      addPart(
+        new THREE.BoxGeometry(innerW, T, innerD),
+        [outD, outD, inRoof, outRoof, outL, outL],
+        0,
+        -H / 2 + T / 2 + 1.5,
+        0
+      );
+      addPart(
+        new THREE.BoxGeometry(T, innerH, innerD),
+        [inD, outD, outD, outD, outD, outD],
+        -L / 2 + T / 2 + 1.5,
+        0,
+        0
+      );
+      addPart(
+        new THREE.BoxGeometry(T, innerH, innerD),
+        [outD, inD, outD, outD, outD, outD],
+        L / 2 - T / 2 - 1.5,
+        0,
+        0
+      );
 
       /* 8 Precision ISO Corner Castings (slightly proud, eliminate all corner coplanar artifacts) */
       var cGeo = trackGeo(new THREE.BoxGeometry(CORNER, CORNER, CORNER));
@@ -945,13 +1181,19 @@
       }
 
       [-1, 1].forEach(function (sx) {
-        [-1, 1].forEach(function (szSign) { addBar(postGeo, sx * fx, 0, szSign * fz); });
+        [-1, 1].forEach(function (szSign) {
+          addBar(postGeo, sx * fx, 0, szSign * fz);
+        });
       });
       [-1, 1].forEach(function (sy) {
-        [-1, 1].forEach(function (szSign) { addBar(longGeo, 0, sy * fy, szSign * fz); });
+        [-1, 1].forEach(function (szSign) {
+          addBar(longGeo, 0, sy * fy, szSign * fz);
+        });
       });
       [-1, 1].forEach(function (sx) {
-        [-1, 1].forEach(function (sy) { addBar(shortGeo, sx * fx, sy * fy, 0); });
+        [-1, 1].forEach(function (sy) {
+          addBar(shortGeo, sx * fx, sy * fy, 0);
+        });
       });
 
       /* Double front doors pivoted on outer front corners with realistic center seam */
@@ -1017,19 +1259,24 @@
         THREE,
         spec,
         (cCopy && cCopy.label) || [spec.id.toUpperCase()],
-        lang === 'ar' && !spec.projectId
+        lang === "ar" && !spec.projectId
       );
-      var labelMat = trackMat(new THREE.MeshStandardMaterial({
-        map: labelTex,
-        transparent: true,
-        opacity: 1,
-        roughness: 0.62,
-        metalness: 0,
-        depthWrite: false,
-        polygonOffset: true,
-        polygonOffsetFactor: -2
-      }));
-      var labelMesh = new THREE.Mesh(trackGeo(new THREE.PlaneGeometry(L - 2 * F, H - 2 * F)), labelMat);
+      var labelMat = trackMat(
+        new THREE.MeshStandardMaterial({
+          map: labelTex,
+          transparent: true,
+          opacity: 1,
+          roughness: 0.62,
+          metalness: 0,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+        })
+      );
+      var labelMesh = new THREE.Mesh(
+        trackGeo(new THREE.PlaneGeometry(L - 2 * F, H - 2 * F)),
+        labelMat
+      );
       labelMesh.position.set(0, 0, D / 2 - F / 2 + T / 2 + 1.8);
       labelMesh.userData.containerId = spec.id;
       group.add(labelMesh);
@@ -1067,13 +1314,13 @@
             THREE,
             spec,
             (curCopy && curCopy.label) || [spec.id.toUpperCase()],
-            lang === 'ar' && !spec.projectId
+            lang === "ar" && !spec.projectId
           );
           if (item.labelTex) item.labelTex.dispose();
           item.labelTex = nextTex;
           labelMat.map = nextTex;
           labelMat.needsUpdate = true;
-        }
+        },
       };
       containers.push(item);
       containerMap.set(spec.id, item);
@@ -1087,7 +1334,7 @@
     }
 
     function applyYardLayout(snapContainers) {
-      var key = frame.portrait ? 'portrait' : 'desktop';
+      var key = frame.portrait ? "portrait" : "desktop";
       var activeDropMap = {};
       if (openItem) {
         var rules = getActiveDrops(openItem.spec.id);
@@ -1100,7 +1347,7 @@
         var item = containers[i];
         var p = item.spec[key];
         item.homePos.set(p.pos[0], -p.pos[1], p.pos[2]);
-        item.homeEuler.set(p.rot[0], p.rot[1], p.rot[2], 'XYZ');
+        item.homeEuler.set(p.rot[0], p.rot[1], p.rot[2], "XYZ");
         item.homeQuat.setFromEuler(item.homeEuler);
 
         var dy = activeDropMap[item.spec.id] || 0;
@@ -1118,21 +1365,27 @@
     }
 
     /* ---------- Build Overhead Gantry Crane ---------- */
-    var steelMat = trackMat(new THREE.MeshStandardMaterial({
-      color: makeColor(COLORS.steel),
-      roughness: 0.35,
-      metalness: 0.14
-    }));
-    var boltMat = trackMat(new THREE.MeshStandardMaterial({
-      color: makeColor(COLORS.bolts),
-      roughness: 0.48,
-      metalness: 0.24
-    }));
-    var cableMat = trackMat(new THREE.MeshStandardMaterial({
-      color: makeColor(COLORS.cable),
-      roughness: 0.42,
-      metalness: 0.18
-    }));
+    var steelMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: makeColor(COLORS.steel),
+        roughness: 0.35,
+        metalness: 0.14,
+      })
+    );
+    var boltMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: makeColor(COLORS.bolts),
+        roughness: 0.48,
+        metalness: 0.24,
+      })
+    );
+    var cableMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: makeColor(COLORS.cable),
+        roughness: 0.42,
+        metalness: 0.18,
+      })
+    );
 
     var railMesh = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(6, 6, 9000, 16)), steelMat);
     railMesh.rotation.z = Math.PI / 2;
@@ -1160,7 +1413,10 @@
     }
 
     var trolley = new THREE.Group();
-    var trolleyBody = new THREE.Mesh(trackGeo(createRoundedBoxGeometry(THREE, 60, 28, 28, 4, 6)), steelMat);
+    var trolleyBody = new THREE.Mesh(
+      trackGeo(createRoundedBoxGeometry(THREE, 60, 28, 28, 4, 6)),
+      steelMat
+    );
     trolleyBody.castShadow = false;
     trolleyBody.receiveShadow = true;
     trolley.add(trolleyBody);
@@ -1173,7 +1429,10 @@
       trolley.add(wh);
     });
 
-    var hubMesh = new THREE.Mesh(trackGeo(createRoundedBoxGeometry(THREE, 20, 15, 18, 3, 4)), steelMat);
+    var hubMesh = new THREE.Mesh(
+      trackGeo(createRoundedBoxGeometry(THREE, 20, 15, 18, 3, 4)),
+      steelMat
+    );
     hubMesh.position.set(0, -21, 0);
     trolley.add(hubMesh);
     scene.add(trolley);
@@ -1182,7 +1441,10 @@
     scene.add(cableMesh);
 
     var spreader = new THREE.Group();
-    var spPlate = new THREE.Mesh(trackGeo(createRoundedBoxGeometry(THREE, 56, 20, 28, 3, 5)), steelMat);
+    var spPlate = new THREE.Mesh(
+      trackGeo(createRoundedBoxGeometry(THREE, 56, 20, 28, 3, 5)),
+      steelMat
+    );
     spPlate.position.set(0, 1, 0);
     spPlate.castShadow = false;
     spPlate.receiveShadow = true;
@@ -1274,20 +1536,23 @@
       var pScale = Math.min(pFitW / item.L, pFitH / item.H);
       var pActualH = item.H * pScale;
       var pTopScreen = frame.railScreenY + Math.max(26, 32 * frame.n);
-      var pCenterScreenY = pTopScreen + (pActualH * frame.k) * 0.5;
+      var pCenterScreenY = pTopScreen + pActualH * frame.k * 0.5;
 
       return {
         pos: new THREE.Vector3(frame.c.x, toWorld(0, pCenterScreenY).y, hangZ),
-        scale: pScale
+        scale: pScale,
       };
     }
 
     /* ---------- Camera & Light Update ---------- */
     function updateCameraAndLights() {
-      var vw = frame.vw, vh = frame.vh, k = frame.k, c = frame.c;
+      var vw = frame.vw,
+        vh = frame.vh,
+        k = frame.k,
+        c = frame.c;
       renderer.setSize(vw, vh, false);
 
-      var D = (vh / k / 2) / Math.tan((10 * Math.PI) / 180);
+      var D = vh / k / 2 / Math.tan((10 * Math.PI) / 180);
       var pitch = (7.5 * Math.PI) / 180;
       camera.aspect = vw / vh;
       camera.near = Math.max(10, 0.3 * D);
@@ -1343,7 +1608,7 @@
           dur: durSec * 1000,
           ease: easeFn || EASE.linear,
           onUpdate: onUpdate,
-          resolve: resolve
+          resolve: resolve,
         });
         requestRender();
       });
@@ -1358,8 +1623,8 @@
     function projectToScreen(v) {
       var p = v.clone().project(camera);
       return {
-        x: ((p.x + 1) * 0.5) * frame.vw,
-        y: ((-p.y + 1) * 0.5) * frame.vh
+        x: (p.x + 1) * 0.5 * frame.vw,
+        y: (-p.y + 1) * 0.5 * frame.vh,
       };
     }
 
@@ -1370,22 +1635,27 @@
         /* Docked spacious mobile/tablet showcase sheet cleanly below hoisted 3D container */
         var hhOuter = (item.H / 2) * hang.scale;
         var frontZ = (item.D / 2) * hang.scale;
-        var botPt = projectToScreen(new THREE.Vector3(hang.pos.x, hang.pos.y - hhOuter, hang.pos.z + frontZ));
-        var sheetTop = Math.max(frame.railScreenY + 118, Math.min(frame.vh * 0.34, Math.round(botPt.y + 14)));
+        var botPt = projectToScreen(
+          new THREE.Vector3(hang.pos.x, hang.pos.y - hhOuter, hang.pos.z + frontZ)
+        );
+        var sheetTop = Math.max(
+          frame.railScreenY + 118,
+          Math.min(frame.vh * 0.34, Math.round(botPt.y + 14))
+        );
 
-        cardEl.classList.add('dp-sheet');
-        cardEl.classList.remove('dp-compact', 'narrow', 'tight');
-        cardEl.style.left = '';
-        cardEl.style.top = '';
-        cardEl.style.width = '';
-        cardEl.style.height = '';
-        cardEl.style.setProperty('--c', '1px');
-        stage.style.setProperty('--sheet-top', sheetTop + 'px');
+        cardEl.classList.add("dp-sheet");
+        cardEl.classList.remove("dp-compact", "narrow", "tight");
+        cardEl.style.left = "";
+        cardEl.style.top = "";
+        cardEl.style.width = "";
+        cardEl.style.height = "";
+        cardEl.style.setProperty("--c", "1px");
+        stage.style.setProperty("--sheet-top", sheetTop + "px");
         return;
       }
 
       /* Desktop / Landscape: precisely nested inside 3D container back-wall cavity */
-      cardEl.classList.remove('dp-sheet');
+      cardEl.classList.remove("dp-sheet");
       var inset = F + 4;
       var hw = (item.L / 2 - inset) * hang.scale;
       var hh = (item.H / 2 - inset) * hang.scale;
@@ -1395,10 +1665,13 @@
         new THREE.Vector3(hang.pos.x - hw, hang.pos.y - hh, hang.pos.z + backZ),
         new THREE.Vector3(hang.pos.x + hw, hang.pos.y - hh, hang.pos.z + backZ),
         new THREE.Vector3(hang.pos.x - hw, hang.pos.y + hh, hang.pos.z + backZ),
-        new THREE.Vector3(hang.pos.x + hw, hang.pos.y + hh, hang.pos.z + backZ)
+        new THREE.Vector3(hang.pos.x + hw, hang.pos.y + hh, hang.pos.z + backZ),
       ];
 
-      var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      var minX = Infinity,
+        maxX = -Infinity,
+        minY = Infinity,
+        maxY = -Infinity;
       for (var i = 0; i < corners.length; i++) {
         var sp = projectToScreen(corners[i]);
         if (sp.x < minX) minX = sp.x;
@@ -1411,23 +1684,23 @@
       var h = Math.max(120, maxY - minY);
       var cUnit = Math.max(0.68, Math.min(1.06, Math.min(h / 206, w / 520)));
 
-      cardEl.style.left = minX.toFixed(1) + 'px';
-      cardEl.style.top = minY.toFixed(1) + 'px';
-      cardEl.style.width = w.toFixed(1) + 'px';
-      cardEl.style.height = h.toFixed(1) + 'px';
-      cardEl.style.setProperty('--c', cUnit.toFixed(4) + 'px');
-      cardEl.classList.toggle('dp-compact', w < 415 || h < 168);
-      cardEl.classList.remove('narrow', 'tight');
+      cardEl.style.left = minX.toFixed(1) + "px";
+      cardEl.style.top = minY.toFixed(1) + "px";
+      cardEl.style.width = w.toFixed(1) + "px";
+      cardEl.style.height = h.toFixed(1) + "px";
+      cardEl.style.setProperty("--c", cUnit.toFixed(4) + "px");
+      cardEl.classList.toggle("dp-compact", w < 415 || h < 168);
+      cardEl.classList.remove("narrow", "tight");
     }
 
     function checkPillOverlap(item) {
       if (!pillEl) return;
       if (!item) {
-        pillEl.classList.remove('is-dim');
+        pillEl.classList.remove("is-dim");
         return;
       }
       if (frame.portrait) {
-        pillEl.classList.add('is-dim');
+        pillEl.classList.add("is-dim");
         return;
       }
       var hang = getHangPose(item);
@@ -1441,10 +1714,13 @@
         new THREE.Vector3(hang.pos.x - hw, hang.pos.y - hh, hang.pos.z + frontZ),
         new THREE.Vector3(hang.pos.x + hw, hang.pos.y - hh, hang.pos.z + frontZ),
         new THREE.Vector3(hang.pos.x - hw, hang.pos.y + hh, hang.pos.z + frontZ),
-        new THREE.Vector3(hang.pos.x + hw, hang.pos.y + hh, hang.pos.z + frontZ)
+        new THREE.Vector3(hang.pos.x + hw, hang.pos.y + hh, hang.pos.z + frontZ),
       ];
 
-      var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      var minX = Infinity,
+        maxX = -Infinity,
+        minY = Infinity,
+        maxY = -Infinity;
       for (var i = 0; i < pts.length; i++) {
         var sp = projectToScreen(pts[i]);
         if (sp.x < minX) minX = sp.x;
@@ -1454,8 +1730,13 @@
       }
 
       var pr = pillEl.getBoundingClientRect();
-      var overlaps = !(maxX < pr.left - 8 || minX > pr.right + 8 || maxY < pr.top - 8 || minY > pr.bottom + 8);
-      pillEl.classList.toggle('is-dim', overlaps);
+      var overlaps = !(
+        maxX < pr.left - 8 ||
+        minX > pr.right + 8 ||
+        maxY < pr.top - 8 ||
+        minY > pr.bottom + 8
+      );
+      pillEl.classList.toggle("is-dim", overlaps);
     }
 
     function fillCard(item) {
@@ -1467,105 +1748,162 @@
       var navIdx = NAV_ORDER.indexOf(item.spec.id);
       var prevId = NAV_ORDER[(navIdx + NAV_ORDER.length - 1) % NAV_ORDER.length];
       var nextId = NAV_ORDER[(navIdx + 1) % NAV_ORDER.length];
-      var prevLbl = (pack.containers[prevId] && pack.containers[prevId].label.join(' ')) || prevId;
-      var nextLbl = (pack.containers[nextId] && pack.containers[nextId].label.join(' ')) || nextId;
-      var closeLbl = (cPack && cPack.closeBtn) || 'Tutup';
+      var prevLbl = (pack.containers[prevId] && pack.containers[prevId].label.join(" ")) || prevId;
+      var nextLbl = (pack.containers[nextId] && pack.containers[nextId].label.join(" ")) || nextId;
+      var closeLbl = (cPack && cPack.closeBtn) || "Tutup";
 
-      var paintHex = HEX_MAP[item.spec.color] || '#1D2C59';
-      var accentHex = item.spec.accent || '#F0653F';
-      cardEl.style.setProperty('--ct', paintHex);
-      cardEl.style.setProperty('--ca', accentHex);
+      var paintHex = HEX_MAP[item.spec.color] || "#1D2C59";
+      var accentHex = item.spec.accent || "#F0653F";
+      cardEl.style.setProperty("--ct", paintHex);
+      cardEl.style.setProperty("--ca", accentHex);
 
       var proj = item.spec.projectId ? getProjectData(item.spec.projectId) : null;
-      var isProcess = item.spec.id === 'process';
+      var isProcess = item.spec.id === "process";
 
-      var chipsHtml = (!isProcess && copy.chips && copy.chips.length)
-        ? '<div class="dp-chips">' + copy.chips.map(function (c) { return '<span>' + escHtml(c) + '</span>'; }).join('') + '</div>'
-        : '';
+      var chipsHtml =
+        !isProcess && copy.chips && copy.chips.length
+          ? '<div class="dp-chips">' +
+            copy.chips
+              .map(function (c) {
+                return "<span>" + escHtml(c) + "</span>";
+              })
+              .join("") +
+            "</div>"
+          : "";
 
-      var actsHtml = '';
+      var actsHtml = "";
       if (item.spec.projectId) {
-        var demoUrl = (window.ZK_PROJECTS && window.ZK_PROJECTS.URL && window.ZK_PROJECTS.URL[item.spec.projectId]) || '#';
+        var demoUrl =
+          (window.ZK_PROJECTS &&
+            window.ZK_PROJECTS.URL &&
+            window.ZK_PROJECTS.URL[item.spec.projectId]) ||
+          "#";
         actsHtml =
           '<div class="dp-acts">' +
-            '<button type="button" class="dp-btn-pri" data-dp-case="' + escHtml(item.spec.projectId) + '">' + escHtml(pack.caseBtn) + '</button>' +
-            '<a class="dp-btn-sec" href="' + escHtml(demoUrl) + '" target="_blank" rel="noopener noreferrer">' + escHtml(pack.demoBtn) + '</a>' +
-          '</div>';
+          '<button type="button" class="dp-btn-pri" data-dp-case="' +
+          escHtml(item.spec.projectId) +
+          '">' +
+          escHtml(pack.caseBtn) +
+          "</button>" +
+          '<a class="dp-btn-sec" href="' +
+          escHtml(demoUrl) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          escHtml(pack.demoBtn) +
+          "</a>" +
+          "</div>";
       } else if (item.spec.github) {
         actsHtml =
           '<div class="dp-acts">' +
-            '<a class="dp-btn-pri" href="' + escHtml(item.spec.github) + '" target="_blank" rel="noopener noreferrer">' + escHtml(pack.githubBtn) + '</a>' +
-          '</div>';
+          '<a class="dp-btn-pri" href="' +
+          escHtml(item.spec.github) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          escHtml(pack.githubBtn) +
+          "</a>" +
+          "</div>";
       } else if (item.spec.contact) {
         actsHtml =
           '<div class="dp-acts">' +
-            '<button type="button" class="dp-btn-pri" data-dp-contact="1">' + escHtml(pack.contactBtn) + '</button>' +
-          '</div>';
+          '<button type="button" class="dp-btn-pri" data-dp-contact="1">' +
+          escHtml(pack.contactBtn) +
+          "</button>" +
+          "</div>";
       }
 
       /* Rich Visual Right/Top Preview Panel inside Container Interior */
-      var visHtml = '';
+      var visHtml = "";
       if (proj) {
         visHtml =
           '<div class="dp-card-vis">' +
-            '<button type="button" class="dp-mini-shot" data-dp-case="' + escHtml(proj.id) + '" aria-label="' + escHtml(pack.caseBtn + ' ' + proj.name) + '">' +
-              '<div class="dp-mini-bar" aria-hidden="true">' +
-                '<span class="dp-mini-dots"><i></i><i></i><i></i></span>' +
-                '<span class="dp-mini-dom">' + escHtml(proj.domain) + '</span>' +
-              '</div>' +
-              '<div class="dp-mini-frame">' +
-                '<img src="' + escHtml(proj.img) + '" alt="' + escHtml(proj.name) + '" decoding="async">' +
-                '<span class="dp-mini-zoom" aria-hidden="true">&#8599;</span>' +
-              '</div>' +
-            '</button>' +
-          '</div>';
+          '<button type="button" class="dp-mini-shot" data-dp-case="' +
+          escHtml(proj.id) +
+          '" aria-label="' +
+          escHtml(pack.caseBtn + " " + proj.name) +
+          '">' +
+          '<div class="dp-mini-bar" aria-hidden="true">' +
+          '<span class="dp-mini-dots"><i></i><i></i><i></i></span>' +
+          '<span class="dp-mini-dom">' +
+          escHtml(proj.domain) +
+          "</span>" +
+          "</div>" +
+          '<div class="dp-mini-frame">' +
+          '<img src="' +
+          escHtml(proj.img) +
+          '" alt="' +
+          escHtml(proj.name) +
+          '" decoding="async">' +
+          '<span class="dp-mini-zoom" aria-hidden="true">&#8599;</span>' +
+          "</div>" +
+          "</button>" +
+          "</div>";
       } else if (isProcess && copy.chips && copy.chips.length) {
         visHtml =
           '<div class="dp-card-vis">' +
-            '<ol class="dp-steps">' +
-              copy.chips.map(function (step, idx) {
-                return '<li><b>0' + (idx + 1) + '</b><span>' + escHtml(step) + '</span></li>';
-              }).join('') +
-            '</ol>' +
-          '</div>';
+          '<ol class="dp-steps">' +
+          copy.chips
+            .map(function (step, idx) {
+              return "<li><b>0" + (idx + 1) + "</b><span>" + escHtml(step) + "</span></li>";
+            })
+            .join("") +
+          "</ol>" +
+          "</div>";
       } else if (item.spec.github) {
         visHtml =
           '<div class="dp-card-vis">' +
-            '<a class="dp-spec-tile" href="' + escHtml(item.spec.github) + '" target="_blank" rel="noopener noreferrer">' +
-              '<span class="dp-spec-k">GITHUB // 2026</span>' +
-              '<strong class="dp-spec-v">@trynvexa</strong>' +
-              '<span class="dp-spec-sub">PKL DigitalCODE · Medan</span>' +
-            '</a>' +
-          '</div>';
+          '<a class="dp-spec-tile" href="' +
+          escHtml(item.spec.github) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="dp-spec-k">GITHUB // 2026</span>' +
+          '<strong class="dp-spec-v">@trynvexa</strong>' +
+          '<span class="dp-spec-sub">PKL DigitalCODE · Medan</span>' +
+          "</a>" +
+          "</div>";
       } else if (item.spec.contact) {
         visHtml =
           '<div class="dp-card-vis">' +
-            '<button type="button" class="dp-spec-tile" data-dp-contact="1">' +
-              '<span class="dp-spec-k">MEDAN · WIB</span>' +
-              '<strong class="dp-spec-v">2026</strong>' +
-              '<span class="dp-spec-sub">WhatsApp &amp; Email &rarr;</span>' +
-            '</button>' +
-          '</div>';
+          '<button type="button" class="dp-spec-tile" data-dp-contact="1">' +
+          '<span class="dp-spec-k">MEDAN · WIB</span>' +
+          '<strong class="dp-spec-v">2026</strong>' +
+          '<span class="dp-spec-sub">WhatsApp &amp; Email &rarr;</span>' +
+          "</button>" +
+          "</div>";
       }
 
       cardEl.innerHTML =
         '<div class="dp-card-bar">' +
-          '<div class="dp-eb"><i class="dp-eb-dot" aria-hidden="true"></i><span>' + escHtml(copy.eb) + '</span></div>' +
-          '<div class="dp-card-ctrls">' +
-            '<button type="button" class="dp-card-ico" data-dp-pick="' + escHtml(prevId) + '" aria-label="' + escHtml(pack.openSr + ' ' + prevLbl) + '">&#8249;</button>' +
-            '<button type="button" class="dp-card-ico" data-dp-pick="' + escHtml(nextId) + '" aria-label="' + escHtml(pack.openSr + ' ' + nextLbl) + '">&#8250;</button>' +
-            '<button type="button" class="dp-card-ico dp-card-x" data-dp-close-card="1" aria-label="' + escHtml(closeLbl) + '">&times;</button>' +
-          '</div>' +
-        '</div>' +
+        '<div class="dp-eb"><i class="dp-eb-dot" aria-hidden="true"></i><span>' +
+        escHtml(copy.eb) +
+        "</span></div>" +
+        '<div class="dp-card-ctrls">' +
+        '<button type="button" class="dp-card-ico" data-dp-pick="' +
+        escHtml(prevId) +
+        '" aria-label="' +
+        escHtml(pack.openSr + " " + prevLbl) +
+        '">&#8249;</button>' +
+        '<button type="button" class="dp-card-ico" data-dp-pick="' +
+        escHtml(nextId) +
+        '" aria-label="' +
+        escHtml(pack.openSr + " " + nextLbl) +
+        '">&#8250;</button>' +
+        '<button type="button" class="dp-card-ico dp-card-x" data-dp-close-card="1" aria-label="' +
+        escHtml(closeLbl) +
+        '">&times;</button>' +
+        "</div>" +
+        "</div>" +
         '<div class="dp-card-grid">' +
-          '<div class="dp-card-main">' +
-            '<h2>' + escHtml(copy.titleBefore) + '<em>' + escHtml(copy.titleAccent) + '</em></h2>' +
-            '<p class="dp-desc">' + escHtml(copy.body) + '</p>' +
-            chipsHtml +
-            actsHtml +
-          '</div>' +
-          visHtml +
-        '</div>';
+        '<div class="dp-card-main">' +
+        "<h2>" +
+        escHtml(copy.titleBefore) +
+        "<em>" +
+        escHtml(copy.titleAccent) +
+        "</em></h2>" +
+        '<p class="dp-desc">' +
+        escHtml(copy.body) +
+        "</p>" +
+        chipsHtml +
+        actsHtml +
+        "</div>" +
+        visHtml +
+        "</div>";
     }
 
     /* ---------- Supporting-Container Gravity Drops & Restores ---------- */
@@ -1590,7 +1928,7 @@
             return;
           }
 
-          tween(0.30, EASE.inQuad, function (a) {
+          tween(0.3, EASE.inQuad, function (a) {
             sub.group.position.lerpVectors(startPos, endPos, a);
           }).then(function () {
             if (disposed) return;
@@ -1674,78 +2012,82 @@
           trolleyX = startTrolleyX + (attach.x - startTrolleyX) * a;
           spreaderPos.set(trolleyX, startSpreader.y + (restY - startSpreader.y) * a, 6);
           syncCraneMeshes();
-        }).then(function () {
-          if (disposed) return;
-          /* 2. Spreader lowers onto container roof */
-          var lowerStart = spreaderPos.clone();
-          var grabPos = new THREE.Vector3(attach.x, attach.y + SPREADER_H / 2, attach.z);
-          return tween(0.24, EASE.outQuad, function (a) {
-            spreaderPos.lerpVectors(lowerStart, grabPos, a);
-            syncCraneMeshes();
-          });
-        }).then(function () {
-          if (disposed) return;
-          return wait(0.05);
-        }).then(function () {
-          if (disposed) return;
-          /* 3. Hoist smoothly + trigger vertical gravity drops */
-          item.setShadows(false);
-          var hoistStartPos = item.group.position.clone();
-          var hoistStartQuat = item.group.quaternion.clone();
-          var identityQuat = new THREE.Quaternion();
-          var hang = getHangPose(item);
-
-          triggerSupportDrops(id);
-
-          return tween(0.38, EASE.outQuad, function (a) {
-            item.group.position.lerpVectors(hoistStartPos, hang.pos, a);
-            item.group.quaternion.slerpQuaternions(hoistStartQuat, identityQuat, a);
-            var sc = 1 + (hang.scale - 1) * a;
-            item.group.scale.setScalar(sc);
-
-            var curAttach = getAttachWorld(item);
-            trolleyX = curAttach.x;
-            spreaderPos.set(curAttach.x, curAttach.y + SPREADER_H / 2, curAttach.z);
-            syncCraneMeshes();
-          });
-        }).then(function () {
-          if (disposed) return;
-          /* 4. Gentle settling sway */
-          openItem = item;
-          checkPillOverlap(item);
-
-          tween(0.55, EASE.linear, function (t) {
-            if (openItem === item) {
-              item.group.rotation.z = 0.022 * Math.sin(3 * Math.PI * t) * (1 - t);
-            }
-          }).then(function () {
-            if (!disposed && openItem === item) item.group.rotation.z = 0;
-          });
-
-          /* 5. Fill & show interior card */
-          fillCard(item);
-          positionCardFor(item);
-          if (reducedMotion) {
-            cardEl.classList.add('on');
-            if (frame.portrait) scrimEl.classList.add('on');
-          } else {
-            wait(0.08).then(function () {
-              if (disposed || openItem !== item) return;
-              positionCardFor(item);
-              cardEl.classList.add('on');
-              if (frame.portrait) scrimEl.classList.add('on');
+        })
+          .then(function () {
+            if (disposed) return;
+            /* 2. Spreader lowers onto container roof */
+            var lowerStart = spreaderPos.clone();
+            var grabPos = new THREE.Vector3(attach.x, attach.y + SPREADER_H / 2, attach.z);
+            return tween(0.24, EASE.outQuad, function (a) {
+              spreaderPos.lerpVectors(lowerStart, grabPos, a);
+              syncCraneMeshes();
             });
-          }
+          })
+          .then(function () {
+            if (disposed) return;
+            return wait(0.05);
+          })
+          .then(function () {
+            if (disposed) return;
+            /* 3. Hoist smoothly + trigger vertical gravity drops */
+            item.setShadows(false);
+            var hoistStartPos = item.group.position.clone();
+            var hoistStartQuat = item.group.quaternion.clone();
+            var identityQuat = new THREE.Quaternion();
+            var hang = getHangPose(item);
 
-          /* 6. Double front doors swing open */
-          var theta = (getDoorAngleDeg() * Math.PI) / 180;
-          return tween(0.34, EASE.outCubic, function (a) {
-            item.leftPivot.rotation.y = -theta * a;
-            item.rightPivot.rotation.y = theta * a;
-            item.labelMat.opacity = Math.max(0, 1 - 7 * a);
-            item.labelMesh.visible = item.labelMat.opacity > 0.01;
+            triggerSupportDrops(id);
+
+            return tween(0.38, EASE.outQuad, function (a) {
+              item.group.position.lerpVectors(hoistStartPos, hang.pos, a);
+              item.group.quaternion.slerpQuaternions(hoistStartQuat, identityQuat, a);
+              var sc = 1 + (hang.scale - 1) * a;
+              item.group.scale.setScalar(sc);
+
+              var curAttach = getAttachWorld(item);
+              trolleyX = curAttach.x;
+              spreaderPos.set(curAttach.x, curAttach.y + SPREADER_H / 2, curAttach.z);
+              syncCraneMeshes();
+            });
+          })
+          .then(function () {
+            if (disposed) return;
+            /* 4. Gentle settling sway */
+            openItem = item;
+            checkPillOverlap(item);
+
+            tween(0.55, EASE.linear, function (t) {
+              if (openItem === item) {
+                item.group.rotation.z = 0.022 * Math.sin(3 * Math.PI * t) * (1 - t);
+              }
+            }).then(function () {
+              if (!disposed && openItem === item) item.group.rotation.z = 0;
+            });
+
+            /* 5. Fill & show interior card */
+            fillCard(item);
+            positionCardFor(item);
+            if (reducedMotion) {
+              cardEl.classList.add("on");
+              if (frame.portrait) scrimEl.classList.add("on");
+            } else {
+              wait(0.08).then(function () {
+                if (disposed || openItem !== item) return;
+                positionCardFor(item);
+                cardEl.classList.add("on");
+                if (frame.portrait) scrimEl.classList.add("on");
+              });
+            }
+
+            /* 6. Double front doors swing open */
+            var theta = (getDoorAngleDeg() * Math.PI) / 180;
+            return tween(0.34, EASE.outCubic, function (a) {
+              item.leftPivot.rotation.y = -theta * a;
+              item.rightPivot.rotation.y = theta * a;
+              item.labelMat.opacity = Math.max(0, 1 - 7 * a);
+              item.labelMesh.visible = item.labelMat.opacity > 0.01;
+            });
           });
-        });
       });
     }
 
@@ -1754,8 +2096,8 @@
       var item = openItem;
       item.group.rotation.z = 0;
 
-      cardEl.classList.remove('on');
-      scrimEl.classList.remove('on');
+      cardEl.classList.remove("on");
+      scrimEl.classList.remove("on");
       var startLeft = item.leftPivot.rotation.y;
       var startRight = item.rightPivot.rotation.y;
       item.labelMesh.visible = true;
@@ -1764,58 +2106,62 @@
         item.leftPivot.rotation.y = startLeft * (1 - a);
         item.rightPivot.rotation.y = startRight * (1 - a);
         item.labelMat.opacity = Math.min(1, a * 1.4);
-      }).then(function () {
-        if (disposed) return;
-        item.leftPivot.rotation.y = 0;
-        item.rightPivot.rotation.y = 0;
-        item.labelMat.opacity = 1;
-        checkPillOverlap(null);
-        return wait(0.03);
-      }).then(function () {
-        if (disposed) return;
-        var lowerStartPos = item.group.position.clone();
-        var lowerStartQuat = item.group.quaternion.clone();
-        var lowerStartScale = item.group.scale.x;
-
-        triggerSupportRestore(item.spec.id);
-
-        return tween(0.30, EASE.inOutQuad, function (a) {
-          item.group.position.lerpVectors(lowerStartPos, item.homePos, a);
-          item.group.quaternion.slerpQuaternions(lowerStartQuat, item.homeQuat, a);
-          var sc = lowerStartScale + (1 - lowerStartScale) * a;
-          item.group.scale.setScalar(sc);
-
-          var curAttach = getAttachWorld(item);
-          trolleyX = curAttach.x;
-          spreaderPos.set(curAttach.x, curAttach.y + SPREADER_H / 2, curAttach.z);
-          syncCraneMeshes();
-        });
-      }).then(function () {
-        if (disposed) return;
-        item.setShadows(true);
-        item.restPos.copy(item.homePos);
-        openItem = null;
-
-        return tween(0.15, EASE.linear, function (t) {
-          item.group.position.y = item.homePos.y + Math.sin(Math.PI * t) * (1 - t) * 4.5;
-        }).then(function () {
+      })
+        .then(function () {
           if (disposed) return;
-          item.group.position.copy(item.homePos);
-          item.group.quaternion.copy(item.homeQuat);
-          item.group.scale.setScalar(1);
+          item.leftPivot.rotation.y = 0;
+          item.rightPivot.rotation.y = 0;
+          item.labelMat.opacity = 1;
+          checkPillOverlap(null);
+          return wait(0.03);
+        })
+        .then(function () {
+          if (disposed) return;
+          var lowerStartPos = item.group.position.clone();
+          var lowerStartQuat = item.group.quaternion.clone();
+          var lowerStartScale = item.group.scale.x;
+
+          triggerSupportRestore(item.spec.id);
+
+          return tween(0.3, EASE.inOutQuad, function (a) {
+            item.group.position.lerpVectors(lowerStartPos, item.homePos, a);
+            item.group.quaternion.slerpQuaternions(lowerStartQuat, item.homeQuat, a);
+            var sc = lowerStartScale + (1 - lowerStartScale) * a;
+            item.group.scale.setScalar(sc);
+
+            var curAttach = getAttachWorld(item);
+            trolleyX = curAttach.x;
+            spreaderPos.set(curAttach.x, curAttach.y + SPREADER_H / 2, curAttach.z);
+            syncCraneMeshes();
+          });
+        })
+        .then(function () {
+          if (disposed) return;
+          item.setShadows(true);
+          item.restPos.copy(item.homePos);
+          openItem = null;
+
+          return tween(0.15, EASE.linear, function (t) {
+            item.group.position.y = item.homePos.y + Math.sin(Math.PI * t) * (1 - t) * 4.5;
+          }).then(function () {
+            if (disposed) return;
+            item.group.position.copy(item.homePos);
+            item.group.quaternion.copy(item.homeQuat);
+            item.group.scale.setScalar(1);
+          });
+        })
+        .then(function () {
+          if (disposed || !retractAfter) return;
+          var retStart = spreaderPos.clone();
+          var startTX = trolleyX;
+          return tween(0.24, EASE.outQuad, function (a) {
+            var targetX = frame.c.x;
+            var targetY = restSpreaderY();
+            trolleyX = startTX + (targetX - startTX) * a;
+            spreaderPos.set(trolleyX, retStart.y + (targetY - retStart.y) * a, 6);
+            syncCraneMeshes();
+          });
         });
-      }).then(function () {
-        if (disposed || !retractAfter) return;
-        var retStart = spreaderPos.clone();
-        var startTX = trolleyX;
-        return tween(0.24, EASE.outQuad, function (a) {
-          var targetX = frame.c.x;
-          var targetY = restSpreaderY();
-          trolleyX = startTX + (targetX - startTX) * a;
-          spreaderPos.set(trolleyX, retStart.y + (targetY - retStart.y) * a, 6);
-          syncCraneMeshes();
-        });
-      });
     }
 
     function runAction(targetId) {
@@ -1823,14 +2169,14 @@
       busy = true;
 
       var job;
-      if (targetId === '__close__') {
+      if (targetId === "__close__") {
         job = openItem ? closeOpen(true) : Promise.resolve();
       } else if (openItem && openItem.spec.id === targetId) {
         job = closeOpen(true);
       } else if (openItem) {
         job = closeOpen(false).then(function () {
           if (disposed) return;
-          if (queuedId === '__close__') {
+          if (queuedId === "__close__") {
             queuedId = null;
             var retStart = spreaderPos.clone();
             var startTX = trolleyX;
@@ -1851,23 +2197,26 @@
         job = pickUp(targetId);
       }
 
-      job.then(function () {
-        busy = false;
-        if (!disposed && !openItem) {
-          applyYardLayout(true);
-          trolleyX = frame.c.x;
-          spreaderPos.set(trolleyX, restSpreaderY(), 6);
-          syncCraneMeshes();
-          requestRender();
+      job.then(
+        function () {
+          busy = false;
+          if (!disposed && !openItem) {
+            applyYardLayout(true);
+            trolleyX = frame.c.x;
+            spreaderPos.set(trolleyX, restSpreaderY(), 6);
+            syncCraneMeshes();
+            requestRender();
+          }
+          if (!disposed && queuedId) {
+            var next = queuedId;
+            queuedId = null;
+            runAction(next);
+          }
+        },
+        function () {
+          busy = false;
         }
-        if (!disposed && queuedId) {
-          var next = queuedId;
-          queuedId = null;
-          runAction(next);
-        }
-      }, function () {
-        busy = false;
-      });
+      );
     }
 
     function handlePick(id) {
@@ -1882,10 +2231,10 @@
     function handleCloseOnly() {
       if (disposed) return;
       if (busy) {
-        queuedId = '__close__';
+        queuedId = "__close__";
         return;
       }
-      if (openItem) runAction('__close__');
+      if (openItem) runAction("__close__");
     }
 
     /* ---------- Raycasting (Tactile Hover Lift + Click) ---------- */
@@ -1911,19 +2260,19 @@
     }
 
     var onCanvasMove = function (e) {
-      if (activeModalProjectId || e.pointerType === 'touch') {
-        canvas.style.cursor = 'default';
+      if (activeModalProjectId || e.pointerType === "touch") {
+        canvas.style.cursor = "default";
         return;
       }
       var id = hitContainerAt(e.clientX, e.clientY);
-      canvas.style.cursor = id ? 'pointer' : 'default';
+      canvas.style.cursor = id ? "pointer" : "default";
 
       if (!reducedMotion && !busy) {
-        var nextHov = (id && (!openItem || openItem.spec.id !== id)) ? id : null;
+        var nextHov = id && (!openItem || openItem.spec.id !== id) ? id : null;
         if (nextHov !== hoveredId) {
           hoveredId = nextHov;
           for (var i = 0; i < containers.length; i++) {
-            containers[i].hoverTarget = (containers[i].spec.id === hoveredId) ? 1 : 0;
+            containers[i].hoverTarget = containers[i].spec.id === hoveredId ? 1 : 0;
           }
           hoverAnimActive = true;
           requestRender();
@@ -1932,7 +2281,7 @@
     };
 
     var onCanvasLeave = function () {
-      canvas.style.cursor = 'default';
+      canvas.style.cursor = "default";
       if (hoveredId) clearHovers();
     };
 
@@ -1953,30 +2302,30 @@
       }
     };
 
-    canvas.addEventListener('pointermove', onCanvasMove, { passive: true });
-    canvas.addEventListener('pointerleave', onCanvasLeave, { passive: true });
-    canvas.addEventListener('pointerdown', onCanvasDown, { passive: true });
-    canvas.addEventListener('click', onCanvasClick);
+    canvas.addEventListener("pointermove", onCanvasMove, { passive: true });
+    canvas.addEventListener("pointerleave", onCanvasLeave, { passive: true });
+    canvas.addEventListener("pointerdown", onCanvasDown, { passive: true });
+    canvas.addEventListener("click", onCanvasClick);
 
     /* ---------- Card, Scrim, SR Menu & Modal Interactions ---------- */
     var onStageClick = function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
 
-      if (t === modalEl || t.closest('[data-dp-close-modal]')) {
+      if (t === modalEl || t.closest("[data-dp-close-modal]")) {
         closeCaseModal();
         return;
       }
 
-      if (t === scrimEl || t.closest('[data-dp-close-card]')) {
+      if (t === scrimEl || t.closest("[data-dp-close-card]")) {
         handleCloseOnly();
         return;
       }
 
-      var swBtn = t.closest('.dp-sw-btn');
+      var swBtn = t.closest(".dp-sw-btn");
       if (swBtn) {
-        var hex = swBtn.getAttribute('data-hex') || '';
-        var sp = swBtn.querySelector('span');
+        var hex = swBtn.getAttribute("data-hex") || "";
+        var sp = swBtn.querySelector("span");
         var cPack = getCasePack(lang);
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(hex).catch(function () {});
@@ -1986,51 +2335,51 @@
           window.ZK3D.spawnSparks(r.left + r.width / 2, r.top + r.height / 2, hex, 14);
         }
         if (sp) {
-          sp.textContent = (cPack && cPack.copied) || 'Copied!';
-          swBtn.classList.add('copied');
+          sp.textContent = (cPack && cPack.copied) || "Copied!";
+          swBtn.classList.add("copied");
           setTimeout(function () {
             if (sp.isConnected) {
               sp.textContent = hex;
-              swBtn.classList.remove('copied');
+              swBtn.classList.remove("copied");
             }
           }, 1400);
         }
         return;
       }
 
-      var caseBtn = t.closest('[data-dp-case]');
+      var caseBtn = t.closest("[data-dp-case]");
       if (caseBtn) {
-        var pid = caseBtn.getAttribute('data-dp-case');
+        var pid = caseBtn.getAttribute("data-dp-case");
         if (pid) openCaseModal(pid);
         return;
       }
 
-      var contactBtn = t.closest('[data-dp-contact]');
+      var contactBtn = t.closest("[data-dp-contact]");
       if (contactBtn) {
         if (window.zkJumpPage) window.zkJumpPage(6);
         return;
       }
 
-      var pickBtn = t.closest('[data-dp-pick]');
+      var pickBtn = t.closest("[data-dp-pick]");
       if (pickBtn) {
-        var id = pickBtn.getAttribute('data-dp-pick');
+        var id = pickBtn.getAttribute("data-dp-pick");
         if (id) handlePick(id);
       }
     };
-    stage.addEventListener('click', onStageClick);
+    stage.addEventListener("click", onStageClick);
 
     /* Keyboard ArrowLeft / ArrowRight cycling when a container is open */
     var onKeyDown = function (e) {
       if (disposed || activeModalProjectId || !openItem) return;
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault();
         var idx = NAV_ORDER.indexOf(openItem.spec.id);
-        var step = e.key === 'ArrowRight' ? 1 : -1;
+        var step = e.key === "ArrowRight" ? 1 : -1;
         var nextId = NAV_ORDER[(idx + step + NAV_ORDER.length) % NAV_ORDER.length];
         handlePick(nextId);
       }
     };
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
 
     /* ---------- Localization Sync (All 8 Languages + RTL) ---------- */
     function syncLanguageUI(rebuildTextures) {
@@ -2038,19 +2387,19 @@
       var pack = getDepotPack(lang);
       if (!pack) return;
 
-      var isRtl = lang === 'ar';
-      stage.setAttribute('data-lang', lang);
-      stage.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+      var isRtl = lang === "ar";
+      stage.setAttribute("data-lang", lang);
+      stage.setAttribute("dir", isRtl ? "rtl" : "ltr");
 
       wordSpan.textContent = pack.word;
-      if (logoBtn) logoBtn.setAttribute('aria-label', pack.logoAria);
+      if (logoBtn) logoBtn.setAttribute("aria-label", pack.logoAria);
       if (homeBtn) {
-        homeBtn.textContent = isRtl ? pack.navHome + ' →' : '← ' + pack.navHome;
-        homeBtn.setAttribute('aria-label', pack.homeAria);
+        homeBtn.textContent = isRtl ? pack.navHome + " →" : "← " + pack.navHome;
+        homeBtn.setAttribute("aria-label", pack.homeAria);
       }
       if (talkBtn) {
         talkBtn.textContent = pack.navTalk;
-        talkBtn.setAttribute('aria-label', pack.talkAria);
+        talkBtn.setAttribute("aria-label", pack.talkAria);
       }
       if (pillEl) pillEl.textContent = pack.pill;
       if (eyebrowEl) eyebrowEl.textContent = pack.eyebrow;
@@ -2058,9 +2407,17 @@
       if (srMenu) {
         srMenu.innerHTML = PILE_SPECS.map(function (s) {
           var c = pack.containers[s.id];
-          var lbl = c ? c.label.join(' ') : s.id;
-          return '<button type="button" data-dp-pick="' + s.id + '">' + escHtml(pack.openSr) + ' ' + escHtml(lbl) + '</button>';
-        }).join('');
+          var lbl = c ? c.label.join(" ") : s.id;
+          return (
+            '<button type="button" data-dp-pick="' +
+            s.id +
+            '">' +
+            escHtml(pack.openSr) +
+            " " +
+            escHtml(lbl) +
+            "</button>"
+          );
+        }).join("");
       }
 
       if (rebuildTextures) {
@@ -2084,7 +2441,7 @@
         syncCraneMeshes();
         fillCard(openItem);
         positionCardFor(openItem);
-        scrimEl.classList.toggle('on', frame.portrait && cardEl.classList.contains('on'));
+        scrimEl.classList.toggle("on", frame.portrait && cardEl.classList.contains("on"));
         checkPillOverlap(openItem);
       } else if (!busy) {
         trolleyX = frame.c.x;
@@ -2100,7 +2457,7 @@
     var onLangChange = function () {
       if (!disposed) syncLanguageUI(true);
     };
-    window.addEventListener('zk-lang', onLangChange);
+    window.addEventListener("zk-lang", onLangChange);
 
     /* ---------- Responsive Resize & Orientation Handling ---------- */
     var resizeRaf = 0;
@@ -2128,7 +2485,7 @@
           spreaderPos.set(curAttach.x, curAttach.y + SPREADER_H / 2, curAttach.z);
           syncCraneMeshes();
           positionCardFor(openItem);
-          scrimEl.classList.toggle('on', frame.portrait && cardEl.classList.contains('on'));
+          scrimEl.classList.toggle("on", frame.portrait && cardEl.classList.contains("on"));
           checkPillOverlap(openItem);
         } else if (!openItem) {
           /* Always keep resting trolley & spreader centered cleanly under new rail Y */
@@ -2139,8 +2496,8 @@
         requestRender();
       });
     };
-    window.addEventListener('resize', onResize, { passive: true });
-    window.addEventListener('orientationchange', onResize, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("orientationchange", onResize, { passive: true });
 
     /* ---------- Escape Cascade (Modal -> Open Container -> Home) ---------- */
     window.__zkDepotEscape = function () {
@@ -2208,22 +2565,22 @@
 
     /* ---------- Entrance Reveal Timeline ---------- */
     function runEntrance() {
-      stage.classList.add('dp-ready');
+      stage.classList.add("dp-ready");
       if (reducedMotion || !stage.animate) return;
-      var revEls = [].slice.call(stage.querySelectorAll('.dp-rv'));
+      var revEls = [].slice.call(stage.querySelectorAll(".dp-rv"));
       revEls.forEach(function (el, idx) {
         var isWord = el === wordSpan;
         try {
           el.animate(
             [
-              { opacity: 0, transform: isWord ? 'translateY(18%)' : 'translateY(12px)' },
-              { opacity: 1, transform: 'translateY(0)' }
+              { opacity: 0, transform: isWord ? "translateY(18%)" : "translateY(12px)" },
+              { opacity: 1, transform: "translateY(0)" },
             ],
             {
               duration: isWord ? 1050 : 800,
               delay: 60 + idx * 55,
-              easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-              fill: 'backwards'
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              fill: "backwards",
             }
           );
         } catch (_) {}
@@ -2249,28 +2606,36 @@
       if (rafId) cancelAnimationFrame(rafId);
       if (resizeRaf) cancelAnimationFrame(resizeRaf);
 
-      activeTweens.forEach(function (tw) { tw.resolve(); });
+      activeTweens.forEach(function (tw) {
+        tw.resolve();
+      });
       activeTweens.clear();
 
-      window.removeEventListener('zk-lang', onLangChange);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      document.removeEventListener('keydown', onKeyDown);
-      canvas.removeEventListener('pointermove', onCanvasMove);
-      canvas.removeEventListener('pointerleave', onCanvasLeave);
-      canvas.removeEventListener('pointerdown', onCanvasDown);
-      canvas.removeEventListener('click', onCanvasClick);
-      stage.removeEventListener('click', onStageClick);
+      window.removeEventListener("zk-lang", onLangChange);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      document.removeEventListener("keydown", onKeyDown);
+      canvas.removeEventListener("pointermove", onCanvasMove);
+      canvas.removeEventListener("pointerleave", onCanvasLeave);
+      canvas.removeEventListener("pointerdown", onCanvasDown);
+      canvas.removeEventListener("click", onCanvasClick);
+      stage.removeEventListener("click", onStageClick);
 
-      document.body.classList.remove('dp-active');
+      document.body.classList.remove("dp-active");
       delete window.__zkDepotEscape;
 
       for (var i = 0; i < containers.length; i++) {
         if (containers[i].labelTex) containers[i].labelTex.dispose();
       }
-      textures.forEach(function (t) { t.dispose(); });
-      materials.forEach(function (m) { m.dispose(); });
-      geometries.forEach(function (g) { g.dispose(); });
+      textures.forEach(function (t) {
+        t.dispose();
+      });
+      materials.forEach(function (m) {
+        m.dispose();
+      });
+      geometries.forEach(function (g) {
+        g.dispose();
+      });
       renderer.dispose();
     };
   }
@@ -2279,11 +2644,15 @@
     if (window.ZK3D && window.ZK3D.registerPage) {
       window.ZK3D.registerPage(5, mountDepot);
     } else {
-      window.addEventListener('load', function () {
-        if (window.ZK3D && window.ZK3D.registerPage) {
-          window.ZK3D.registerPage(5, mountDepot);
-        }
-      }, { once: true });
+      window.addEventListener(
+        "load",
+        function () {
+          if (window.ZK3D && window.ZK3D.registerPage) {
+            window.ZK3D.registerPage(5, mountDepot);
+          }
+        },
+        { once: true }
+      );
     }
   }
 

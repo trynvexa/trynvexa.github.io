@@ -3,10 +3,50 @@
    8-Language Native Localization (id, en, zh, es, ar, fr, ja, ko)
    ============================================================ */
 var NP_DATA = [
-  { id: "mono", num: "01", year: "2026", domain: "v0-mono-ecommerce.vercel.app", stack: ["HTML5", "CSS3", "Responsive UI", "Editorial Typography"], r: "1711/919", name: "Mono", a: "#c4622d", img: "assets/images/project-mono.webp" },
-  { id: "gigi", num: "02", year: "2026", domain: "modern-gen-z-energy-drink-landi-six-eta.vercel.app", stack: ["HTML5", "Tailwind CSS", "Conversion UI", "Product Showcase"], r: "1690/931", name: "GiGi", a: "#7fc400", img: "assets/images/project-gigi.webp" },
-  { id: "compute", num: "03", year: "2026", domain: "compute-the-platform-to-build-psi-tan.vercel.app", stack: ["Modern CSS", "Dark UI System", "Interactive Layout", "SaaS Landing"], r: "1707/921", name: "Compute", a: "#ff4d8d", img: "assets/images/project-compute.webp" },
-  { id: "sweet", num: "04", year: "2026", domain: "trynvexa.github.io/toko-kue", stack: ["HTML5", "CSS3", "JavaScript", "E-Commerce Catalog"], r: "1901/922", name: "Sweet Heaven", a: "#c9a227", img: "assets/images/project-sweet.jpg" }
+  {
+    id: "mono",
+    num: "01",
+    year: "2026",
+    domain: "v0-mono-ecommerce.vercel.app",
+    stack: ["HTML5", "CSS3", "Responsive UI", "Editorial Typography"],
+    r: "1711/919",
+    name: "Mono",
+    a: "#c4622d",
+    img: "assets/images/project-mono.webp",
+  },
+  {
+    id: "gigi",
+    num: "02",
+    year: "2026",
+    domain: "modern-gen-z-energy-drink-landi-six-eta.vercel.app",
+    stack: ["HTML5", "Tailwind CSS", "Conversion UI", "Product Showcase"],
+    r: "1690/931",
+    name: "GiGi",
+    a: "#7fc400",
+    img: "assets/images/project-gigi.webp",
+  },
+  {
+    id: "compute",
+    num: "03",
+    year: "2026",
+    domain: "compute-the-platform-to-build-psi-tan.vercel.app",
+    stack: ["Modern CSS", "Dark UI System", "Interactive Layout", "SaaS Landing"],
+    r: "1707/921",
+    name: "Compute",
+    a: "#ff4d8d",
+    img: "assets/images/project-compute.webp",
+  },
+  {
+    id: "sweet",
+    num: "04",
+    year: "2026",
+    domain: "trynvexa.github.io/toko-kue",
+    stack: ["HTML5", "CSS3", "JavaScript", "E-Commerce Catalog"],
+    r: "1901/922",
+    name: "Sweet Heaven",
+    a: "#c9a227",
+    img: "assets/images/project-sweet.jpg",
+  },
 ];
 
 var NP_X = {
@@ -14,34 +54,34 @@ var NP_X = {
     crops: [
       { x: 0.22, y: 0, w: 0.58, h: 0.11, wide: 1 },
       { x: 0.22, y: 0.2, w: 0.6, h: 0.68 },
-      { x: 0.34, y: 0.76, w: 0.32, h: 0.17 }
+      { x: 0.34, y: 0.76, w: 0.32, h: 0.17 },
     ],
-    pal: ["#e9d7c3", "#b4572a", "#5a5c5c", "#1d2223", "#8d8c88"]
+    pal: ["#e9d7c3", "#b4572a", "#5a5c5c", "#1d2223", "#8d8c88"],
   },
   gigi: {
     crops: [
       { x: 0.04, y: 0, w: 0.94, h: 0.1, wide: 1 },
       { x: 0.12, y: 0.25, w: 0.34, h: 0.56 },
-      { x: 0.58, y: 0.1, w: 0.28, h: 0.82 }
+      { x: 0.58, y: 0.1, w: 0.28, h: 0.82 },
     ],
-    pal: ["#b7fc08", "#fdfdf9", "#64b102", "#060606", "#ddded9"]
+    pal: ["#b7fc08", "#fdfdf9", "#64b102", "#060606", "#ddded9"],
   },
   compute: {
     crops: [
       { x: 0, y: 0, w: 1, h: 0.12, wide: 1 },
       { x: 0.03, y: 0.28, w: 0.6, h: 0.35 },
-      { x: 0.03, y: 0.74, w: 0.42, h: 0.2 }
+      { x: 0.03, y: 0.74, w: 0.42, h: 0.2 },
     ],
-    pal: ["#000000", "#d94f87", "#cdc2fc", "#2e0a1a", "#fefefe"]
+    pal: ["#000000", "#d94f87", "#cdc2fc", "#2e0a1a", "#fefefe"],
   },
   sweet: {
     crops: [
       { x: 0.08, y: 0.04, w: 0.86, h: 0.12, wide: 1 },
       { x: 0.18, y: 0.24, w: 0.64, h: 0.45 },
-      { x: 0.08, y: 0.05, w: 0.18, h: 0.1 }
+      { x: 0.08, y: 0.05, w: 0.18, h: 0.1 },
     ],
-    pal: ["#e8dacd", "#fef7ef", "#caab52", "#8b6145", "#a28e83"]
-  }
+    pal: ["#e8dacd", "#fef7ef", "#caab52", "#8b6145", "#a28e83"],
+  },
 };
 
 var NP_I18N = {
@@ -64,38 +104,94 @@ var NP_I18N = {
       "Dark UI System": "Sistem UI Gelap",
       "Interactive Layout": "Tata Letak Interaktif",
       "SaaS Landing": "Halaman SaaS",
-      "E-Commerce Catalog": "Katalog Toko Daring"
+      "E-Commerce Catalog": "Katalog Toko Daring",
     },
     projects: {
       mono: {
         kind: "Hunian modular",
         alt: "Halaman depan Mono: huruf besar menimpa foto bangunan baja karat di tepi air",
-        t: ["Halaman depan untuk produk hunian modular yang ringan dan tahan lama.", "Nama merek dibuat sebesar layar dan ditimpa foto bangunannya, jadi orang langsung tahu ini tentang apa tanpa membaca. Menu dan tombol kontak sengaja dibuat kecil supaya tidak mengganggu."],
-        crops: ["Menu dan tombol kontak dibuat kecil supaya tidak menyaingi judul.", "Bangunan baja karat di depan huruf yang dibuat raksasa.", "Satu kalimat utama di atas pantulan air."],
-        rows: [["Menu", "Desain, Galeri, Model, Tentang"], ["Tombol", "Kontak"], ["Kalimat utama", "Ringan, tahan lama, dan siap bertualang."], ["Fokus Desain", "Tipografi monumental, kontras material baja & air, navigasi minimalis"]]
+        t: [
+          "Halaman depan untuk produk hunian modular yang ringan dan tahan lama.",
+          "Nama merek dibuat sebesar layar dan ditimpa foto bangunannya, jadi orang langsung tahu ini tentang apa tanpa membaca. Menu dan tombol kontak sengaja dibuat kecil supaya tidak mengganggu.",
+        ],
+        crops: [
+          "Menu dan tombol kontak dibuat kecil supaya tidak menyaingi judul.",
+          "Bangunan baja karat di depan huruf yang dibuat raksasa.",
+          "Satu kalimat utama di atas pantulan air.",
+        ],
+        rows: [
+          ["Menu", "Desain, Galeri, Model, Tentang"],
+          ["Tombol", "Kontak"],
+          ["Kalimat utama", "Ringan, tahan lama, dan siap bertualang."],
+          ["Fokus Desain", "Tipografi monumental, kontras material baja & air, navigasi minimalis"],
+        ],
       },
       gigi: {
         kind: "Minuman energi",
         alt: "Halaman depan GiGi: judul tebal, tombol daftar diskon, dan kaleng rasa lemon lime",
-        t: ["Halaman depan minuman energi tanpa gula.", "Latar dibuat putih bersih supaya warna hijau kaleng yang bicara. Judulnya tebal dan padat, tombol diskon ada di menu dan di bawah judul, dan empat keunggulan produk diringkas dalam satu baris."],
-        crops: ["Menu dengan satu tombol diskon berwarna hijau.", "Judul, deskripsi singkat, dan dua tombol dengan fungsi berbeda.", "Kaleng lemon lime jadi pusat perhatian di sisi kanan."],
-        rows: [["Menu", "Beranda, Rasa, Kreator, Distributor, Karier"], ["Tombol", "Diskon 25%, Daftar & Hemat 25%, Jelajahi Rasa"], ["Keunggulan", "Tanpa Gula, Kafein 7+mg, Rasa Alami, Kaya Vitamin B"], ["Fokus Desain", "Hierarki konversi tinggi, aksen neon segar di atas kanvas putih bersih"]]
+        t: [
+          "Halaman depan minuman energi tanpa gula.",
+          "Latar dibuat putih bersih supaya warna hijau kaleng yang bicara. Judulnya tebal dan padat, tombol diskon ada di menu dan di bawah judul, dan empat keunggulan produk diringkas dalam satu baris.",
+        ],
+        crops: [
+          "Menu dengan satu tombol diskon berwarna hijau.",
+          "Judul, deskripsi singkat, dan dua tombol dengan fungsi berbeda.",
+          "Kaleng lemon lime jadi pusat perhatian di sisi kanan.",
+        ],
+        rows: [
+          ["Menu", "Beranda, Rasa, Kreator, Distributor, Karier"],
+          ["Tombol", "Diskon 25%, Daftar & Hemat 25%, Jelajahi Rasa"],
+          ["Keunggulan", "Tanpa Gula, Kafein 7+mg, Rasa Alami, Kaya Vitamin B"],
+          [
+            "Fokus Desain",
+            "Hierarki konversi tinggi, aksen neon segar di atas kanvas putih bersih",
+          ],
+        ],
       },
       compute: {
         kind: "Layanan agen AI",
         alt: "Halaman depan Compute: judul putih di latar gelap dengan pohon bercahaya merah muda",
-        t: ["Halaman depan untuk layanan agen AI yang berjalan di banyak mesin sekaligus.", "Latar gelap dengan satu gambar pohon bercahaya di kanan. Judul besar di kiri, tiga angka performa di bawahnya, dan satu tombol putih yang jelas untuk mulai memakai layanan."],
-        crops: ["Menu lengkap dengan tombol masuk dan tombol putih jalankan agen.", "Judul besar, dengan kata terakhir diberi warna gradasi.", "Tiga angka performa di bagian bawah."],
-        rows: [["Menu", "Kapabilitas, Proses, Infrastruktur, Integrasi, Keamanan"], ["Tombol", "Masuk, Jalankan Agen"], ["Angka", "3500+ agen aktif, 99.7% aktif, latensi < 50 md"], ["Fokus Desain", "Atmosfer mode gelap teknis, metrik performa langsung, tombol kontras tinggi"]]
+        t: [
+          "Halaman depan untuk layanan agen AI yang berjalan di banyak mesin sekaligus.",
+          "Latar gelap dengan satu gambar pohon bercahaya di kanan. Judul besar di kiri, tiga angka performa di bawahnya, dan satu tombol putih yang jelas untuk mulai memakai layanan.",
+        ],
+        crops: [
+          "Menu lengkap dengan tombol masuk dan tombol putih jalankan agen.",
+          "Judul besar, dengan kata terakhir diberi warna gradasi.",
+          "Tiga angka performa di bagian bawah.",
+        ],
+        rows: [
+          ["Menu", "Kapabilitas, Proses, Infrastruktur, Integrasi, Keamanan"],
+          ["Tombol", "Masuk, Jalankan Agen"],
+          ["Angka", "3500+ agen aktif, 99.7% aktif, latensi < 50 md"],
+          [
+            "Fokus Desain",
+            "Atmosfer mode gelap teknis, metrik performa langsung, tombol kontras tinggi",
+          ],
+        ],
       },
       sweet: {
         kind: "Toko kue artisan",
         alt: "Halaman depan Sweet Heaven: judul serif putih di latar krem dengan tombol emas",
-        t: ["Halaman depan toko kue artisan.", "Warna krem dan emas, judul serif besar di tengah, dan hanya satu tombol menuju koleksi. Tidak ada elemen lain yang bersaing dengan judulnya."],
-        crops: ["Menu berhuruf kapital renggang dan tombol pesan berwarna emas.", "Judul serif putih besar dan satu tombol menuju koleksi.", "Logo dua warna, cokelat dan emas."],
-        rows: [["Menu", "Beranda, Filosofi, Menu, Pertanyaan, Kontak"], ["Tombol", "Pesan Sekarang, Lihat Koleksi"], ["Fokus Desain", "Editorial hangat bernuansa krem & emas, tipografi serif klasik yang elegan"]]
-      }
-    }
+        t: [
+          "Halaman depan toko kue artisan.",
+          "Warna krem dan emas, judul serif besar di tengah, dan hanya satu tombol menuju koleksi. Tidak ada elemen lain yang bersaing dengan judulnya.",
+        ],
+        crops: [
+          "Menu berhuruf kapital renggang dan tombol pesan berwarna emas.",
+          "Judul serif putih besar dan satu tombol menuju koleksi.",
+          "Logo dua warna, cokelat dan emas.",
+        ],
+        rows: [
+          ["Menu", "Beranda, Filosofi, Menu, Pertanyaan, Kontak"],
+          ["Tombol", "Pesan Sekarang, Lihat Koleksi"],
+          [
+            "Fokus Desain",
+            "Editorial hangat bernuansa krem & emas, tipografi serif klasik yang elegan",
+          ],
+        ],
+      },
+    },
   },
   en: {
     role: "Front-End & UI Design",
@@ -112,32 +208,85 @@ var NP_I18N = {
       mono: {
         kind: "Modular Housing",
         alt: "Mono homepage: monumental letters behind weathered steel architecture by the water",
-        t: ["Landing page for a lightweight, durable modular housing concept.", "The brand name spans the full viewport behind the architectural photography so visitors grasp the scale immediately. Navigation and contact triggers stay understated to preserve visual calm."],
-        crops: ["Compact navigation and contact button that never compete with the hero title.", "Weathered steel structure layered in front of monumental display typography.", "A single positioning statement anchored above the water reflection."],
-        rows: [["Navigation", "Design, Gallery, Models, About"], ["Action", "Contact"], ["Key Copy", "Lightweight, durable and adventure-ready."], ["Design Focus", "Monumental typography, steel & water material contrast, minimal chrome"]]
+        t: [
+          "Landing page for a lightweight, durable modular housing concept.",
+          "The brand name spans the full viewport behind the architectural photography so visitors grasp the scale immediately. Navigation and contact triggers stay understated to preserve visual calm.",
+        ],
+        crops: [
+          "Compact navigation and contact button that never compete with the hero title.",
+          "Weathered steel structure layered in front of monumental display typography.",
+          "A single positioning statement anchored above the water reflection.",
+        ],
+        rows: [
+          ["Navigation", "Design, Gallery, Models, About"],
+          ["Action", "Contact"],
+          ["Key Copy", "Lightweight, durable and adventure-ready."],
+          [
+            "Design Focus",
+            "Monumental typography, steel & water material contrast, minimal chrome",
+          ],
+        ],
       },
       gigi: {
         kind: "Energy Drink",
         alt: "GiGi homepage: bold headline, discount trigger, and lemon-lime energy drink can",
-        t: ["High-energy landing page for a zero-sugar Gen-Z energy drink.", "A crisp white canvas lets the electric lime can command attention. Bold condensed typography, dual conversion triggers, and a four-pillar benefit strip drive immediate action."],
-        crops: ["Top bar featuring a high-contrast green discount CTA.", "Punchy headline, concise copy, and dual primary/secondary action buttons.", "The lemon-lime can positioned as the unmistakable visual anchor on the right."],
-        rows: [["Navigation", "Home, Flavours, Creators, Distributors, Careers"], ["Actions", "Get 25% Off, Sign Up & Save 25%, Explore Flavours"], ["Highlights", "Zero Sugar, 7+mg Caffeine, Natural Flavours, Vitamin B Rich"], ["Design Focus", "High-conversion hierarchy, fresh neon accents on a clean white stage"]]
+        t: [
+          "High-energy landing page for a zero-sugar Gen-Z energy drink.",
+          "A crisp white canvas lets the electric lime can command attention. Bold condensed typography, dual conversion triggers, and a four-pillar benefit strip drive immediate action.",
+        ],
+        crops: [
+          "Top bar featuring a high-contrast green discount CTA.",
+          "Punchy headline, concise copy, and dual primary/secondary action buttons.",
+          "The lemon-lime can positioned as the unmistakable visual anchor on the right.",
+        ],
+        rows: [
+          ["Navigation", "Home, Flavours, Creators, Distributors, Careers"],
+          ["Actions", "Get 25% Off, Sign Up & Save 25%, Explore Flavours"],
+          ["Highlights", "Zero Sugar, 7+mg Caffeine, Natural Flavours, Vitamin B Rich"],
+          ["Design Focus", "High-conversion hierarchy, fresh neon accents on a clean white stage"],
+        ],
       },
       compute: {
         kind: "AI Agent Platform",
         alt: "Compute homepage: white display headline on a dark stage with a glowing pink neural tree",
-        t: ["Front page for a distributed AI agent execution platform.", "Deep obsidian background paired with a glowing neural tree on the right, left-aligned display headline, three live performance metrics, and a crisp white deployment CTA."],
-        crops: ["Full product navigation with Sign in and a high-contrast white Deploy agent CTA.", "Large display headline with a gradient-accented terminal word.", "Three key infrastructure performance metrics anchored below the fold."],
-        rows: [["Navigation", "Capabilities, Process, Infra, Integrations, Security"], ["Actions", "Sign in, Deploy agent"], ["Metrics", "3500+ active agents, 99.7% uptime, < 50 ms latency"], ["Design Focus", "Technical dark-mode atmosphere, real-time telemetry, clear CTA hierarchy"]]
+        t: [
+          "Front page for a distributed AI agent execution platform.",
+          "Deep obsidian background paired with a glowing neural tree on the right, left-aligned display headline, three live performance metrics, and a crisp white deployment CTA.",
+        ],
+        crops: [
+          "Full product navigation with Sign in and a high-contrast white Deploy agent CTA.",
+          "Large display headline with a gradient-accented terminal word.",
+          "Three key infrastructure performance metrics anchored below the fold.",
+        ],
+        rows: [
+          ["Navigation", "Capabilities, Process, Infra, Integrations, Security"],
+          ["Actions", "Sign in, Deploy agent"],
+          ["Metrics", "3500+ active agents, 99.7% uptime, < 50 ms latency"],
+          [
+            "Design Focus",
+            "Technical dark-mode atmosphere, real-time telemetry, clear CTA hierarchy",
+          ],
+        ],
       },
       sweet: {
         kind: "Artisan Bakery",
         alt: "Sweet Heaven homepage: white serif headline on warm cream backdrop with golden button",
-        t: ["Editorial storefront for an artisan cake and pastry studio.", "Warm cream and gold palette, centered classic serif headline, and a single focused call-to-action leading into the curated pastry collection."],
-        crops: ["Wide-tracked uppercase navigation paired with a golden Order Now button.", "Large white serif headline with a single focused collection trigger.", "Two-tone chocolate and gold brand mark."],
-        rows: [["Navigation", "Home, Philosophy, Menu, Questions, Contact"], ["Actions", "Order Now, Discover Collection"], ["Design Focus", "Warm cream & gold editorial palette, timeless serif typography"]]
-      }
-    }
+        t: [
+          "Editorial storefront for an artisan cake and pastry studio.",
+          "Warm cream and gold palette, centered classic serif headline, and a single focused call-to-action leading into the curated pastry collection.",
+        ],
+        crops: [
+          "Wide-tracked uppercase navigation paired with a golden Order Now button.",
+          "Large white serif headline with a single focused collection trigger.",
+          "Two-tone chocolate and gold brand mark.",
+        ],
+        rows: [
+          ["Navigation", "Home, Philosophy, Menu, Questions, Contact"],
+          ["Actions", "Order Now, Discover Collection"],
+          ["Design Focus", "Warm cream & gold editorial palette, timeless serif typography"],
+        ],
+      },
+    },
   },
   zh: {
     role: "前端与界面设计",
@@ -158,38 +307,85 @@ var NP_I18N = {
       "Dark UI System": "暗色界面系统",
       "Interactive Layout": "交互式布局",
       "SaaS Landing": "SaaS 落地页",
-      "E-Commerce Catalog": "电商目录"
+      "E-Commerce Catalog": "电商目录",
     },
     projects: {
       mono: {
         kind: "模块化住宅",
         alt: "Mono 首页：水畔耐候钢建筑覆盖在巨幅品牌字母之上",
-        t: ["面向轻量化、耐用型模块化住宅的落地页设计。", "品牌名铺满整屏并置于建筑摄影背后，让访客无需阅读即可一眼感知空间气势；导航与联系入口刻意克制，保持画面宁静。"],
-        crops: ["精简的导航栏与联系按钮，绝不抢占主标题视线。", "耐候钢建筑主体层叠于巨幅展示字形前方。", "水面倒影之上仅留一句凝练的品牌主张。"],
-        rows: [["导航栏", "设计、画廊、型号、关于"], ["操作按钮", "联系我们"], ["核心文案", "轻盈、坚固，随时开启探索。"], ["设计重点", "纪念碑式字体排版、钢材与水面的材质对比、极简导航"]]
+        t: [
+          "面向轻量化、耐用型模块化住宅的落地页设计。",
+          "品牌名铺满整屏并置于建筑摄影背后，让访客无需阅读即可一眼感知空间气势；导航与联系入口刻意克制，保持画面宁静。",
+        ],
+        crops: [
+          "精简的导航栏与联系按钮，绝不抢占主标题视线。",
+          "耐候钢建筑主体层叠于巨幅展示字形前方。",
+          "水面倒影之上仅留一句凝练的品牌主张。",
+        ],
+        rows: [
+          ["导航栏", "设计、画廊、型号、关于"],
+          ["操作按钮", "联系我们"],
+          ["核心文案", "轻盈、坚固，随时开启探索。"],
+          ["设计重点", "纪念碑式字体排版、钢材与水面的材质对比、极简导航"],
+        ],
       },
       gigi: {
         kind: "能量饮品",
         alt: "GiGi 首页：粗体标题、折扣按钮与青柠风味能量饮料罐",
-        t: ["面向 Z 世代的零糖能量饮品高转化落地页。", "纯白画布让荧光青柠罐身成为绝对主角；紧凑粗体标题、双重折扣转化按钮以及一行四项核心卖点瞬间激发点击。"],
-        crops: ["顶栏内置高对比度荧光绿折扣行动按钮。", "有力主标题、简短导语与主次分明的双按钮。", "右侧青柠风味易拉罐稳稳锚定视觉重心。"],
-        rows: [["导航栏", "首页、口味、创作者、经销商、加入我们"], ["行动按钮", "立减 25%、注册享 25% 折扣、探索口味"], ["核心卖点", "零糖、7+mg 咖啡因、天然风味、富含维生素 B"], ["设计重点", "高转化信息层级、纯白舞台上的鲜活霓虹点缀"]]
+        t: [
+          "面向 Z 世代的零糖能量饮品高转化落地页。",
+          "纯白画布让荧光青柠罐身成为绝对主角；紧凑粗体标题、双重折扣转化按钮以及一行四项核心卖点瞬间激发点击。",
+        ],
+        crops: [
+          "顶栏内置高对比度荧光绿折扣行动按钮。",
+          "有力主标题、简短导语与主次分明的双按钮。",
+          "右侧青柠风味易拉罐稳稳锚定视觉重心。",
+        ],
+        rows: [
+          ["导航栏", "首页、口味、创作者、经销商、加入我们"],
+          ["行动按钮", "立减 25%、注册享 25% 折扣、探索口味"],
+          ["核心卖点", "零糖、7+mg 咖啡因、天然风味、富含维生素 B"],
+          ["设计重点", "高转化信息层级、纯白舞台上的鲜活霓虹点缀"],
+        ],
       },
       compute: {
         kind: "AI 智能体平台",
         alt: "Compute 首页：深色背景上的白色大标题与发光粉紫数字树",
-        t: ["面向分布式多机 AI 智能体执行平台的官网首页。", "深邃黑底搭配右侧发光数字树视觉，左侧大字标题、下方三项核心性能指标以及一枚醒目的白色部署按钮清晰利落。"],
-        crops: ["完整产品导航搭配登录与高对比度白色“部署智能体”按钮。", "巨幅展示标题，末尾关键词施以渐变高光。", "首屏底部稳健呈现三项关键基础设施性能指标。"],
-        rows: [["导航栏", "能力、流程、基础设施、集成、安全"], ["行动按钮", "登录、部署智能体"], ["核心数据", "3500+ 活跃智能体、99.7% 在线率、< 50 ms 延迟"], ["设计重点", "硬核暗色氛围、实时遥测指标、清晰高对比 CTA"]]
+        t: [
+          "面向分布式多机 AI 智能体执行平台的官网首页。",
+          "深邃黑底搭配右侧发光数字树视觉，左侧大字标题、下方三项核心性能指标以及一枚醒目的白色部署按钮清晰利落。",
+        ],
+        crops: [
+          "完整产品导航搭配登录与高对比度白色“部署智能体”按钮。",
+          "巨幅展示标题，末尾关键词施以渐变高光。",
+          "首屏底部稳健呈现三项关键基础设施性能指标。",
+        ],
+        rows: [
+          ["导航栏", "能力、流程、基础设施、集成、安全"],
+          ["行动按钮", "登录、部署智能体"],
+          ["核心数据", "3500+ 活跃智能体、99.7% 在线率、< 50 ms 延迟"],
+          ["设计重点", "硬核暗色氛围、实时遥测指标、清晰高对比 CTA"],
+        ],
       },
       sweet: {
         kind: "手作烘焙工坊",
         alt: "Sweet Heaven 首页：奶油色背景上的白色衬线标题与金色按钮",
-        t: ["手作蛋糕与甜点工坊的杂志风官网首页。", "温暖奶油与香槟金配色，居中经典白色衬线主标题，辅以唯一通往精选系列的行动按钮，毫无多余干扰。"],
-        crops: ["宽字距大写导航与金色“立即预订”按钮相得益彰。", "居中大号白色衬线标题配单一焦点按钮。", "巧克力棕与金色双色品牌标识。"],
-        rows: [["导航栏", "首页、理念、菜单、常见问题、联系"], ["行动按钮", "立即预订、探索精选系列"], ["设计重点", "温暖奶油与金色的杂志美学、隽永典雅的衬线排版"]]
-      }
-    }
+        t: [
+          "手作蛋糕与甜点工坊的杂志风官网首页。",
+          "温暖奶油与香槟金配色，居中经典白色衬线主标题，辅以唯一通往精选系列的行动按钮，毫无多余干扰。",
+        ],
+        crops: [
+          "宽字距大写导航与金色“立即预订”按钮相得益彰。",
+          "居中大号白色衬线标题配单一焦点按钮。",
+          "巧克力棕与金色双色品牌标识。",
+        ],
+        rows: [
+          ["导航栏", "首页、理念、菜单、常见问题、联系"],
+          ["行动按钮", "立即预订、探索精选系列"],
+          ["设计重点", "温暖奶油与金色的杂志美学、隽永典雅的衬线排版"],
+        ],
+      },
+    },
   },
   es: {
     role: "Front-End y Diseño UI",
@@ -210,38 +406,88 @@ var NP_I18N = {
       "Dark UI System": "Sistema UI oscuro",
       "Interactive Layout": "Diseño interactivo",
       "SaaS Landing": "Landing SaaS",
-      "E-Commerce Catalog": "Catálogo e-commerce"
+      "E-Commerce Catalog": "Catálogo e-commerce",
     },
     projects: {
       mono: {
         kind: "Vivienda modular",
         alt: "Portada de Mono: letras monumentales detrás de arquitectura de acero junto al agua",
-        t: ["Landing page para un concepto de vivienda modular ligera y duradera.", "El nombre de la marca cruza la pantalla detrás de la arquitectura para comunicar escala al instante, mientras la navegación y el contacto permanecen sobrios."],
-        crops: ["Navegación compacta y botón de contacto que nunca compiten con el titular.", "Estructura de acero corten superpuesta sobre tipografía monumental.", "Una sola frase clave anclada sobre el reflejo del agua."],
-        rows: [["Menú", "Diseño, Galería, Modelos, Nosotros"], ["Acción", "Contacto"], ["Frase clave", "Ligera, duradera y lista para la aventura."], ["Enfoque de diseño", "Tipografía monumental, contraste entre acero y agua, navegación mínima"]]
+        t: [
+          "Landing page para un concepto de vivienda modular ligera y duradera.",
+          "El nombre de la marca cruza la pantalla detrás de la arquitectura para comunicar escala al instante, mientras la navegación y el contacto permanecen sobrios.",
+        ],
+        crops: [
+          "Navegación compacta y botón de contacto que nunca compiten con el titular.",
+          "Estructura de acero corten superpuesta sobre tipografía monumental.",
+          "Una sola frase clave anclada sobre el reflejo del agua.",
+        ],
+        rows: [
+          ["Menú", "Diseño, Galería, Modelos, Nosotros"],
+          ["Acción", "Contacto"],
+          ["Frase clave", "Ligera, duradera y lista para la aventura."],
+          [
+            "Enfoque de diseño",
+            "Tipografía monumental, contraste entre acero y agua, navegación mínima",
+          ],
+        ],
       },
       gigi: {
         kind: "Bebida energética",
         alt: "Portada de GiGi: titular grueso, botón de descuento y lata sabor lima-limón",
-        t: ["Landing page de alto impacto para una bebida energética sin azúcar.", "El lienzo blanco puro deja que la lata lima eléctrica brille, combinando titulares densos, doble CTA de descuento y cuatro beneficios en una sola línea."],
-        crops: ["Barra superior con un CTA verde de descuento de alto contraste.", "Titular directo, descripción breve y dos botones con funciones distintas.", "La lata lima-limón como foco visual inconfundible a la derecha."],
-        rows: [["Menú", "Inicio, Sabores, Creadores, Distribuidores, Carreras"], ["Acciones", "25% de descuento, Regístrate y ahorra 25%, Ver sabores"], ["Ventajas", "Sin azúcar, 7+mg cafeína, Sabores naturales, Rico en vitamina B"], ["Enfoque de diseño", "Jerarquía de alta conversión, acentos neón sobre lienzo blanco"]]
+        t: [
+          "Landing page de alto impacto para una bebida energética sin azúcar.",
+          "El lienzo blanco puro deja que la lata lima eléctrica brille, combinando titulares densos, doble CTA de descuento y cuatro beneficios en una sola línea.",
+        ],
+        crops: [
+          "Barra superior con un CTA verde de descuento de alto contraste.",
+          "Titular directo, descripción breve y dos botones con funciones distintas.",
+          "La lata lima-limón como foco visual inconfundible a la derecha.",
+        ],
+        rows: [
+          ["Menú", "Inicio, Sabores, Creadores, Distribuidores, Carreras"],
+          ["Acciones", "25% de descuento, Regístrate y ahorra 25%, Ver sabores"],
+          ["Ventajas", "Sin azúcar, 7+mg cafeína, Sabores naturales, Rico en vitamina B"],
+          ["Enfoque de diseño", "Jerarquía de alta conversión, acentos neón sobre lienzo blanco"],
+        ],
       },
       compute: {
         kind: "Plataforma de agentes IA",
         alt: "Portada de Compute: titular blanco sobre fondo oscuro con árbol luminoso rosa",
-        t: ["Portada para una plataforma distribuida de ejecución de agentes de IA.", "Fondo obsidiana profundo junto a un árbol luminoso a la derecha, titular amplio a la izquierda, tres métricas en vivo y un botón blanco nítido."],
-        crops: ["Navegación completa con acceso y botón blanco de alto contraste.", "Titular de gran escala con degradado en la última palabra.", "Tres métricas clave de rendimiento en la parte inferior."],
-        rows: [["Menú", "Capacidades, Proceso, Infraestructura, Integraciones, Seguridad"], ["Acciones", "Iniciar sesión, Desplegar agente"], ["Métricas", "3500+ agentes activos, 99.7% uptime, latencia < 50 ms"], ["Enfoque de diseño", "Atmósfera técnica oscura, telemetría en vivo y CTA nítido"]]
+        t: [
+          "Portada para una plataforma distribuida de ejecución de agentes de IA.",
+          "Fondo obsidiana profundo junto a un árbol luminoso a la derecha, titular amplio a la izquierda, tres métricas en vivo y un botón blanco nítido.",
+        ],
+        crops: [
+          "Navegación completa con acceso y botón blanco de alto contraste.",
+          "Titular de gran escala con degradado en la última palabra.",
+          "Tres métricas clave de rendimiento en la parte inferior.",
+        ],
+        rows: [
+          ["Menú", "Capacidades, Proceso, Infraestructura, Integraciones, Seguridad"],
+          ["Acciones", "Iniciar sesión, Desplegar agente"],
+          ["Métricas", "3500+ agentes activos, 99.7% uptime, latencia < 50 ms"],
+          ["Enfoque de diseño", "Atmósfera técnica oscura, telemetría en vivo y CTA nítido"],
+        ],
       },
       sweet: {
         kind: "Pastelería artesanal",
         alt: "Portada de Sweet Heaven: título serif blanco en fondo crema con botón dorado",
-        t: ["Escaparate editorial para un taller artesanal de pastelería.", "Paleta cálida en crema y oro, gran titular serif centrado y un único botón hacia la colección para que nada compita con el protagonismo visual."],
-        crops: ["Menú en mayúsculas espaciadas junto al botón dorado de pedido.", "Gran titular serif blanco y un único botón hacia la colección.", "Logotipo bicolor en chocolate y dorado."],
-        rows: [["Menú", "Inicio, Filosofía, Menú, Preguntas, Contacto"], ["Acciones", "Pedir ahora, Descubrir colección"], ["Enfoque de diseño", "Editorial cálido en crema y oro, tipografía serif clásica"]]
-      }
-    }
+        t: [
+          "Escaparate editorial para un taller artesanal de pastelería.",
+          "Paleta cálida en crema y oro, gran titular serif centrado y un único botón hacia la colección para que nada compita con el protagonismo visual.",
+        ],
+        crops: [
+          "Menú en mayúsculas espaciadas junto al botón dorado de pedido.",
+          "Gran titular serif blanco y un único botón hacia la colección.",
+          "Logotipo bicolor en chocolate y dorado.",
+        ],
+        rows: [
+          ["Menú", "Inicio, Filosofía, Menú, Preguntas, Contacto"],
+          ["Acciones", "Pedir ahora, Descubrir colección"],
+          ["Enfoque de diseño", "Editorial cálido en crema y oro, tipografía serif clásica"],
+        ],
+      },
+    },
   },
   ar: {
     role: "واجهات أمامية وتصميم UI",
@@ -262,38 +508,85 @@ var NP_I18N = {
       "Dark UI System": "نظام واجهة داكن",
       "Interactive Layout": "تخطيط تفاعلي",
       "SaaS Landing": "صفحة SaaS",
-      "E-Commerce Catalog": "كتالوج متجر"
+      "E-Commerce Catalog": "كتالوج متجر",
     },
     projects: {
       mono: {
         kind: "مساكن معيارية",
         alt: "واجهة Mono: أحرف عملاقة خلف مبنى فولاذي على ضفة الماء",
-        t: ["صفحة هبوط لمفهوم مساكن معيارية خفيفة ومتينة.", "يمتد اسم العلامة بعرض الشاشة خلف صورة المبنى الفولاذي ليفهم الزائر الفكرة فورًا، بينما تبقى القائمة وزر التواصل هادئين."],
-        crops: ["قائمة مختصرة وزر تواصل لا ينافسان العنوان الرئيسي.", "مبنى فولاذي بارز أمام طباعة عرض عملاقة.", "جملة تعريفية واحدة فوق انعكاس الماء."],
-        rows: [["القائمة", "التصميم، المعرض، النماذج، عنا"], ["الزر", "تواصل"], ["العبارة الرئيسية", "خفيفة، متينة، وجاهزة للمغامرة."], ["تركيز التصميم", "طباعة ضخمة، تباين الفولاذ والماء، تنقل بسيط"]]
+        t: [
+          "صفحة هبوط لمفهوم مساكن معيارية خفيفة ومتينة.",
+          "يمتد اسم العلامة بعرض الشاشة خلف صورة المبنى الفولاذي ليفهم الزائر الفكرة فورًا، بينما تبقى القائمة وزر التواصل هادئين.",
+        ],
+        crops: [
+          "قائمة مختصرة وزر تواصل لا ينافسان العنوان الرئيسي.",
+          "مبنى فولاذي بارز أمام طباعة عرض عملاقة.",
+          "جملة تعريفية واحدة فوق انعكاس الماء.",
+        ],
+        rows: [
+          ["القائمة", "التصميم، المعرض، النماذج، عنا"],
+          ["الزر", "تواصل"],
+          ["العبارة الرئيسية", "خفيفة، متينة، وجاهزة للمغامرة."],
+          ["تركيز التصميم", "طباعة ضخمة، تباين الفولاذ والماء، تنقل بسيط"],
+        ],
       },
       gigi: {
         kind: "مشروب طاقة",
         alt: "واجهة GiGi: عنوان جريء وزر خصم وعبوة بنكهة الليمون واللايم",
-        t: ["صفحة هبوط نابضة بالحيوية لمشروب طاقة خالٍ من السكر.", "خلفية بيضاء ناصعة تبرز لون العبوة الأخضر المضيء، مع عناوين قوية وأزرار خصم واضحة وأربع مزايا في صف واحد."],
-        crops: ["شريط علوي يضم زر خصم أخضر عالي التباين.", "عنوان حاد ووصف موجز وزران بوظيفتين مختلفتين.", "عبوة الليمون واللايم نقطة التركيز البصري الأساسية."],
-        rows: [["القائمة", "الرئيسية، النكهات، المبدعون، الموزعون، الوظائف"], ["الأزرار", "خصم 25%، سجّل ووفّر 25%، استكشف النكهات"], ["المزايا", "خالٍ من السكر، +7ملغ كافيين، نكهات طبيعية، غني بفيتامين B"], ["تركيز التصميم", "تسلسل تحويل عالٍ ولمسات نيون منعشة على خلفية بيضاء"]]
+        t: [
+          "صفحة هبوط نابضة بالحيوية لمشروب طاقة خالٍ من السكر.",
+          "خلفية بيضاء ناصعة تبرز لون العبوة الأخضر المضيء، مع عناوين قوية وأزرار خصم واضحة وأربع مزايا في صف واحد.",
+        ],
+        crops: [
+          "شريط علوي يضم زر خصم أخضر عالي التباين.",
+          "عنوان حاد ووصف موجز وزران بوظيفتين مختلفتين.",
+          "عبوة الليمون واللايم نقطة التركيز البصري الأساسية.",
+        ],
+        rows: [
+          ["القائمة", "الرئيسية، النكهات، المبدعون، الموزعون، الوظائف"],
+          ["الأزرار", "خصم 25%، سجّل ووفّر 25%، استكشف النكهات"],
+          ["المزايا", "خالٍ من السكر، +7ملغ كافيين، نكهات طبيعية، غني بفيتامين B"],
+          ["تركيز التصميم", "تسلسل تحويل عالٍ ولمسات نيون منعشة على خلفية بيضاء"],
+        ],
       },
       compute: {
         kind: "منصة وكلاء ذكاء اصطناعي",
         alt: "واجهة Compute: عنوان أبيض على خلفية داكنة مع شجرة مضيئة وردية",
-        t: ["الصفحة الرئيسية لمنصة تشغيل وكلاء ذكاء اصطناعي موزّعين عبر عدة أجهزة.", "خلفية داكنة مع شجرة رقمية مضيئة، وعنوان كبير، وثلاثة أرقام أداء فورية، وزر أبيض واضح لبدء التشغيل."],
-        crops: ["قائمة متكاملة تضم تسجيل الدخول وزر نشر الوكيل الأبيض.", "عنوان ضخم تتألق كلمته الأخيرة بتدرج لوني.", "ثلاثة مؤشرات أداء رئيسية في الجزء السفلي."],
-        rows: [["القائمة", "القدرات، الآلية، البنية، التكاملات، الأمان"], ["الأزرار", "تسجيل الدخول، نشر وكيل"], ["المؤشرات", "+3500 وكيل نشط، 99.7% توافر، زمن استجابة < 50 مللي ثانية"], ["تركيز التصميم", "أجواء داكنة تقنية ومقاييس لحظية وزر إجراء واضح"]]
+        t: [
+          "الصفحة الرئيسية لمنصة تشغيل وكلاء ذكاء اصطناعي موزّعين عبر عدة أجهزة.",
+          "خلفية داكنة مع شجرة رقمية مضيئة، وعنوان كبير، وثلاثة أرقام أداء فورية، وزر أبيض واضح لبدء التشغيل.",
+        ],
+        crops: [
+          "قائمة متكاملة تضم تسجيل الدخول وزر نشر الوكيل الأبيض.",
+          "عنوان ضخم تتألق كلمته الأخيرة بتدرج لوني.",
+          "ثلاثة مؤشرات أداء رئيسية في الجزء السفلي.",
+        ],
+        rows: [
+          ["القائمة", "القدرات، الآلية، البنية، التكاملات، الأمان"],
+          ["الأزرار", "تسجيل الدخول، نشر وكيل"],
+          ["المؤشرات", "+3500 وكيل نشط، 99.7% توافر، زمن استجابة < 50 مللي ثانية"],
+          ["تركيز التصميم", "أجواء داكنة تقنية ومقاييس لحظية وزر إجراء واضح"],
+        ],
       },
       sweet: {
         kind: "مخبز حلويات حرفي",
         alt: "واجهة Sweet Heaven: عنوان أبيض كلاسيكي على خلفية كريمية وزر ذهبي",
-        t: ["واجهة تحريرية لمتجر كيك وحلويات حرفية.", "درجات الكريمي والذهبي وعنوان سيريف كبير في المنتصف وزر واحد نحو التشكيلة دون أي تشتيت بصري."],
-        crops: ["قائمة أحرف متباعدة مع زر طلب ذهبي أنيق.", "عنوان سيريف أبيض كبير مع زر واحد نحو المجموعة.", "شعار بلونين: الشوكولاتة والذهبي."],
-        rows: [["القائمة", "الرئيسية، الفلسفة، القائمة، الأسئلة، تواصل"], ["الأزرار", "اطلب الآن، اكتشف التشكيلة"], ["تركيز التصميم", "طابع تحريري دافئ بالكريمي والذهبي وخط سيريف كلاسيكي"]]
-      }
-    }
+        t: [
+          "واجهة تحريرية لمتجر كيك وحلويات حرفية.",
+          "درجات الكريمي والذهبي وعنوان سيريف كبير في المنتصف وزر واحد نحو التشكيلة دون أي تشتيت بصري.",
+        ],
+        crops: [
+          "قائمة أحرف متباعدة مع زر طلب ذهبي أنيق.",
+          "عنوان سيريف أبيض كبير مع زر واحد نحو المجموعة.",
+          "شعار بلونين: الشوكولاتة والذهبي.",
+        ],
+        rows: [
+          ["القائمة", "الرئيسية، الفلسفة، القائمة، الأسئلة، تواصل"],
+          ["الأزرار", "اطلب الآن، اكتشف التشكيلة"],
+          ["تركيز التصميم", "طابع تحريري دافئ بالكريمي والذهبي وخط سيريف كلاسيكي"],
+        ],
+      },
+    },
   },
   fr: {
     role: "Front-End & Design UI",
@@ -314,38 +607,85 @@ var NP_I18N = {
       "Dark UI System": "Système UI sombre",
       "Interactive Layout": "Mise en page interactive",
       "SaaS Landing": "Landing SaaS",
-      "E-Commerce Catalog": "Catalogue e-commerce"
+      "E-Commerce Catalog": "Catalogue e-commerce",
     },
     projects: {
       mono: {
         kind: "Habitat modulaire",
         alt: "Page d’accueil Mono : lettrage géant derrière une architecture en acier au bord de l’eau",
-        t: ["Landing page pour un concept d’habitat modulaire léger et durable.", "Le nom de la marque s’étend sur tout l’écran derrière la photo architecturale pour frapper d’emblée, tandis que menu et contact restent discrets."],
-        crops: ["Navigation compacte et bouton contact qui ne rivalisent pas avec le titre.", "Architecture en acier corten devant une typographie monumentale.", "Une seule phrase clé posée au-dessus du reflet de l’eau."],
-        rows: [["Menu", "Design, Galerie, Modèles, À propos"], ["Action", "Contact"], ["Accroche", "Léger, durable et prêt pour l’aventure."], ["Axe design", "Typographie monumentale, contraste acier & eau, chrome minimal"]]
+        t: [
+          "Landing page pour un concept d’habitat modulaire léger et durable.",
+          "Le nom de la marque s’étend sur tout l’écran derrière la photo architecturale pour frapper d’emblée, tandis que menu et contact restent discrets.",
+        ],
+        crops: [
+          "Navigation compacte et bouton contact qui ne rivalisent pas avec le titre.",
+          "Architecture en acier corten devant une typographie monumentale.",
+          "Une seule phrase clé posée au-dessus du reflet de l’eau.",
+        ],
+        rows: [
+          ["Menu", "Design, Galerie, Modèles, À propos"],
+          ["Action", "Contact"],
+          ["Accroche", "Léger, durable et prêt pour l’aventure."],
+          ["Axe design", "Typographie monumentale, contraste acier & eau, chrome minimal"],
+        ],
       },
       gigi: {
         kind: "Boisson énergisante",
         alt: "Page d’accueil GiGi : titre gras, bouton de remise et canette citron-vert",
-        t: ["Landing page percutante pour une boisson énergisante sans sucre.", "Un fond blanc pur met en valeur la canette vert fluo, soutenue par un titre dense, deux déclencheurs de remise et quatre atouts alignés."],
-        crops: ["Barre supérieure dotée d’un bouton de remise vert à fort contraste.", "Titre incisif, texte court et deux boutons aux rôles distincts.", "La canette citron-vert comme point d’ancrage visuel à droite."],
-        rows: [["Menu", "Accueil, Saveurs, Créateurs, Distributeurs, Carrières"], ["Actions", "-25 %, S’inscrire & économiser 25 %, Voir les saveurs"], ["Atouts", "Zéro sucre, 7+mg caféine, Arômes naturels, Riche en vitamine B"], ["Axe design", "Hiérarchie orientée conversion, accents néon sur scène blanche"]]
+        t: [
+          "Landing page percutante pour une boisson énergisante sans sucre.",
+          "Un fond blanc pur met en valeur la canette vert fluo, soutenue par un titre dense, deux déclencheurs de remise et quatre atouts alignés.",
+        ],
+        crops: [
+          "Barre supérieure dotée d’un bouton de remise vert à fort contraste.",
+          "Titre incisif, texte court et deux boutons aux rôles distincts.",
+          "La canette citron-vert comme point d’ancrage visuel à droite.",
+        ],
+        rows: [
+          ["Menu", "Accueil, Saveurs, Créateurs, Distributeurs, Carrières"],
+          ["Actions", "-25 %, S’inscrire & économiser 25 %, Voir les saveurs"],
+          ["Atouts", "Zéro sucre, 7+mg caféine, Arômes naturels, Riche en vitamine B"],
+          ["Axe design", "Hiérarchie orientée conversion, accents néon sur scène blanche"],
+        ],
       },
       compute: {
         kind: "Plateforme d’agents IA",
         alt: "Page d’accueil Compute : titre blanc sur fond sombre avec arbre lumineux rose",
-        t: ["Page d’accueil pour une plateforme d’exécution d’agents IA distribués.", "Fond obsidienne profond, arbre lumineux à droite, grand titre à gauche, trois métriques temps réel et un CTA blanc net."],
-        crops: ["Navigation complète avec connexion et bouton blanc Déployer un agent.", "Grand titre d’affichage avec dernier mot mis en valeur par un dégradé.", "Trois indicateurs clés de performance en bas de l’écran."],
-        rows: [["Menu", "Capacités, Processus, Infra, Intégrations, Sécurité"], ["Actions", "Se connecter, Déployer un agent"], ["Chiffres", "3500+ agents actifs, 99,7 % dispo, latence < 50 ms"], ["Axe design", "Ambiance sombre technique, télémétrie en direct, CTA contrasté"]]
+        t: [
+          "Page d’accueil pour une plateforme d’exécution d’agents IA distribués.",
+          "Fond obsidienne profond, arbre lumineux à droite, grand titre à gauche, trois métriques temps réel et un CTA blanc net.",
+        ],
+        crops: [
+          "Navigation complète avec connexion et bouton blanc Déployer un agent.",
+          "Grand titre d’affichage avec dernier mot mis en valeur par un dégradé.",
+          "Trois indicateurs clés de performance en bas de l’écran.",
+        ],
+        rows: [
+          ["Menu", "Capacités, Processus, Infra, Intégrations, Sécurité"],
+          ["Actions", "Se connecter, Déployer un agent"],
+          ["Chiffres", "3500+ agents actifs, 99,7 % dispo, latence < 50 ms"],
+          ["Axe design", "Ambiance sombre technique, télémétrie en direct, CTA contrasté"],
+        ],
       },
       sweet: {
         kind: "Pâtisserie artisanale",
         alt: "Page d’accueil Sweet Heaven : titre serif blanc sur fond crème avec bouton doré",
-        t: ["Vitrine éditoriale pour une maison de pâtisserie artisanale.", "Palette crème et or, grand titre serif centré et un seul appel à l’action vers la collection, sans distraction superflue."],
-        crops: ["Menu en capitales espacées accompagné d’un bouton doré Commander.", "Grand titre serif blanc et unique bouton vers la collection.", "Logo bicolore chocolat et or."],
-        rows: [["Menu", "Accueil, Philosophie, Carte, Questions, Contact"], ["Actions", "Commander, Découvrir la collection"], ["Axe design", "Éditorial chaleureux crème & or, typographie serif intemporelle"]]
-      }
-    }
+        t: [
+          "Vitrine éditoriale pour une maison de pâtisserie artisanale.",
+          "Palette crème et or, grand titre serif centré et un seul appel à l’action vers la collection, sans distraction superflue.",
+        ],
+        crops: [
+          "Menu en capitales espacées accompagné d’un bouton doré Commander.",
+          "Grand titre serif blanc et unique bouton vers la collection.",
+          "Logo bicolore chocolat et or.",
+        ],
+        rows: [
+          ["Menu", "Accueil, Philosophie, Carte, Questions, Contact"],
+          ["Actions", "Commander, Découvrir la collection"],
+          ["Axe design", "Éditorial chaleureux crème & or, typographie serif intemporelle"],
+        ],
+      },
+    },
   },
   ja: {
     role: "フロントエンド & UIデザイン",
@@ -366,38 +706,85 @@ var NP_I18N = {
       "Dark UI System": "ダークUI設計",
       "Interactive Layout": "対話レイアウト",
       "SaaS Landing": "SaaSランディング",
-      "E-Commerce Catalog": "ECカタログ"
+      "E-Commerce Catalog": "ECカタログ",
     },
     projects: {
       mono: {
         kind: "モジュラー住宅",
         alt: "Monoトップページ：水辺の鋼鉄建築の背後に巨大なブランド文字",
-        t: ["軽量で高耐久なモジュラー住宅のランディングページ。", "画面いっぱいのブランドロゴの前に建築写真を重ね、読まなくても世界観が伝わる構成に。メニューと連絡ボタンは控えめに抑えています。"],
-        crops: ["主見出しの邪魔をしないコンパクトなナビと連絡ボタン。", "巨大なディスプレイ書体の手前に立つ耐候性鋼の建築。", "水面の反射の上に置かれた端的なタグライン。"],
-        rows: [["メニュー", "デザイン、ギャラリー、モデル、概要"], ["ボタン", "お問い合わせ"], ["タグライン", "軽くて丈夫、冒険へすぐ踏み出せる。"], ["デザイン要点", "圧倒的なタイポグラフィ、鋼鉄と水の対比、最小限のナビ"]]
+        t: [
+          "軽量で高耐久なモジュラー住宅のランディングページ。",
+          "画面いっぱいのブランドロゴの前に建築写真を重ね、読まなくても世界観が伝わる構成に。メニューと連絡ボタンは控えめに抑えています。",
+        ],
+        crops: [
+          "主見出しの邪魔をしないコンパクトなナビと連絡ボタン。",
+          "巨大なディスプレイ書体の手前に立つ耐候性鋼の建築。",
+          "水面の反射の上に置かれた端的なタグライン。",
+        ],
+        rows: [
+          ["メニュー", "デザイン、ギャラリー、モデル、概要"],
+          ["ボタン", "お問い合わせ"],
+          ["タグライン", "軽くて丈夫、冒険へすぐ踏み出せる。"],
+          ["デザイン要点", "圧倒的なタイポグラフィ、鋼鉄と水の対比、最小限のナビ"],
+        ],
       },
       gigi: {
         kind: "エナジードリンク",
         alt: "GiGiトップページ：力強い見出し、割引ボタン、レモンライム缶",
-        t: ["Z世代向けの無糖エナジードリンク用ランディングページ。", "真っ白なキャンバスでネオンライムの缶を主役にし、凝縮された見出し・2箇所の割引CTA・4つの特長バーで即座に訴求します。"],
-        crops: ["コントラストの効いた緑色の割引CTAを備えたトップバー。", "力強い見出し・簡潔な説明・役割の異なる2つのボタン。", "右側の視覚的アンカーとして映えるレモンライム缶。"],
-        rows: [["メニュー", "ホーム、フレーバー、クリエイター、販売店、採用"], ["ボタン", "25%オフ、登録して25%オフ、フレーバーを見る"], ["特長", "糖類ゼロ、カフェイン7+mg、天然香料、ビタミンB豊富"], ["デザイン要点", "高いコンバージョン階層、白背景に映えるネオンアクセント"]]
+        t: [
+          "Z世代向けの無糖エナジードリンク用ランディングページ。",
+          "真っ白なキャンバスでネオンライムの缶を主役にし、凝縮された見出し・2箇所の割引CTA・4つの特長バーで即座に訴求します。",
+        ],
+        crops: [
+          "コントラストの効いた緑色の割引CTAを備えたトップバー。",
+          "力強い見出し・簡潔な説明・役割の異なる2つのボタン。",
+          "右側の視覚的アンカーとして映えるレモンライム缶。",
+        ],
+        rows: [
+          ["メニュー", "ホーム、フレーバー、クリエイター、販売店、採用"],
+          ["ボタン", "25%オフ、登録して25%オフ、フレーバーを見る"],
+          ["特長", "糖類ゼロ、カフェイン7+mg、天然香料、ビタミンB豊富"],
+          ["デザイン要点", "高いコンバージョン階層、白背景に映えるネオンアクセント"],
+        ],
       },
       compute: {
         kind: "AIエージェント基盤",
         alt: "Computeトップページ：暗色背景に白の大きな見出しとピンクに光るデジタルツリー",
-        t: ["複数マシンで分散稼働するAIエージェント基盤のフロントページ。", "深い漆黒背景と右側の光るツリー、左揃えの大見出し、3つのリアルタイム性能指標、明快な白いデプロイボタンで構成しました。"],
-        crops: ["ログインと高コントラストな白のデプロイボタン付きナビ。", "末尾の単語にグラデーションを効かせた大型見出し。", "画面下部に並ぶ3つの主要パフォーマンス指標。"],
-        rows: [["メニュー", "機能、プロセス、インフラ、連携、セキュリティ"], ["ボタン", "ログイン、エージェントを展開"], ["性能指標", "稼働エージェント3500+、稼働率99.7%、遅延50ms未満"], ["デザイン要点", "技術的なダークモード、リアルタイム指標、明確なCTA"]]
+        t: [
+          "複数マシンで分散稼働するAIエージェント基盤のフロントページ。",
+          "深い漆黒背景と右側の光るツリー、左揃えの大見出し、3つのリアルタイム性能指標、明快な白いデプロイボタンで構成しました。",
+        ],
+        crops: [
+          "ログインと高コントラストな白のデプロイボタン付きナビ。",
+          "末尾の単語にグラデーションを効かせた大型見出し。",
+          "画面下部に並ぶ3つの主要パフォーマンス指標。",
+        ],
+        rows: [
+          ["メニュー", "機能、プロセス、インフラ、連携、セキュリティ"],
+          ["ボタン", "ログイン、エージェントを展開"],
+          ["性能指標", "稼働エージェント3500+、稼働率99.7%、遅延50ms未満"],
+          ["デザイン要点", "技術的なダークモード、リアルタイム指標、明確なCTA"],
+        ],
       },
       sweet: {
         kind: "アルチザン洋菓子店",
         alt: "Sweet Heavenトップページ：クリーム背景に白のセリフ体見出しと金色ボタン",
-        t: ["アルチザンケーキ＆洋菓子店のエディトリアルサイト。", "温かなクリームとゴールドを基調に、中央のクラシックなセリフ体見出しとコレクションへの単一CTAで凛とした佇まいに仕上げました。"],
-        crops: ["字間を広げた大文字メニューと金色の注文ボタン。", "白い大型セリフ体見出しとコレクションへの単一ボタン。", "チョコレートとゴールドの2色ロゴ。"],
-        rows: [["メニュー", "ホーム、哲学、メニュー、よくある質問、お問い合わせ"], ["ボタン", "今すぐ注文、コレクションを見る"], ["デザイン要点", "温かなクリーム＆ゴールド配色、優雅なクラシックセリフ体"]]
-      }
-    }
+        t: [
+          "アルチザンケーキ＆洋菓子店のエディトリアルサイト。",
+          "温かなクリームとゴールドを基調に、中央のクラシックなセリフ体見出しとコレクションへの単一CTAで凛とした佇まいに仕上げました。",
+        ],
+        crops: [
+          "字間を広げた大文字メニューと金色の注文ボタン。",
+          "白い大型セリフ体見出しとコレクションへの単一ボタン。",
+          "チョコレートとゴールドの2色ロゴ。",
+        ],
+        rows: [
+          ["メニュー", "ホーム、哲学、メニュー、よくある質問、お問い合わせ"],
+          ["ボタン", "今すぐ注文、コレクションを見る"],
+          ["デザイン要点", "温かなクリーム＆ゴールド配色、優雅なクラシックセリフ体"],
+        ],
+      },
+    },
   },
   ko: {
     role: "프론트엔드 & UI 디자인",
@@ -418,650 +805,697 @@ var NP_I18N = {
       "Dark UI System": "다크 UI 시스템",
       "Interactive Layout": "인터랙티브 레이아웃",
       "SaaS Landing": "SaaS 랜딩",
-      "E-Commerce Catalog": "이커머스 카탈로그"
+      "E-Commerce Catalog": "이커머스 카탈로그",
     },
     projects: {
       mono: {
         kind: "모듈러 하우징",
         alt: "Mono 첫 화면: 물가의 강철 건축물 뒤로 펼쳐진 초대형 브랜드 타이포그래피",
-        t: ["가볍고 견고한 모듈러 주택 제품을 위한 랜딩 페이지입니다.", "브랜드 이름을 화면 가득 채우고 그 위에 건축 사진을 겹쳐 읽지 않아도 주제가 단번에 전달되게 했으며, 메뉴와 문의 버튼은 절제했습니다."],
-        crops: ["제목과 경쟁하지 않도록 절제한 상단 메뉴와 문의 버튼.", "초대형 디스플레이 서체 앞에 겹쳐진 강철 건축물.", "물결 반사 위에 놓인 단 한 줄의 핵심 카피."],
-        rows: [["메뉴", "디자인, 갤러리, 모델, 소개"], ["버튼", "문의"], ["핵심 문구", "가볍고 견고하며 모험에 준비된 공간."], ["디자인 포인트", "기념비적 타이포그래피, 강철과 물의 질감 대비, 미니멀 내비게이션"]]
+        t: [
+          "가볍고 견고한 모듈러 주택 제품을 위한 랜딩 페이지입니다.",
+          "브랜드 이름을 화면 가득 채우고 그 위에 건축 사진을 겹쳐 읽지 않아도 주제가 단번에 전달되게 했으며, 메뉴와 문의 버튼은 절제했습니다.",
+        ],
+        crops: [
+          "제목과 경쟁하지 않도록 절제한 상단 메뉴와 문의 버튼.",
+          "초대형 디스플레이 서체 앞에 겹쳐진 강철 건축물.",
+          "물결 반사 위에 놓인 단 한 줄의 핵심 카피.",
+        ],
+        rows: [
+          ["메뉴", "디자인, 갤러리, 모델, 소개"],
+          ["버튼", "문의"],
+          ["핵심 문구", "가볍고 견고하며 모험에 준비된 공간."],
+          ["디자인 포인트", "기념비적 타이포그래피, 강철과 물의 질감 대비, 미니멀 내비게이션"],
+        ],
       },
       gigi: {
         kind: "에너지 드링크",
         alt: "GiGi 첫 화면: 굵은 제목, 할인 버튼, 레몬 라임 에너지 드링크 캔",
-        t: ["Z세대를 위한 제로 슈거 에너지 드링크 랜딩 페이지입니다.", "깨끗한 흰 배경으로 네온 라임 캔이 돋보이게 하고, 밀도 높은 제목과 이중 할인 버튼, 한 줄 요약 장점으로 즉각적인 행동을 유도합니다."],
-        crops: ["고대비 그린 할인 버튼을 강조한 상단 바.", "강렬한 헤드라인, 짧은 설명, 역할이 다른 두 개의 버튼.", "오른쪽 시각적 중심을 잡는 레몬 라임 캔."],
-        rows: [["메뉴", "홈, 플레이버, 크리에이터, 유통, 채용"], ["버튼", "25% 할인, 가입하고 25% 절약, 맛 둘러보기"], ["핵심 장점", "제로 슈거, 카페인 7+mg, 천연 향료, 풍부한 비타민 B"], ["디자인 포인트", "높은 전환율 위계, 흰 배경 위의 선명한 네온 포인트"]]
+        t: [
+          "Z세대를 위한 제로 슈거 에너지 드링크 랜딩 페이지입니다.",
+          "깨끗한 흰 배경으로 네온 라임 캔이 돋보이게 하고, 밀도 높은 제목과 이중 할인 버튼, 한 줄 요약 장점으로 즉각적인 행동을 유도합니다.",
+        ],
+        crops: [
+          "고대비 그린 할인 버튼을 강조한 상단 바.",
+          "강렬한 헤드라인, 짧은 설명, 역할이 다른 두 개의 버튼.",
+          "오른쪽 시각적 중심을 잡는 레몬 라임 캔.",
+        ],
+        rows: [
+          ["메뉴", "홈, 플레이버, 크리에이터, 유통, 채용"],
+          ["버튼", "25% 할인, 가입하고 25% 절약, 맛 둘러보기"],
+          ["핵심 장점", "제로 슈거, 카페인 7+mg, 천연 향료, 풍부한 비타민 B"],
+          ["디자인 포인트", "높은 전환율 위계, 흰 배경 위의 선명한 네온 포인트"],
+        ],
       },
       compute: {
         kind: "AI 에이전트 플랫폼",
         alt: "Compute 첫 화면: 어두운 배경 위의 흰색 대형 제목과 분홍빛 발광 트리",
-        t: ["여러 머신에서 동시에 실행되는 분산 AI 에이전트 플랫폼 첫 화면입니다.", "깊은 다크 배경과 오른쪽 발광 트리, 왼쪽 대형 제목, 하단 3가지 성능 지표, 선명한 흰색 배포 버튼으로 구성했습니다."],
-        crops: ["로그인과 고대비 흰색 에이전트 배포 버튼을 갖춘 상단 메뉴.", "마지막 단어에 그라데이션 포인트를 준 대형 제목.", "하단에 배치된 세 가지 핵심 성능 지표."],
-        rows: [["메뉴", "기능, 프로세스, 인프라, 연동, 보안"], ["버튼", "로그인, 에이전트 배포"], ["성능 지표", "활성 에이전트 3500+, 가동률 99.7%, 지연 50ms 미만"], ["디자인 포인트", "테크니컬 다크 모드, 실시간 지표, 명확한 고대비 CTA"]]
+        t: [
+          "여러 머신에서 동시에 실행되는 분산 AI 에이전트 플랫폼 첫 화면입니다.",
+          "깊은 다크 배경과 오른쪽 발광 트리, 왼쪽 대형 제목, 하단 3가지 성능 지표, 선명한 흰색 배포 버튼으로 구성했습니다.",
+        ],
+        crops: [
+          "로그인과 고대비 흰색 에이전트 배포 버튼을 갖춘 상단 메뉴.",
+          "마지막 단어에 그라데이션 포인트를 준 대형 제목.",
+          "하단에 배치된 세 가지 핵심 성능 지표.",
+        ],
+        rows: [
+          ["메뉴", "기능, 프로세스, 인프라, 연동, 보안"],
+          ["버튼", "로그인, 에이전트 배포"],
+          ["성능 지표", "활성 에이전트 3500+, 가동률 99.7%, 지연 50ms 미만"],
+          ["디자인 포인트", "테크니컬 다크 모드, 실시간 지표, 명확한 고대비 CTA"],
+        ],
       },
       sweet: {
         kind: "아티잔 베이커리",
         alt: "Sweet Heaven 첫 화면: 크림색 배경 위의 흰색 세리프 제목과 골드 버튼",
-        t: ["아티잔 케이크 및 페이스트리 스튜디오를 위한 에디토리얼 첫 화면입니다.", "따뜻한 크림과 골드 팔레트, 중앙의 클래식 세리프 제목, 컬렉션으로 향하는 단 하나의 버튼으로 시선을 집중시켰습니다."],
-        crops: ["넓은 자간의 대문자 메뉴와 골드 주문 버튼.", "큰 흰색 세리프 제목과 컬렉션으로 이어지는 단일 버튼.", "초콜릿과 골드 투톤 브랜드 로고."],
-        rows: [["메뉴", "홈, 철학, 메뉴, 자주 묻는 질문, 문의"], ["버튼", "지금 주문, 컬렉션 보기"], ["디자인 포인트", "따뜻한 크림 & 골드 에디토리얼, 클래식 세리프 타이포그래피"]]
-      }
-    }
-  }
+        t: [
+          "아티잔 케이크 및 페이스트리 스튜디오를 위한 에디토리얼 첫 화면입니다.",
+          "따뜻한 크림과 골드 팔레트, 중앙의 클래식 세리프 제목, 컬렉션으로 향하는 단 하나의 버튼으로 시선을 집중시켰습니다.",
+        ],
+        crops: [
+          "넓은 자간의 대문자 메뉴와 골드 주문 버튼.",
+          "큰 흰색 세리프 제목과 컬렉션으로 이어지는 단일 버튼.",
+          "초콜릿과 골드 투톤 브랜드 로고.",
+        ],
+        rows: [
+          ["메뉴", "홈, 철학, 메뉴, 자주 묻는 질문, 문의"],
+          ["버튼", "지금 주문, 컬렉션 보기"],
+          ["디자인 포인트", "따뜻한 크림 & 골드 에디토리얼, 클래식 세리프 타이포그래피"],
+        ],
+      },
+    },
+  },
 };
 
 var NP_URL = {
-  mono: 'https://v0-mono-ecommerce.vercel.app/',
-  gigi: 'https://modern-gen-z-energy-drink-landi-six-eta.vercel.app/',
-  compute: 'https://compute-the-platform-to-build-psi-tan.vercel.app/',
-  sweet: 'https://trynvexa.github.io/toko-kue/'
+  mono: "https://v0-mono-ecommerce.vercel.app/",
+  gigi: "https://modern-gen-z-energy-drink-landi-six-eta.vercel.app/",
+  compute: "https://compute-the-platform-to-build-psi-tan.vercel.app/",
+  sweet: "https://trynvexa.github.io/toko-kue/",
 };
 
 /* ---------- 8-Language Localization for Zikri's Depot (p5) ---------- */
 var NP_DEPOT_I18N = {
   id: {
-    word: 'PROYEK',
-    navHome: 'Beranda',
-    navTalk: 'Hubungi ↗',
-    logoAria: 'Kembali ke beranda',
-    homeAria: 'Kembali ke daftar kartu',
-    talkAria: 'Buka halaman Kontak',
-    pill: 'PILIH KONTAINER ↓',
-    eyebrow: 'ZIKRI’S DEPOT · 7 KONTAINER · 2026',
-    caseBtn: 'Detail Proyek',
-    demoBtn: 'Lihat Demo ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: 'Hubungi Saya ↗',
-    openSr: 'Buka kontainer',
-    closeModalAria: 'Tutup detail proyek',
-    modalLightboxHint: 'Buka Demo Langsung ↗',
+    word: "PROYEK",
+    navHome: "Beranda",
+    navTalk: "Hubungi ↗",
+    logoAria: "Kembali ke beranda",
+    homeAria: "Kembali ke daftar kartu",
+    talkAria: "Buka halaman Kontak",
+    pill: "PILIH KONTAINER ↓",
+    eyebrow: "ZIKRI’S DEPOT · 7 KONTAINER · 2026",
+    caseBtn: "Detail Proyek",
+    demoBtn: "Lihat Demo ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "Hubungi Saya ↗",
+    openSr: "Buka kontainer",
+    closeModalAria: "Tutup detail proyek",
+    modalLightboxHint: "Buka Demo Langsung ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / HUNIAN MODULAR',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: 'Halaman depan hunian modular dengan tipografi monumental, kontras material baja-air, dan navigasi bersih.',
-        chips: ['HTML5', 'CSS3', 'Tipografi Editorial']
+        label: ["MONO", "LIVING"],
+        eb: "01 / HUNIAN MODULAR",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "Halaman depan hunian modular dengan tipografi monumental, kontras material baja-air, dan navigasi bersih.",
+        chips: ["HTML5", "CSS3", "Tipografi Editorial"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / MINUMAN ENERGI',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: 'Landing page minuman energi tanpa gula berkonversi tinggi dengan aksen neon tajam di kanvas putih.',
-        chips: ['Tailwind CSS', 'UI Konversi']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / MINUMAN ENERGI",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "Landing page minuman energi tanpa gula berkonversi tinggi dengan aksen neon tajam di kanvas putih.",
+        chips: ["Tailwind CSS", "UI Konversi"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / AGEN AI',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: 'Antarmuka gelap platform agen AI terdistribusi dengan metrik langsung dan hirarki aksi kontras tinggi.',
-        chips: ['Sistem UI Gelap', 'Halaman SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / AGEN AI",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "Antarmuka gelap platform agen AI terdistribusi dengan metrik langsung dan hirarki aksi kontras tinggi.",
+        chips: ["Sistem UI Gelap", "Halaman SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / TOKO KUE',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: 'Etalase editorial toko kue artisan bernuansa krem dan emas dengan tipografi serif klasik yang hangat.',
-        chips: ['JavaScript', 'Katalog Daring']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / TOKO KUE",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "Etalase editorial toko kue artisan bernuansa krem dan emas dengan tipografi serif klasik yang hangat.",
+        chips: ["JavaScript", "Katalog Daring"],
       },
       process: {
-        label: ['PROSES'],
-        eb: '05 / CARA KERJA',
-        titleBefore: 'Cara saya ',
-        titleAccent: 'bekerja.',
-        body: 'Riset kebutuhan, merancang sistem visual, membangun kode responsif, menguji tiap detail, lalu merilis.',
-        chips: ['Riset', 'Desain UI', 'Kode Bersih', 'Rilis']
+        label: ["PROSES"],
+        eb: "05 / CARA KERJA",
+        titleBefore: "Cara saya ",
+        titleAccent: "bekerja.",
+        body: "Riset kebutuhan, merancang sistem visual, membangun kode responsif, menguji tiap detail, lalu merilis.",
+        chips: ["Riset", "Desain UI", "Kode Bersih", "Rilis"],
       },
       do: {
-        label: ['ARSIP', 'GITHUB'],
-        eb: '06 / ARSIP KODE',
-        titleBefore: 'Eksperimen & ',
-        titleAccent: 'kode.',
-        body: 'Kumpulan eksplorasi antarmuka, komponen interaktif, dan proyek web sumber terbuka sejak SMK hingga PKL DigitalCODE.',
-        chips: ['Open Source', 'Vanilla JS', 'UI Motion']
+        label: ["ARSIP", "GITHUB"],
+        eb: "06 / ARSIP KODE",
+        titleBefore: "Eksperimen & ",
+        titleAccent: "kode.",
+        body: "Kumpulan eksplorasi antarmuka, komponen interaktif, dan proyek web sumber terbuka sejak SMK hingga PKL DigitalCODE.",
+        chips: ["Open Source", "Vanilla JS", "UI Motion"],
       },
       archive: {
-        label: ['AJAK', 'DISKUSI'],
-        eb: '07 / KOLABORASI',
-        titleBefore: 'Punya ',
-        titleAccent: 'ide?',
-        body: 'Terbuka untuk freelance, kolaborasi produk web, atau sekadar bertukar pikiran soal desain antarmuka.',
-        chips: []
-      }
-    }
+        label: ["AJAK", "DISKUSI"],
+        eb: "07 / KOLABORASI",
+        titleBefore: "Punya ",
+        titleAccent: "ide?",
+        body: "Terbuka untuk freelance, kolaborasi produk web, atau sekadar bertukar pikiran soal desain antarmuka.",
+        chips: [],
+      },
+    },
   },
   en: {
-    word: 'PROJECTS',
-    navHome: 'Home',
-    navTalk: 'Let’s Talk ↗',
-    logoAria: 'Return to home wheel',
-    homeAria: 'Return to portfolio cards',
-    talkAria: 'Open Contact page',
-    pill: 'PICK A CONTAINER ↓',
-    eyebrow: 'ZIKRI’S DEPOT · 7 CONTAINERS · 2026',
-    caseBtn: 'Case Study',
-    demoBtn: 'Live Demo ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: 'Get in Touch ↗',
-    openSr: 'Open container',
-    closeModalAria: 'Close case study',
-    modalLightboxHint: 'Launch Live Demo ↗',
+    word: "PROJECTS",
+    navHome: "Home",
+    navTalk: "Let’s Talk ↗",
+    logoAria: "Return to home wheel",
+    homeAria: "Return to portfolio cards",
+    talkAria: "Open Contact page",
+    pill: "PICK A CONTAINER ↓",
+    eyebrow: "ZIKRI’S DEPOT · 7 CONTAINERS · 2026",
+    caseBtn: "Case Study",
+    demoBtn: "Live Demo ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "Get in Touch ↗",
+    openSr: "Open container",
+    closeModalAria: "Close case study",
+    modalLightboxHint: "Launch Live Demo ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / MODULAR HOUSING',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: 'Editorial landing page for modular housing built with monumental display typography and calm minimal chrome.',
-        chips: ['HTML5', 'CSS3', 'Editorial Type']
+        label: ["MONO", "LIVING"],
+        eb: "01 / MODULAR HOUSING",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "Editorial landing page for modular housing built with monumental display typography and calm minimal chrome.",
+        chips: ["HTML5", "CSS3", "Editorial Type"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / ENERGY DRINK',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: 'High-conversion zero-sugar energy drink showcase pairing electric lime accents with a crisp white canvas.',
-        chips: ['Tailwind CSS', 'Conversion UI']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / ENERGY DRINK",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "High-conversion zero-sugar energy drink showcase pairing electric lime accents with a crisp white canvas.",
+        chips: ["Tailwind CSS", "Conversion UI"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / AI PLATFORM',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: 'Technical dark-mode front page for distributed AI agents with real-time metrics and crisp deployment CTAs.',
-        chips: ['Dark UI System', 'SaaS Landing']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / AI PLATFORM",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "Technical dark-mode front page for distributed AI agents with real-time metrics and crisp deployment CTAs.",
+        chips: ["Dark UI System", "SaaS Landing"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / ARTISAN BAKERY',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: 'Warm cream-and-gold storefront for an artisan pastry studio anchored by timeless serif typography.',
-        chips: ['JavaScript', 'E-Commerce']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / ARTISAN BAKERY",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "Warm cream-and-gold storefront for an artisan pastry studio anchored by timeless serif typography.",
+        chips: ["JavaScript", "E-Commerce"],
       },
       process: {
-        label: ['PROCESS'],
-        eb: '05 / HOW I WORK',
-        titleBefore: 'How I ',
-        titleAccent: 'build.',
-        body: 'Research the brief, design clear systems, engineer responsive code, polish micro-interactions, and ship.',
-        chips: ['Research', 'UI Systems', 'Clean Code', 'Ship']
+        label: ["PROCESS"],
+        eb: "05 / HOW I WORK",
+        titleBefore: "How I ",
+        titleAccent: "build.",
+        body: "Research the brief, design clear systems, engineer responsive code, polish micro-interactions, and ship.",
+        chips: ["Research", "UI Systems", "Clean Code", "Ship"],
       },
       do: {
-        label: ['CODE', 'ARCHIVE'],
-        eb: '06 / ARCHIVE',
-        titleBefore: 'Boxes of ',
-        titleAccent: 'code.',
-        body: 'Interactive UI studies, creative front-end experiments, and open repositories crafted through studio & DigitalCODE work.',
-        chips: ['Open Source', 'Vanilla JS', 'UI Motion']
+        label: ["CODE", "ARCHIVE"],
+        eb: "06 / ARCHIVE",
+        titleBefore: "Boxes of ",
+        titleAccent: "code.",
+        body: "Interactive UI studies, creative front-end experiments, and open repositories crafted through studio & DigitalCODE work.",
+        chips: ["Open Source", "Vanilla JS", "UI Motion"],
       },
       archive: {
-        label: ['SAY', 'HELLO'],
-        eb: '07 / COLLABORATE',
-        titleBefore: 'Got an ',
-        titleAccent: 'idea?',
-        body: 'Available for freelance web builds, UI design collaborations, or a quick conversation about your next product.',
-        chips: []
-      }
-    }
+        label: ["SAY", "HELLO"],
+        eb: "07 / COLLABORATE",
+        titleBefore: "Got an ",
+        titleAccent: "idea?",
+        body: "Available for freelance web builds, UI design collaborations, or a quick conversation about your next product.",
+        chips: [],
+      },
+    },
   },
   zh: {
-    word: '精选项目',
-    navHome: '首页',
-    navTalk: '联系我 ↗',
-    logoAria: '返回首页卡片',
-    homeAria: '返回作品集轮盘',
-    talkAria: '打开联系页面',
-    pill: '选择一个集装箱 ↓',
-    eyebrow: 'ZIKRI 仓库 · 7 个集装箱 · 2026',
-    caseBtn: '项目详情',
-    demoBtn: '在线演示 ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: '立即联系 ↗',
-    openSr: '打开集装箱',
-    closeModalAria: '关闭案例详情',
-    modalLightboxHint: '打开在线演示 ↗',
+    word: "精选项目",
+    navHome: "首页",
+    navTalk: "联系我 ↗",
+    logoAria: "返回首页卡片",
+    homeAria: "返回作品集轮盘",
+    talkAria: "打开联系页面",
+    pill: "选择一个集装箱 ↓",
+    eyebrow: "ZIKRI 仓库 · 7 个集装箱 · 2026",
+    caseBtn: "项目详情",
+    demoBtn: "在线演示 ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "立即联系 ↗",
+    openSr: "打开集装箱",
+    closeModalAria: "关闭案例详情",
+    modalLightboxHint: "打开在线演示 ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / 模块化住宅',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: '面向模块化住宅的杂志风落地页，以巨幅排版与耐候钢材质对比展现空间张力。',
-        chips: ['HTML5', 'CSS3', '杂志排版']
+        label: ["MONO", "LIVING"],
+        eb: "01 / 模块化住宅",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "面向模块化住宅的杂志风落地页，以巨幅排版与耐候钢材质对比展现空间张力。",
+        chips: ["HTML5", "CSS3", "杂志排版"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / 能量饮品',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: '零糖能量饮品高转化展示页，在纯白画布上释放鲜活霓虹青柠张力。',
-        chips: ['Tailwind CSS', '高转化界面']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / 能量饮品",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "零糖能量饮品高转化展示页，在纯白画布上释放鲜活霓虹青柠张力。",
+        chips: ["Tailwind CSS", "高转化界面"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / AI 平台',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: '分布式 AI 智能体平台的深色官网，呈现实时性能指标与清晰行动按钮。',
-        chips: ['暗色界面系统', 'SaaS 落地页']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / AI 平台",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "分布式 AI 智能体平台的深色官网，呈现实时性能指标与清晰行动按钮。",
+        chips: ["暗色界面系统", "SaaS 落地页"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / 手作烘焙',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: '温暖奶油与香槟金配色的手作烘焙官网，以典雅衬线标题聚焦精品系列。',
-        chips: ['JavaScript', '电商目录']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / 手作烘焙",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "温暖奶油与香槟金配色的手作烘焙官网，以典雅衬线标题聚焦精品系列。",
+        chips: ["JavaScript", "电商目录"],
       },
       process: {
-        label: ['工作流程'],
-        eb: '05 / 工作方式',
-        titleBefore: '我的打造',
-        titleAccent: '方式。',
-        body: '深入调研需求、构建设计系统、编写洁净响应式代码、打磨交互细节并稳健发布。',
-        chips: ['需求调研', '界面设计', '洁净代码', '发布上线']
+        label: ["工作流程"],
+        eb: "05 / 工作方式",
+        titleBefore: "我的打造",
+        titleAccent: "方式。",
+        body: "深入调研需求、构建设计系统、编写洁净响应式代码、打磨交互细节并稳健发布。",
+        chips: ["需求调研", "界面设计", "洁净代码", "发布上线"],
       },
       do: {
-        label: ['代码', '档案馆'],
-        eb: '06 / 开源归档',
-        titleBefore: '实验与',
-        titleAccent: '代码。',
-        body: '汇集界面交互实验、动效组件研究以及在 DigitalCODE 实践期间沉淀的开源仓库。',
-        chips: ['开源项目', '原生 JS', '界面动效']
+        label: ["代码", "档案馆"],
+        eb: "06 / 开源归档",
+        titleBefore: "实验与",
+        titleAccent: "代码。",
+        body: "汇集界面交互实验、动效组件研究以及在 DigitalCODE 实践期间沉淀的开源仓库。",
+        chips: ["开源项目", "原生 JS", "界面动效"],
       },
       archive: {
-        label: ['开启', '合作'],
-        eb: '07 / 联系合作',
-        titleBefore: '有新的',
-        titleAccent: '想法？',
-        body: '开放自由职业承接、网页界面设计与创意协作，欢迎随时交流你的下一个产品构想。',
-        chips: []
-      }
-    }
+        label: ["开启", "合作"],
+        eb: "07 / 联系合作",
+        titleBefore: "有新的",
+        titleAccent: "想法？",
+        body: "开放自由职业承接、网页界面设计与创意协作，欢迎随时交流你的下一个产品构想。",
+        chips: [],
+      },
+    },
   },
   es: {
-    word: 'PROYECTOS',
-    navHome: 'Inicio',
-    navTalk: 'Hablemos ↗',
-    logoAria: 'Volver al inicio',
-    homeAria: 'Volver a las tarjetas',
-    talkAria: 'Abrir página de contacto',
-    pill: 'ELIGE UN CONTENEDOR ↓',
-    eyebrow: 'DEPÓSITO DE ZIKRI · 7 CONTENEDORES · 2026',
-    caseBtn: 'Ver Detalle',
-    demoBtn: 'Ver Demo ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: 'Contactar ↗',
-    openSr: 'Abrir contenedor',
-    closeModalAria: 'Cerrar detalle del proyecto',
-    modalLightboxHint: 'Abrir demo en vivo ↗',
+    word: "PROYECTOS",
+    navHome: "Inicio",
+    navTalk: "Hablemos ↗",
+    logoAria: "Volver al inicio",
+    homeAria: "Volver a las tarjetas",
+    talkAria: "Abrir página de contacto",
+    pill: "ELIGE UN CONTENEDOR ↓",
+    eyebrow: "DEPÓSITO DE ZIKRI · 7 CONTENEDORES · 2026",
+    caseBtn: "Ver Detalle",
+    demoBtn: "Ver Demo ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "Contactar ↗",
+    openSr: "Abrir contenedor",
+    closeModalAria: "Cerrar detalle del proyecto",
+    modalLightboxHint: "Abrir demo en vivo ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / VIVIENDA MODULAR',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: 'Landing editorial para vivienda modular con tipografía monumental y navegación sobria.',
-        chips: ['HTML5', 'CSS3', 'Tipografía']
+        label: ["MONO", "LIVING"],
+        eb: "01 / VIVIENDA MODULAR",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "Landing editorial para vivienda modular con tipografía monumental y navegación sobria.",
+        chips: ["HTML5", "CSS3", "Tipografía"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / BEBIDA ENERGÉTICA',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: 'Escaparate de alta conversión para bebida sin azúcar con acentos lima sobre blanco puro.',
-        chips: ['Tailwind CSS', 'UI Conversión']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / BEBIDA ENERGÉTICA",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "Escaparate de alta conversión para bebida sin azúcar con acentos lima sobre blanco puro.",
+        chips: ["Tailwind CSS", "UI Conversión"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / PLATAFORMA IA',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: 'Portada oscura para agentes de IA distribuidos con telemetría en vivo y CTA directo.',
-        chips: ['UI Oscuro', 'Landing SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / PLATAFORMA IA",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "Portada oscura para agentes de IA distribuidos con telemetría en vivo y CTA directo.",
+        chips: ["UI Oscuro", "Landing SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / PASTELERÍA',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: 'Escaparate cálido en crema y oro para pastelería artesanal con tipografía serif clásica.',
-        chips: ['JavaScript', 'Catálogo']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / PASTELERÍA",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "Escaparate cálido en crema y oro para pastelería artesanal con tipografía serif clásica.",
+        chips: ["JavaScript", "Catálogo"],
       },
       process: {
-        label: ['PROCESO'],
-        eb: '05 / METODOLOGÍA',
-        titleBefore: 'Cómo ',
-        titleAccent: 'trabajo.',
-        body: 'Investigo el objetivo, diseño sistemas claros, programo con precisión y pulo cada interacción.',
-        chips: ['Análisis', 'Diseño UI', 'Código limpio', 'Lanzamiento']
+        label: ["PROCESO"],
+        eb: "05 / METODOLOGÍA",
+        titleBefore: "Cómo ",
+        titleAccent: "trabajo.",
+        body: "Investigo el objetivo, diseño sistemas claros, programo con precisión y pulo cada interacción.",
+        chips: ["Análisis", "Diseño UI", "Código limpio", "Lanzamiento"],
       },
       do: {
-        label: ['ARCHIVO', 'GITHUB'],
-        eb: '06 / ARCHIVO DE CÓDIGO',
-        titleBefore: 'Cajas de ',
-        titleAccent: 'código.',
-        body: 'Experimentos interactivos, componentes web y repositorios públicos creados en mi trayectoria.',
-        chips: ['Open Source', 'Vanilla JS', 'Animación UI']
+        label: ["ARCHIVO", "GITHUB"],
+        eb: "06 / ARCHIVO DE CÓDIGO",
+        titleBefore: "Cajas de ",
+        titleAccent: "código.",
+        body: "Experimentos interactivos, componentes web y repositorios públicos creados en mi trayectoria.",
+        chips: ["Open Source", "Vanilla JS", "Animación UI"],
       },
       archive: {
-        label: ['HABLEMOS', 'HOY'],
-        eb: '07 / COLABORACIÓN',
-        titleBefore: '¿Tienes una ',
-        titleAccent: 'idea?',
-        body: 'Disponible para proyectos freelance, diseño UI y colaboraciones web. Cuéntame tu idea.',
-        chips: []
-      }
-    }
+        label: ["HABLEMOS", "HOY"],
+        eb: "07 / COLABORACIÓN",
+        titleBefore: "¿Tienes una ",
+        titleAccent: "idea?",
+        body: "Disponible para proyectos freelance, diseño UI y colaboraciones web. Cuéntame tu idea.",
+        chips: [],
+      },
+    },
   },
   ar: {
-    word: 'المشاريع',
-    navHome: 'الرئيسية',
-    navTalk: 'تواصل معي ↗',
-    logoAria: 'العودة إلى الرئيسية',
-    homeAria: 'العودة إلى البطاقات',
-    talkAria: 'فتح صفحة التواصل',
-    pill: 'اختر حاوية ↓',
-    eyebrow: 'مستودع زكري · 7 حاويات · 2026',
-    caseBtn: 'تفاصيل المشروع',
-    demoBtn: 'معاينة مباشرة ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: 'ابدأ المحادثة ↗',
-    openSr: 'فتح الحاوية',
-    closeModalAria: 'إغلاق تفاصيل المشروع',
-    modalLightboxHint: 'فتح المعاينة المباشرة ↗',
+    word: "المشاريع",
+    navHome: "الرئيسية",
+    navTalk: "تواصل معي ↗",
+    logoAria: "العودة إلى الرئيسية",
+    homeAria: "العودة إلى البطاقات",
+    talkAria: "فتح صفحة التواصل",
+    pill: "اختر حاوية ↓",
+    eyebrow: "مستودع زكري · 7 حاويات · 2026",
+    caseBtn: "تفاصيل المشروع",
+    demoBtn: "معاينة مباشرة ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "ابدأ المحادثة ↗",
+    openSr: "فتح الحاوية",
+    closeModalAria: "إغلاق تفاصيل المشروع",
+    modalLightboxHint: "فتح المعاينة المباشرة ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / مساكن معيارية',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: 'صفحة هبوط تحريرية لمساكن معيارية بطباعة عملاقة وتباين بصري هادئ بين الفولاذ والماء.',
-        chips: ['HTML5', 'CSS3', 'طباعة تحريرية']
+        label: ["MONO", "LIVING"],
+        eb: "01 / مساكن معيارية",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "صفحة هبوط تحريرية لمساكن معيارية بطباعة عملاقة وتباين بصري هادئ بين الفولاذ والماء.",
+        chips: ["HTML5", "CSS3", "طباعة تحريرية"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / مشروب طاقة',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: 'عرض منتج عالي التحويل لمشروب طاقة خالٍ من السكر بلمسات نيون على خلفية بيضاء.',
-        chips: ['Tailwind CSS', 'واجهة تحويل']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / مشروب طاقة",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "عرض منتج عالي التحويل لمشروب طاقة خالٍ من السكر بلمسات نيون على خلفية بيضاء.",
+        chips: ["Tailwind CSS", "واجهة تحويل"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / منصة ذكاء اصطناعي',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: 'واجهة داكنة لمنصة وكلاء ذكاء اصطناعي موزّعين مع مؤشرات أداء لحظية وأزرار واضحة.',
-        chips: ['واجهة داكنة', 'صفحة SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / منصة ذكاء اصطناعي",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "واجهة داكنة لمنصة وكلاء ذكاء اصطناعي موزّعين مع مؤشرات أداء لحظية وأزرار واضحة.",
+        chips: ["واجهة داكنة", "صفحة SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / مخبز حرفي',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: 'متجر حلويات حرفي بدرجات الكريمي والذهبي وعنوان سيريف كلاسيكي دافئ.',
-        chips: ['JavaScript', 'كتالوج متجر']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / مخبز حرفي",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "متجر حلويات حرفي بدرجات الكريمي والذهبي وعنوان سيريف كلاسيكي دافئ.",
+        chips: ["JavaScript", "كتالوج متجر"],
       },
       process: {
-        label: ['المنهجية'],
-        eb: '05 / طريقة العمل',
-        titleBefore: 'كيف ',
-        titleAccent: 'أعمل.',
-        body: 'أبحث في الفكرة، أصمم نظامًا بصريًا واضحًا، أكتب شيفرة متجاوبة ونظيفة، وأصقل كل تفصيلة.',
-        chips: ['بحث', 'تصميم UI', 'شيفرة نظيفة', 'إطلاق']
+        label: ["المنهجية"],
+        eb: "05 / طريقة العمل",
+        titleBefore: "كيف ",
+        titleAccent: "أعمل.",
+        body: "أبحث في الفكرة، أصمم نظامًا بصريًا واضحًا، أكتب شيفرة متجاوبة ونظيفة، وأصقل كل تفصيلة.",
+        chips: ["بحث", "تصميم UI", "شيفرة نظيفة", "إطلاق"],
       },
       do: {
-        label: ['الأرشيف', 'جيت هاب'],
-        eb: '06 / أرشيف الشيفرة',
-        titleBefore: 'صناديق ',
-        titleAccent: 'التجارب.',
-        body: 'مجموعة من تجارب الواجهات التفاعلية ومستودعات الكود المفتوحة خلال دراستي وتدريبي في DigitalCODE.',
-        chips: ['مصدر مفتوح', 'Vanilla JS', 'حركة الواجهة']
+        label: ["الأرشيف", "جيت هاب"],
+        eb: "06 / أرشيف الشيفرة",
+        titleBefore: "صناديق ",
+        titleAccent: "التجارب.",
+        body: "مجموعة من تجارب الواجهات التفاعلية ومستودعات الكود المفتوحة خلال دراستي وتدريبي في DigitalCODE.",
+        chips: ["مصدر مفتوح", "Vanilla JS", "حركة الواجهة"],
       },
       archive: {
-        label: ['تواصل', 'معي'],
-        eb: '07 / تعاون جديد',
-        titleBefore: 'لديك ',
-        titleAccent: 'فكرة؟',
-        body: 'متاح للأعمال الحرة، تصميم واجهات الويب، أو التعاون الإبداعي لبناء منتجك الرقمي القادم.',
-        chips: []
-      }
-    }
+        label: ["تواصل", "معي"],
+        eb: "07 / تعاون جديد",
+        titleBefore: "لديك ",
+        titleAccent: "فكرة؟",
+        body: "متاح للأعمال الحرة، تصميم واجهات الويب، أو التعاون الإبداعي لبناء منتجك الرقمي القادم.",
+        chips: [],
+      },
+    },
   },
   fr: {
-    word: 'PROJETS',
-    navHome: 'Accueil',
-    navTalk: 'Parlons-en ↗',
-    logoAria: 'Retour à l’accueil',
-    homeAria: 'Retour aux cartes',
-    talkAria: 'Ouvrir la page Contact',
-    pill: 'CHOISIR UN CONTENEUR ↓',
-    eyebrow: 'DÉPÔT DE ZIKRI · 7 CONTENEURS · 2026',
-    caseBtn: 'Étude de cas',
-    demoBtn: 'Démo live ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: 'Me contacter ↗',
-    openSr: 'Ouvrir le conteneur',
-    closeModalAria: 'Fermer l’étude de cas',
-    modalLightboxHint: 'Ouvrir la démo ↗',
+    word: "PROJETS",
+    navHome: "Accueil",
+    navTalk: "Parlons-en ↗",
+    logoAria: "Retour à l’accueil",
+    homeAria: "Retour aux cartes",
+    talkAria: "Ouvrir la page Contact",
+    pill: "CHOISIR UN CONTENEUR ↓",
+    eyebrow: "DÉPÔT DE ZIKRI · 7 CONTENEURS · 2026",
+    caseBtn: "Étude de cas",
+    demoBtn: "Démo live ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "Me contacter ↗",
+    openSr: "Ouvrir le conteneur",
+    closeModalAria: "Fermer l’étude de cas",
+    modalLightboxHint: "Ouvrir la démo ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / HABITAT MODULAIRE',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: 'Landing éditoriale pour habitat modulaire alliant typographie monumentale et navigation épurée.',
-        chips: ['HTML5', 'CSS3', 'Typographie']
+        label: ["MONO", "LIVING"],
+        eb: "01 / HABITAT MODULAIRE",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "Landing éditoriale pour habitat modulaire alliant typographie monumentale et navigation épurée.",
+        chips: ["HTML5", "CSS3", "Typographie"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / BOISSON ÉNERGISANTE',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: 'Vitrine à forte conversion pour boisson sans sucre aux accents néon sur scène blanche.',
-        chips: ['Tailwind CSS', 'Conversion UI']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / BOISSON ÉNERGISANTE",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "Vitrine à forte conversion pour boisson sans sucre aux accents néon sur scène blanche.",
+        chips: ["Tailwind CSS", "Conversion UI"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / PLATEFORME IA',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: 'Interface sombre pour agents IA distribués avec télémétrie temps réel et CTA contrasté.',
-        chips: ['UI Sombre', 'Landing SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / PLATEFORME IA",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "Interface sombre pour agents IA distribués avec télémétrie temps réel et CTA contrasté.",
+        chips: ["UI Sombre", "Landing SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / PÂTISSERIE',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: 'Maison de pâtisserie artisanale en crème et or portée par une typographie serif intemporelle.',
-        chips: ['JavaScript', 'Catalogue']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / PÂTISSERIE",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "Maison de pâtisserie artisanale en crème et or portée par une typographie serif intemporelle.",
+        chips: ["JavaScript", "Catalogue"],
       },
       process: {
-        label: ['PROCESSUS'],
-        eb: '05 / MÉTHODE',
-        titleBefore: 'Ma façon de ',
-        titleAccent: 'créer.',
-        body: 'Comprendre le besoin, concevoir le système UI, coder proprement, affiner le mouvement et livrer.',
-        chips: ['Recherche', 'Design UI', 'Code propre', 'Livraison']
+        label: ["PROCESSUS"],
+        eb: "05 / MÉTHODE",
+        titleBefore: "Ma façon de ",
+        titleAccent: "créer.",
+        body: "Comprendre le besoin, concevoir le système UI, coder proprement, affiner le mouvement et livrer.",
+        chips: ["Recherche", "Design UI", "Code propre", "Livraison"],
       },
       do: {
-        label: ['ARCHIVES', 'GITHUB'],
-        eb: '06 / ARCHIVES CODE',
-        titleBefore: 'Boîtes de ',
-        titleAccent: 'code.',
-        body: 'Études interactives, composants créatifs et dépôts open source réalisés au fil de mes projets.',
-        chips: ['Open Source', 'Vanilla JS', 'Motion UI']
+        label: ["ARCHIVES", "GITHUB"],
+        eb: "06 / ARCHIVES CODE",
+        titleBefore: "Boîtes de ",
+        titleAccent: "code.",
+        body: "Études interactives, composants créatifs et dépôts open source réalisés au fil de mes projets.",
+        chips: ["Open Source", "Vanilla JS", "Motion UI"],
       },
       archive: {
-        label: ['PARLONS', 'PROJET'],
-        eb: '07 / COLLABORATION',
-        titleBefore: 'Une ',
-        titleAccent: 'idée ?',
-        body: 'Disponible pour missions freelance, collaborations UI/Front-End ou discussions créatives.',
-        chips: []
-      }
-    }
+        label: ["PARLONS", "PROJET"],
+        eb: "07 / COLLABORATION",
+        titleBefore: "Une ",
+        titleAccent: "idée ?",
+        body: "Disponible pour missions freelance, collaborations UI/Front-End ou discussions créatives.",
+        chips: [],
+      },
+    },
   },
   ja: {
-    word: 'プロジェクト',
-    navHome: 'ホーム',
-    navTalk: 'お問い合わせ ↗',
-    logoAria: 'ホームに戻る',
-    homeAria: 'カード一覧へ戻る',
-    talkAria: 'お問い合わせページを開く',
-    pill: 'コンテナを選ぶ ↓',
-    eyebrow: 'ZIKRI’S DEPOT · 7 コンテナ · 2026',
-    caseBtn: '詳細を見る',
-    demoBtn: 'ライブデモ ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: '相談する ↗',
-    openSr: 'コンテナを開く',
-    closeModalAria: 'ケーススタディを閉じる',
-    modalLightboxHint: 'ライブデモを開く ↗',
+    word: "プロジェクト",
+    navHome: "ホーム",
+    navTalk: "お問い合わせ ↗",
+    logoAria: "ホームに戻る",
+    homeAria: "カード一覧へ戻る",
+    talkAria: "お問い合わせページを開く",
+    pill: "コンテナを選ぶ ↓",
+    eyebrow: "ZIKRI’S DEPOT · 7 コンテナ · 2026",
+    caseBtn: "詳細を見る",
+    demoBtn: "ライブデモ ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "相談する ↗",
+    openSr: "コンテナを開く",
+    closeModalAria: "ケーススタディを閉じる",
+    modalLightboxHint: "ライブデモを開く ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / モジュラー住宅',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: '巨大なタイポグラフィと鋼鉄建築の対比で魅せるモジュラー住宅のランディングページ。',
-        chips: ['HTML5', 'CSS3', 'エディトリアル']
+        label: ["MONO", "LIVING"],
+        eb: "01 / モジュラー住宅",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "巨大なタイポグラフィと鋼鉄建築の対比で魅せるモジュラー住宅のランディングページ。",
+        chips: ["HTML5", "CSS3", "エディトリアル"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / エナジードリンク',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: '白背景にネオンライムが映える、無糖エナジードリンクの高転換ショーケース。',
-        chips: ['Tailwind CSS', 'コンバージョンUI']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / エナジードリンク",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "白背景にネオンライムが映える、無糖エナジードリンクの高転換ショーケース。",
+        chips: ["Tailwind CSS", "コンバージョンUI"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / AIプラットフォーム',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: '分散AIエージェント基盤のための漆黒ダークUIとリアルタイム性能指標。',
-        chips: ['ダークUI', 'SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / AIプラットフォーム",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "分散AIエージェント基盤のための漆黒ダークUIとリアルタイム性能指標。",
+        chips: ["ダークUI", "SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / 洋菓子店',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: '温かなクリームとゴールド、クラシックなセリフ体で綴る洋菓子店のエディトリアルサイト。',
-        chips: ['JavaScript', 'ECカタログ']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / 洋菓子店",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "温かなクリームとゴールド、クラシックなセリフ体で綴る洋菓子店のエディトリアルサイト。",
+        chips: ["JavaScript", "ECカタログ"],
       },
       process: {
-        label: ['プロセス'],
-        eb: '05 / 制作フロー',
-        titleBefore: '制作の',
-        titleAccent: '進め方。',
-        body: '要件の理解からUI設計、レスポンシブ実装、細部の検証まで一貫して丁寧に仕上げます。',
-        chips: ['リサーチ', 'UI設計', 'クリーン実装', 'リリース']
+        label: ["プロセス"],
+        eb: "05 / 制作フロー",
+        titleBefore: "制作の",
+        titleAccent: "進め方。",
+        body: "要件の理解からUI設計、レスポンシブ実装、細部の検証まで一貫して丁寧に仕上げます。",
+        chips: ["リサーチ", "UI設計", "クリーン実装", "リリース"],
       },
       do: {
-        label: ['コード', 'アーカイブ'],
-        eb: '06 / コード保管庫',
-        titleBefore: '実験と',
-        titleAccent: 'コード。',
-        body: 'UIモーション研究やインタラクティブな試作、DigitalCODEでの学びを含む公開リポジトリ。',
-        chips: ['オープンソース', 'Vanilla JS', 'UIモーション']
+        label: ["コード", "アーカイブ"],
+        eb: "06 / コード保管庫",
+        titleBefore: "実験と",
+        titleAccent: "コード。",
+        body: "UIモーション研究やインタラクティブな試作、DigitalCODEでの学びを含む公開リポジトリ。",
+        chips: ["オープンソース", "Vanilla JS", "UIモーション"],
       },
       archive: {
-        label: ['コラボ', '相談する'],
-        eb: '07 / コラボレーション',
-        titleBefore: 'アイデアが',
-        titleAccent: 'ありますか？',
-        body: 'フリーランス案件、Web UI制作、クリエイティブな共同制作のご相談をお待ちしています。',
-        chips: []
-      }
-    }
+        label: ["コラボ", "相談する"],
+        eb: "07 / コラボレーション",
+        titleBefore: "アイデアが",
+        titleAccent: "ありますか？",
+        body: "フリーランス案件、Web UI制作、クリエイティブな共同制作のご相談をお待ちしています。",
+        chips: [],
+      },
+    },
   },
   ko: {
-    word: '프로젝트',
-    navHome: '홈',
-    navTalk: '문의하기 ↗',
-    logoAria: '홈으로 돌아가기',
-    homeAria: '카드 목록으로 돌아가기',
-    talkAria: '문의 페이지 열기',
-    pill: '컨테이너 선택 ↓',
-    eyebrow: 'ZIKRI’S DEPOT · 7 컨테이너 · 2026',
-    caseBtn: '상세 보기',
-    demoBtn: '라이브 데모 ↗',
-    githubBtn: 'GitHub @trynvexa ↗',
-    contactBtn: '연락하기 ↗',
-    openSr: '컨테이너 열기',
-    closeModalAria: '케이스 스터디 닫기',
-    modalLightboxHint: '라이브 데모 열기 ↗',
+    word: "프로젝트",
+    navHome: "홈",
+    navTalk: "문의하기 ↗",
+    logoAria: "홈으로 돌아가기",
+    homeAria: "카드 목록으로 돌아가기",
+    talkAria: "문의 페이지 열기",
+    pill: "컨테이너 선택 ↓",
+    eyebrow: "ZIKRI’S DEPOT · 7 컨테이너 · 2026",
+    caseBtn: "상세 보기",
+    demoBtn: "라이브 데모 ↗",
+    githubBtn: "GitHub @trynvexa ↗",
+    contactBtn: "연락하기 ↗",
+    openSr: "컨테이너 열기",
+    closeModalAria: "케이스 스터디 닫기",
+    modalLightboxHint: "라이브 데모 열기 ↗",
     containers: {
       work: {
-        label: ['MONO', 'LIVING'],
-        eb: '01 / 모듈러 하우징',
-        titleBefore: 'Mono ',
-        titleAccent: 'Living.',
-        body: '초대형 타이포그래피와 강철 건축물의 질감 대비가 돋보이는 모듈러 주택 랜딩 페이지.',
-        chips: ['HTML5', 'CSS3', '에디토리얼']
+        label: ["MONO", "LIVING"],
+        eb: "01 / 모듈러 하우징",
+        titleBefore: "Mono ",
+        titleAccent: "Living.",
+        body: "초대형 타이포그래피와 강철 건축물의 질감 대비가 돋보이는 모듈러 주택 랜딩 페이지.",
+        chips: ["HTML5", "CSS3", "에디토리얼"],
       },
       about: {
-        label: ['GIGI', 'ENERGY'],
-        eb: '02 / 에너지 드링크',
-        titleBefore: 'GiGi ',
-        titleAccent: 'Energy.',
-        body: '깨끗한 화이트 캔버스 위에 네온 라임 에너지를 극대화한 제로 슈거 음료 쇼케이스.',
-        chips: ['Tailwind CSS', '전환 UI']
+        label: ["GIGI", "ENERGY"],
+        eb: "02 / 에너지 드링크",
+        titleBefore: "GiGi ",
+        titleAccent: "Energy.",
+        body: "깨끗한 화이트 캔버스 위에 네온 라임 에너지를 극대화한 제로 슈거 음료 쇼케이스.",
+        chips: ["Tailwind CSS", "전환 UI"],
       },
       kit: {
-        label: ['COMPUTE', 'AI'],
-        eb: '03 / AI 플랫폼',
-        titleBefore: 'Compute ',
-        titleAccent: 'AI.',
-        body: '분산 AI 에이전트 플랫폼을 위한 다크 UI, 실시간 지표 및 명확한 배포 동선.',
-        chips: ['다크 UI', 'SaaS']
+        label: ["COMPUTE", "AI"],
+        eb: "03 / AI 플랫폼",
+        titleBefore: "Compute ",
+        titleAccent: "AI.",
+        body: "분산 AI 에이전트 플랫폼을 위한 다크 UI, 실시간 지표 및 명확한 배포 동선.",
+        chips: ["다크 UI", "SaaS"],
       },
       hello: {
-        label: ['SWEET', 'HEAVEN'],
-        eb: '04 / 아티잔 베이커리',
-        titleBefore: 'Sweet ',
-        titleAccent: 'Heaven.',
-        body: '따뜻한 크림과 골드 팔레트, 클래식 세리프 타이포그래피로 완성한 베이커리 스토어.',
-        chips: ['JavaScript', '이커머스']
+        label: ["SWEET", "HEAVEN"],
+        eb: "04 / 아티잔 베이커리",
+        titleBefore: "Sweet ",
+        titleAccent: "Heaven.",
+        body: "따뜻한 크림과 골드 팔레트, 클래식 세리프 타이포그래피로 완성한 베이커리 스토어.",
+        chips: ["JavaScript", "이커머스"],
       },
       process: {
-        label: ['프로세스'],
-        eb: '05 / 작업 방식',
-        titleBefore: '작업하는 ',
-        titleAccent: '방식.',
-        body: '요구사항 분석, UI 시스템 설계, 반응형 코드 구현, 인터랙션 디테일 검증까지 꼼꼼히 완성합니다.',
-        chips: ['리서치', 'UI 디자인', '클린 코드', '배포']
+        label: ["프로세스"],
+        eb: "05 / 작업 방식",
+        titleBefore: "작업하는 ",
+        titleAccent: "방식.",
+        body: "요구사항 분석, UI 시스템 설계, 반응형 코드 구현, 인터랙션 디테일 검증까지 꼼꼼히 완성합니다.",
+        chips: ["리서치", "UI 디자인", "클린 코드", "배포"],
       },
       do: {
-        label: ['코드', '아카이브'],
-        eb: '06 / 코드 아카이브',
-        titleBefore: '실험과 ',
-        titleAccent: '코드.',
-        body: 'UI 모션 실험, 인터랙티브 컴포넌트, DigitalCODE 실무 경험이 담긴 오픈소스 저장소.',
-        chips: ['오픈소스', 'Vanilla JS', 'UI 모션']
+        label: ["코드", "아카이브"],
+        eb: "06 / 코드 아카이브",
+        titleBefore: "실험과 ",
+        titleAccent: "코드.",
+        body: "UI 모션 실험, 인터랙티브 컴포넌트, DigitalCODE 실무 경험이 담긴 오픈소스 저장소.",
+        chips: ["오픈소스", "Vanilla JS", "UI 모션"],
       },
       archive: {
-        label: ['협업', '문의하기'],
-        eb: '07 / 협업 제안',
-        titleBefore: '아이디어가 ',
-        titleAccent: '있나요?',
-        body: '프리랜서 웹 개발, UI 디자인 협업, 새로운 프로덕트 논의 모두 열려 있습니다.',
-        chips: []
-      }
-    }
-  }
+        label: ["협업", "문의하기"],
+        eb: "07 / 협업 제안",
+        titleBefore: "아이디어가 ",
+        titleAccent: "있나요?",
+        body: "프리랜서 웹 개발, UI 디자인 협업, 새로운 프로덕트 논의 모두 열려 있습니다.",
+        chips: [],
+      },
+    },
+  },
 };
 
 window.ZK_PROJECTS = {
@@ -1069,5 +1503,5 @@ window.ZK_PROJECTS = {
   X: NP_X,
   I18N: NP_I18N,
   URL: NP_URL,
-  DEPOT: NP_DEPOT_I18N
+  DEPOT: NP_DEPOT_I18N,
 };

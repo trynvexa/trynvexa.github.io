@@ -8,14 +8,14 @@
   if (!Z) return;
 
   function makeGlowSprite(THREE) {
-    var c = document.createElement('canvas');
+    var c = document.createElement("canvas");
     c.width = c.height = 64;
-    var ctx = c.getContext('2d');
+    var ctx = c.getContext("2d");
     var g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.32, 'rgba(255,255,255,0.68)');
-    g.addColorStop(0.7, 'rgba(255,255,255,0.16)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
+    g.addColorStop(0, "rgba(255,255,255,1)");
+    g.addColorStop(0.32, "rgba(255,255,255,0.68)");
+    g.addColorStop(0.7, "rgba(255,255,255,0.16)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 64);
     var tex = new THREE.CanvasTexture(c);
@@ -29,8 +29,8 @@
      SCENE 2: MUSIC ACOUSTIC RESONANCE — HiDPI Fluid Harmonic Waves & Ripples
      ======================================================================== */
   function parseHexRgb(hex, fallback) {
-    if (!hex || typeof hex !== 'string') return fallback;
-    var h = hex.replace('#', '').trim();
+    if (!hex || typeof hex !== "string") return fallback;
+    var h = hex.replace("#", "").trim();
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     if (h.length !== 6) return fallback;
     var n = parseInt(h, 16);
@@ -39,7 +39,17 @@
   }
 
   function rgbaStr(rgb, a) {
-    return 'rgba(' + Math.round(rgb[0]) + ',' + Math.round(rgb[1]) + ',' + Math.round(rgb[2]) + ',' + a.toFixed(3) + ')';
+    return (
+      "rgba(" +
+      Math.round(rgb[0]) +
+      "," +
+      Math.round(rgb[1]) +
+      "," +
+      Math.round(rgb[2]) +
+      "," +
+      a.toFixed(3) +
+      ")"
+    );
   }
 
   function traceSmoothClosedLoop(ctx, xs, ys, count) {
@@ -58,10 +68,11 @@
 
   function mountMusicVisualizer(canvas, getAudioState) {
     if (!canvas) return function () {};
-    var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext("2d");
     if (!ctx) return function () {};
 
-    var alive = true, raf = 0;
+    var alive = true,
+      raf = 0;
     var SAMPLES = 56;
     var xs = new Float32Array(SAMPLES);
     var ys = new Float32Array(SAMPLES);
@@ -71,7 +82,10 @@
 
     var curA = [224, 101, 79];
     var curB = [245, 154, 114];
-    var sBass = 0, sMid = 0, sTreble = 0, prevBass = 0;
+    var sBass = 0,
+      sMid = 0,
+      sTreble = 0,
+      prevBass = 0;
     var ripples = [];
     var lastPulse = 0;
     var lastFrame = 0;
@@ -82,7 +96,7 @@
         speed: (m % 2 === 0 ? 1 : -1) * (0.09 + (m % 4) * 0.035),
         band: m % 3,
         size: 1.5 + (m % 3) * 0.65,
-        ph: m * 1.13
+        ph: m * 1.13,
       });
     }
 
@@ -104,7 +118,8 @@
     function renderFrame(now, isStatic) {
       var sz = syncSize();
       if (!sz) return;
-      var w = sz.w, h = sz.h;
+      var w = sz.w,
+        h = sz.h;
       ctx.clearRect(0, 0, w, h);
 
       var t = isStatic ? 1.4 : now * 0.001;
@@ -168,15 +183,18 @@
         var binHi = playing && bins ? bins[Math.min(63, 28 + Math.floor(sym * 34))] : 0;
 
         var lowTarget =
-          (Math.sin(ang * 3 + t * 0.95) * 0.55 + Math.cos(ang * 5 - t * 0.7) * 0.45) * (playing ? 9 : 4.2) +
+          (Math.sin(ang * 3 + t * 0.95) * 0.55 + Math.cos(ang * 5 - t * 0.7) * 0.45) *
+            (playing ? 9 : 4.2) +
           binVal * baseR * 0.135 * ampScale +
           sBass * baseR * 0.055;
         var midTarget =
-          (Math.sin(ang * 4 - t * 1.35 + 1.1) * 0.6 + Math.cos(ang * 6 + t * 0.9) * 0.4) * (playing ? 11 : 4.5) +
+          (Math.sin(ang * 4 - t * 1.35 + 1.1) * 0.6 + Math.cos(ang * 6 + t * 0.9) * 0.4) *
+            (playing ? 11 : 4.5) +
           binMid * baseR * 0.155 * ampScale +
           sMid * baseR * 0.045;
         var hiTarget =
-          (Math.cos(ang * 7 + t * 1.7) * 0.55 + Math.sin(ang * 9 - t * 1.2) * 0.45) * (playing ? 7.5 : 3) +
+          (Math.cos(ang * 7 + t * 1.7) * 0.55 + Math.sin(ang * 9 - t * 1.2) * 0.45) *
+            (playing ? 7.5 : 3) +
           binHi * baseR * 0.12 * ampScale +
           sTreble * baseR * 0.035;
 
@@ -224,7 +242,7 @@
         ys[h1] = cy + Math.sin(a3) * r3;
       }
       traceSmoothClosedLoop(ctx, xs, ys, SAMPLES);
-      ctx.strokeStyle = playing ? 'rgba(255,250,242,0.72)' : 'rgba(255,250,242,0.42)';
+      ctx.strokeStyle = playing ? "rgba(255,250,242,0.72)" : "rgba(255,250,242,0.42)";
       ctx.lineWidth = 1.05;
       ctx.stroke();
 
@@ -234,27 +252,35 @@
         var mAng = mt.ang + t * mt.speed * (playing ? 1.8 : 0.55);
         var norm = (((mAng % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2);
         var idx = Math.floor(norm * SAMPLES) % SAMPLES;
-        var radOff = mt.band === 0 ? baseR * 0.99 + smoothLow[idx]
-                   : mt.band === 1 ? baseR * 1.035 + smoothMid[idx]
-                   : baseR * 1.08 + smoothHigh[idx];
+        var radOff =
+          mt.band === 0
+            ? baseR * 0.99 + smoothLow[idx]
+            : mt.band === 1
+              ? baseR * 1.035 + smoothMid[idx]
+              : baseR * 1.08 + smoothHigh[idx];
         var mx = cx + Math.cos(mAng) * radOff;
         var my = cy + Math.sin(mAng) * radOff;
         var pulse = 0.55 + 0.45 * Math.sin(t * 2.6 + mt.ph);
         var alpha = (playing ? 0.78 : 0.34) * pulse;
         ctx.beginPath();
         ctx.arc(mx, my, mt.size + (playing ? sTreble * 1.3 : 0), 0, Math.PI * 2);
-        ctx.fillStyle = mt.band === 2 ? 'rgba(255,252,246,' + alpha.toFixed(3) + ')' : rgbaStr(mt.band === 0 ? curA : curB, alpha);
+        ctx.fillStyle =
+          mt.band === 2
+            ? "rgba(255,252,246," + alpha.toFixed(3) + ")"
+            : rgbaStr(mt.band === 0 ? curA : curB, alpha);
         ctx.fill();
       }
     }
 
     if (Z.isReduced) {
       renderFrame(0, true);
-      var onResizeReduced = function () { renderFrame(0, true); };
-      window.addEventListener('resize', onResizeReduced, { passive: true });
+      var onResizeReduced = function () {
+        renderFrame(0, true);
+      };
+      window.addEventListener("resize", onResizeReduced, { passive: true });
       return function () {
         alive = false;
-        window.removeEventListener('resize', onResizeReduced);
+        window.removeEventListener("resize", onResizeReduced);
       };
     }
 
@@ -280,20 +306,30 @@
      SCENE 3: SKILL 3D GYROSCOPIC ENERGY CONSTELLATION (p4, anchored over hand)
      ======================================================================== */
   function mountSkillWebgl(stageEl) {
-    var noop = { setColor: function () {}, pulse: function () {}, setTilt: function () {}, destroy: function () {} };
-    if (!stageEl || Z.isReduced || Z.tier !== 'webgl' || !Z.hasThree()) return noop;
+    var noop = {
+      setColor: function () {},
+      pulse: function () {},
+      setTilt: function () {},
+      destroy: function () {},
+    };
+    if (!stageEl || Z.isReduced || Z.tier !== "webgl" || !Z.hasThree()) return noop;
 
     var THREE = window.THREE;
-    var canvas = document.createElement('canvas');
-    canvas.className = 'sk-webgl';
-    canvas.setAttribute('aria-hidden', 'true');
-    var orbitEl = stageEl.querySelector('.sk-orbit');
+    var canvas = document.createElement("canvas");
+    canvas.className = "sk-webgl";
+    canvas.setAttribute("aria-hidden", "true");
+    var orbitEl = stageEl.querySelector(".sk-orbit");
     if (orbitEl) stageEl.insertBefore(canvas, orbitEl);
     else stageEl.appendChild(canvas);
 
     var renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
+      renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: "low-power",
+      });
     } catch (e) {
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
       return noop;
@@ -328,7 +364,8 @@
     var count = isMobile ? 28 : 40;
     var pts = new Float32Array(count * 3);
     for (var i = 0; i < count; i++) {
-      var u = Math.random(), v = Math.random();
+      var u = Math.random(),
+        v = Math.random();
       var theta = u * Math.PI * 2;
       var phi = Math.acos(2 * v - 1);
       var rad = 1.48 + Math.random() * 1.1;
@@ -337,7 +374,7 @@
       pts[i * 3 + 2] = rad * Math.cos(phi);
     }
     var pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+    pGeo.setAttribute("position", new THREE.BufferAttribute(pts, 3));
     var sprite = makeGlowSprite(THREE);
     var pMat = new THREE.PointsMaterial({
       color: 0xd9731f,
@@ -345,15 +382,21 @@
       map: sprite,
       transparent: true,
       opacity: 0.5,
-      depthWrite: false
+      depthWrite: false,
     });
     var cloud = new THREE.Points(pGeo, pMat);
     root.add(cloud);
 
-    var curCol = new THREE.Color('#14181f');
-    var tgtCol = new THREE.Color('#14181f');
-    var tx = 0, ty = 0, cx = 0, cy = 0, burst = 0;
-    var alive = true, raf = 0, lastSk = 0;
+    var curCol = new THREE.Color("#14181f");
+    var tgtCol = new THREE.Color("#14181f");
+    var tx = 0,
+      ty = 0,
+      cx = 0,
+      cy = 0,
+      burst = 0;
+    var alive = true,
+      raf = 0,
+      lastSk = 0;
 
     function syncPosition() {
       if (!orbitEl || !canvas.isConnected) return;
@@ -368,19 +411,22 @@
       renderer.setSize(w, h, false);
     }
     syncPosition();
-    window.addEventListener('resize', syncPosition, { passive: true });
-    requestAnimationFrame(function () { canvas.classList.add('is-live'); });
+    window.addEventListener("resize", syncPosition, { passive: true });
+    requestAnimationFrame(function () {
+      canvas.classList.add("is-live");
+    });
 
-    var pgEl = document.getElementById('pg');
+    var pgEl = document.getElementById("pg");
     function loop(now) {
       if (!alive || !canvas.isConnected) return;
       raf = requestAnimationFrame(loop);
-      if (document.hidden || (pgEl && pgEl.classList.contains('sk-scrolled')) || now - lastSk < 32) return;
+      if (document.hidden || (pgEl && pgEl.classList.contains("sk-scrolled")) || now - lastSk < 32)
+        return;
       lastSk = now;
       var t = now * 0.001;
       cx += (tx - cx) * 0.1;
       cy += (ty - cy) * 0.1;
-      burst *= 0.90;
+      burst *= 0.9;
       curCol.lerp(tgtCol, 0.1);
       r1Mat.color.copy(curCol);
       r2Mat.color.copy(curCol);
@@ -403,7 +449,9 @@
 
     return {
       setColor: function (hex) {
-        try { if (hex) tgtCol.set(hex); } catch (e) {}
+        try {
+          if (hex) tgtCol.set(hex);
+        } catch (e) {}
       },
       pulse: function (strength) {
         burst = Math.min(1.5, burst + (strength || 0.75));
@@ -415,14 +463,19 @@
       destroy: function () {
         alive = false;
         if (raf) cancelAnimationFrame(raf);
-        window.removeEventListener('resize', syncPosition);
-        r1Geo.dispose(); r1Mat.dispose();
-        r2Geo.dispose(); r2Mat.dispose();
-        r3Geo.dispose(); r3Mat.dispose();
-        pGeo.dispose(); pMat.dispose(); sprite.dispose();
+        window.removeEventListener("resize", syncPosition);
+        r1Geo.dispose();
+        r1Mat.dispose();
+        r2Geo.dispose();
+        r2Mat.dispose();
+        r3Geo.dispose();
+        r3Mat.dispose();
+        pGeo.dispose();
+        pMat.dispose();
+        sprite.dispose();
         renderer.dispose();
         if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-      }
+      },
     };
   }
 
