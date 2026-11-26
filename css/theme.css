@@ -1745,9 +1745,16 @@ body,
 
 /* Starred state */
 .stat-star.is-starred {
+  cursor: default;
   background: color-mix(in srgb, #f59e0b 16%, transparent);
   border: 1px solid color-mix(in srgb, #f59e0b 40%, transparent);
   color: color-mix(in srgb, var(--ink) 90%, #f59e0b);
+}
+
+.stat-star.is-starred:hover,
+.stat-star.is-starred:active {
+  transform: none;
+  background: color-mix(in srgb, #f59e0b 16%, transparent);
 }
 
 .stat-star.is-starred .star-ico {
@@ -1757,7 +1764,7 @@ body,
 }
 
 .stat-star.is-starred:hover .star-ico {
-  transform: scale(1.2) rotate(12deg);
+  transform: none;
 }
 
 /* Pulse animation on click */

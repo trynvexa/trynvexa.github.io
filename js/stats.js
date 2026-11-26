@@ -32,6 +32,46 @@
     location.protocol === "file:" ||
     location.hostname === "";
 
+  /* ---- persistent visitor flags (localStorage + sessionStorage + cookie) ---- */
+  function readCookie(name) {
+    try {
+      var m = document.cookie.match(new RegExp("(?:^|;\\s*)" + name + "=([^;]*)"));
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeCookie(name, val) {
+    try {
+      document.cookie =
+        name + "=" + encodeURIComponent(val) + "; max-age=315360000; path=/; SameSite=Lax";
+    } catch (e) {}
+  }
+
+  function hasPersistentFlag(key) {
+    try {
+      var lv = localStorage.getItem(key);
+      if (lv === "1" || lv === "true") return true;
+    } catch (e) {}
+    try {
+      var sv = sessionStorage.getItem(key);
+      if (sv === "1" || sv === "true") return true;
+    } catch (e) {}
+    var cv = readCookie(key);
+    return cv === "1" || cv === "true";
+  }
+
+  function setPersistentFlag(key) {
+    try {
+      localStorage.setItem(key, "1");
+    } catch (e) {}
+    try {
+      sessionStorage.setItem(key, "1");
+    } catch (e) {}
+    writeCookie(key, "1");
+  }
+
   /* ---- cached restore for instant display ---- */
   try {
     var cv = localStorage.getItem("zk_v2_views");
@@ -41,14 +81,17 @@
   } catch (e) {}
 
   /* ---- starred state ---- */
-  var isStarred = false;
-  try {
-    isStarred = localStorage.getItem("zk_v2_starred") === "true";
-  } catch (e) {}
-  if (isStarred) {
-    starBtn.classList.add("is-starred");
-    starBtn.setAttribute("title", "Sudah memberi bintang");
+  var isStarred = hasPersistentFlag("zk_v2_starred");
+  function syncStarredUI() {
+    if (isStarred) {
+      starBtn.classList.add("is-starred");
+      starBtn.setAttribute("aria-pressed", "true");
+      starBtn.setAttribute("title", "Sudah memberi bintang");
+    } else {
+      starBtn.setAttribute("aria-pressed", "false");
+    }
   }
+  syncStarredUI();
 
   /* ---- fetch ---- */
   function apiFetch(path) {
@@ -75,19 +118,26 @@
       });
   }
 
-  /* ---- views ---- */
+  /* ---- views (unique new visitors only) ---- */
+  var viewInitStarted = false;
   function initViews() {
-    var seen = false;
-    try {
-      seen = sessionStorage.getItem("zk_v2_view_counted") === "1";
-    } catch (e) {}
-    var hit = !isLocal && !seen;
-    apiFetch((hit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY).then(function (v) {
+    if (viewInitStarted) return;
+    viewInitStarted = true;
+
+    var alreadyCounted = hasPersistentFlag("zk_v2_view_counted");
+    var shouldHit = !isLocal && !alreadyCounted;
+
+    // Prevent concurrent double-hit in the same session while fetch is in flight
+    if (shouldHit) {
+      try {
+        sessionStorage.setItem("zk_v2_view_counted", "1");
+      } catch (e) {}
+    }
+
+    apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY).then(function (v) {
       if (typeof v !== "number") return;
-      if (hit) {
-        try {
-          sessionStorage.setItem("zk_v2_view_counted", "1");
-        } catch (e) {}
+      if (shouldHit) {
+        setPersistentFlag("zk_v2_view_counted");
       }
       try {
         localStorage.setItem("zk_v2_views", v);
@@ -228,15 +278,19 @@
     }, 650);
   }
 
-  /* ---- star button ---- */
+  /* ---- star button (one star per visitor) ---- */
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
+    if (!isStarred && hasPersistentFlag("zk_v2_starred")) {
+      isStarred = true;
+      syncStarredUI();
+    }
+
     if (!isStarred) {
       isStarred = true;
-      try {
-        localStorage.setItem("zk_v2_starred", "true");
-      } catch (e) {}
-      starBtn.classList.add("is-starred", "pulse");
+      setPersistentFlag("zk_v2_starred");
+      syncStarredUI();
+      starBtn.classList.add("pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
       }, 500);
@@ -258,12 +312,20 @@
         starsEl.textContent = formatNum(v);
       });
     } else {
-      starBtn.classList.add("pulse");
-      setTimeout(function () {
-        starBtn.classList.remove("pulse");
-      }, 400);
-      spawnParticles(starBtn);
-      showToast("Sudah diberi bintang, terima kasih.", 3000);
+      showToast("Sudah diberi bintang sebelumnya.", 2800);
+    }
+  });
+
+  /* ---- sync across browser tabs ---- */
+  window.addEventListener("storage", function (ev) {
+    if (!ev) return;
+    if (ev.key === "zk_v2_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
+      isStarred = true;
+      syncStarredUI();
+    } else if (ev.key === "zk_v2_stars" && ev.newValue !== null) {
+      starsEl.textContent = formatNum(ev.newValue);
+    } else if (ev.key === "zk_v2_views" && ev.newValue !== null) {
+      viewsEl.textContent = formatNum(ev.newValue);
     }
   });
 
