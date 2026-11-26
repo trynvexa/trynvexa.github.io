@@ -34,9 +34,12 @@ html {
 }
 
 /* ==========================================================================
-   1. PAGE p4 TOKENS (LIGHT + ADAPTIVE DARK MODE)
+   1. PAGE p4 TOKENS (ALWAYS LIGHT STUDIO THEME)
    ========================================================================== */
 .pg.p4 {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --ink: #14161b;
   --sk-bg: #f6f4ef;
   --sk-surf: rgba(255, 255, 255, 0.86);
   --sk-surf-solid: #ffffff;
@@ -52,36 +55,6 @@ html {
   --pink: var(--sk-ink);
   color: var(--sk-ink);
   background-color: var(--sk-bg);
-}
-
-:root[data-theme="dark"] .pg.p4 {
-  --sk-bg: #0c0e14;
-  --sk-surf: rgba(20, 23, 32, 0.84);
-  --sk-surf-solid: #141720;
-  --sk-elev: #191d28;
-  --sk-ink: #f4f1ea;
-  --sk-mute: rgba(244, 241, 234, 0.68);
-  --sk-soft: rgba(244, 241, 234, 0.07);
-  --sk-line: rgba(244, 241, 234, 0.12);
-  --sk-line-hi: rgba(244, 241, 234, 0.28);
-  --sk-shadow: 0 22px 54px -22px rgba(0, 0, 0, 0.72);
-  --sk-glass-border: rgba(244, 241, 234, 0.14);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .pg.p4 {
-    --sk-bg: #0c0e14;
-    --sk-surf: rgba(20, 23, 32, 0.84);
-    --sk-surf-solid: #141720;
-    --sk-elev: #191d28;
-    --sk-ink: #f4f1ea;
-    --sk-mute: rgba(244, 241, 234, 0.68);
-    --sk-soft: rgba(244, 241, 234, 0.07);
-    --sk-line: rgba(244, 241, 234, 0.12);
-    --sk-line-hi: rgba(244, 241, 234, 0.28);
-    --sk-shadow: 0 22px 54px -22px rgba(0, 0, 0, 0.72);
-    --sk-glass-border: rgba(244, 241, 234, 0.14);
-  }
 }
 
 /* Background Atmosphere (.fx64) — Lightweight & Dark-Mode Aware */
@@ -201,10 +174,6 @@ html {
 /* Refined Figure Depth */
 .pg.p4 .bg img.skill-fig {
   filter: drop-shadow(0 28px 36px rgba(14, 16, 22, 0.14));
-}
-
-:root[data-theme="dark"] .pg.p4 .bg img.skill-fig {
-  filter: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.62));
 }
 
 /* Upgraded 4 Pillar Callouts (.sk-tags) — Clean Margin Anchors (Zero Leg Clutter!) */
@@ -530,24 +499,6 @@ html {
     inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
     0 10px 20px -8px rgba(14, 16, 22, 0.34),
     0 2px 4px rgba(14, 16, 22, 0.08);
-}
-
-:root[data-theme="dark"] .pg.p4 .bg .sk-ic {
-  background: radial-gradient(circle at 30% 24%, #faf8f4 0%, #ece8df 68%, #ded9ce 100%);
-  box-shadow:
-    0 0 0 1.2px color-mix(in srgb, var(--cc) 55%, rgba(255, 255, 255, 0.35)),
-    0 0 18px -4px color-mix(in srgb, var(--cc) 48%, transparent),
-    0 12px 24px -8px rgba(0, 0, 0, 0.78);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .pg.p4 .bg .sk-ic {
-    background: radial-gradient(circle at 30% 24%, #faf8f4 0%, #ece8df 68%, #ded9ce 100%);
-    box-shadow:
-      0 0 0 1.2px color-mix(in srgb, var(--cc) 55%, rgba(255, 255, 255, 0.35)),
-      0 0 18px -4px color-mix(in srgb, var(--cc) 48%, transparent),
-      0 12px 24px -8px rgba(0, 0, 0, 0.78);
-  }
 }
 
 .pg.p4 .sk-inn .sk-ic {
@@ -1045,75 +996,7 @@ html {
   }
 }
 
-/* ==========================================================================
-   6. FULL DARK MODE PARITY ACROSS ALL OTHER SKILLS SECTIONS & DETAIL PANEL
-   ========================================================================== */
-:root[data-theme="dark"] .pg.p4 .sk-eyebrow::before {
-  background: var(--cc);
-}
-:root[data-theme="dark"] .pg.p4 .sk-stats {
-  border-top-color: var(--sk-line-hi);
-}
-:root[data-theme="dark"] .pg.p4 .sk-stat {
-  color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-grid .sk-card,
-:root[data-theme="dark"] .pg.p4 .sk-grid .sk-card.ai {
-  color: var(--sk-ink);
-  border-bottom-color: var(--sk-line);
-}
-:root[data-theme="dark"] .pg.p4 .sk-marq.alt {
-  background: color-mix(in srgb, var(--cc) 14%, #141720);
-  color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-pr .sk-pc {
-  border-top-color: var(--sk-line-hi);
-}
-:root[data-theme="dark"] .pg.p4 .sk-sec.sk-end {
-  border-top-color: var(--sk-line-hi);
-}
-:root[data-theme="dark"] .pg.p4 .sk-cta {
-  background: var(--sk-ink);
-  color: var(--sk-bg);
-  border-color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-cta:hover {
-  background: var(--cc);
-  border-color: var(--cc);
-  color: #0c0e14;
-}
-:root[data-theme="dark"] .pg.p4.open .bd > .sk-panel {
-  background: rgba(16, 19, 27, 0.94);
-  border-color: var(--sk-line-hi);
-  color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-row {
-  border-top-color: var(--sk-line);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x {
-  border-color: var(--sk-line-hi);
-  color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-x:hover {
-  background: var(--sk-ink);
-  color: var(--sk-bg);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-rl {
-  color: var(--sk-ink);
-  border-bottom-color: var(--sk-line-hi);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav {
-  border-top-color: var(--sk-line-hi);
-}
-:root[data-theme="dark"] .pg.p4 .sk-panel .sk-nav button {
-  color: var(--sk-ink);
-}
-:root[data-theme="dark"] .pg.p4 .sk-mtr {
-  background: rgba(255, 255, 255, 0.14);
-}
-:root[data-theme="dark"] .pg.p4 .sk-grab {
-  background: rgba(255, 255, 255, 0.28);
-}
+/* Page p4 intentionally stays in its light studio theme even in dark mode */
 
 /* ==========================================================================
    7. MOBILE & TABLET RESPONSIVE (<= 820px — iOS 390px, Android 360px, iPad)

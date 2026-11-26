@@ -1529,15 +1529,9 @@ window.SKR = (function () {
     tool: "#60a5fa",
     ai: "#22d3ee",
   };
-  function isDark() {
-    var t = document.documentElement.getAttribute("data-theme");
-    if (t === "dark") return true;
-    if (t === "light") return false;
-    return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  }
   function catCol(g) {
-    var map = isDark() ? COL_DARK : COL_LIGHT;
-    return map[g] || map.all;
+    /* Halaman Skill selalu memakai palet terang */
+    return COL_LIGHT[g] || COL_LIGHT.all;
   }
   var NAME = {
     all: "Semua",

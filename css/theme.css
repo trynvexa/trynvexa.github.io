@@ -373,23 +373,23 @@ html.home-enter .title .t1 i {
     align-self: flex-start !important;
     margin: 1px 0 2px 0 !important;
   }
-  body .hd .meta .meta-name,
-  body .hd .meta span:first-child {
+  body .hd .meta .meta-name {
     font-size: clamp(19px, 5vw, 23px) !important;
     line-height: 1.05 !important;
     text-align: left !important;
   }
-  body .hd .meta .meta-role,
-  body .hd .meta span:last-child {
+  body .hd .meta .meta-role {
     font-size: clamp(8.5px, 2.3vw, 10px) !important;
     letter-spacing: 0.13em !important;
     line-height: 1.25 !important;
-    opacity: 0.75 !important;
+    opacity: 0.78 !important;
     text-align: left !important;
+    align-self: flex-start !important;
     margin-left: 0 !important;
+    padding-bottom: 0 !important;
     white-space: nowrap !important;
   }
-  body .hd .meta span:last-child::before {
+  body .hd .meta .meta-role::before {
     display: none !important;
   }
 
@@ -1630,8 +1630,14 @@ body,
    STATS BADGE (Views / Mata & Star / Bintang)
    Ditempatkan di bawah nama (M. Zikri Al-Bukhori)
    ============================================================ */
-.hd .meta {
-  align-items: flex-end !important;
+@media (min-width: 701px) {
+  .hd .meta {
+    align-items: flex-end !important;
+  }
+  .hd .meta .meta-role {
+    align-self: flex-end;
+    padding-bottom: 2px;
+  }
 }
 
 .hd .meta .meta-author {
@@ -1647,9 +1653,20 @@ body,
   margin-top: 1px;
 }
 
-.hd .meta .meta-role {
-  align-self: flex-end;
-  padding-bottom: 2px;
+/* Isolate stats-badge spans from legacy `.hd .meta span:first-child / span:last-child` rules */
+.hd .meta .stats-badge span,
+.hd .meta .stats-badge .stat-pill,
+.hd .meta .stats-badge .stat-val {
+  margin-left: 0 !important;
+  font-size: inherit !important;
+  letter-spacing: inherit !important;
+  opacity: 1 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+.hd .meta .stats-badge span::before {
+  content: none !important;
+  display: none !important;
 }
 
 .stats-badge {
@@ -1710,11 +1727,11 @@ body,
 
 .stat-views {
   cursor: default;
-  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  color: color-mix(in srgb, var(--ink) 86%, transparent);
 }
 
 .stat-views .stat-ico {
-  opacity: 0.82;
+  opacity: 0.9;
 }
 
 .stat-star {
@@ -1722,6 +1739,39 @@ body,
   background: color-mix(in srgb, var(--ink) 6%, transparent);
   position: relative;
   overflow: visible;
+}
+
+:root[data-theme="dark"] .stats-badge {
+  background: rgba(20, 22, 30, 0.86);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme="dark"] .stats-badge:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+:root[data-theme="dark"] .stat-pill {
+  color: #f5f2eb;
+}
+
+:root[data-theme="dark"] .stat-views {
+  color: rgba(245, 242, 235, 0.9);
+}
+
+:root[data-theme="dark"] .stat-star {
+  background: rgba(255, 255, 255, 0.09);
+  color: #f5f2eb;
+}
+
+:root[data-theme="dark"] .stat-star:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+:root[data-theme="dark"] .stat-star.is-starred {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fde68a;
 }
 
 .stat-star:hover {
@@ -1856,11 +1906,7 @@ body,
   align-items: center;
   gap: 9px;
   padding: 6px 16px 6px 9px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 253, 249, 0.82) 0%,
-    rgba(244, 240, 232, 0.74) 100%
-  );
+  background: linear-gradient(135deg, rgba(255, 253, 249, 0.82) 0%, rgba(244, 240, 232, 0.74) 100%);
   -webkit-backdrop-filter: blur(36px) saturate(180%);
   backdrop-filter: blur(36px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.85);
@@ -1935,11 +1981,7 @@ body,
 
 /* Dark mode */
 :root[data-theme="dark"] .stat-toast .toast-pill {
-  background: linear-gradient(
-    135deg,
-    rgba(38, 38, 43, 0.82) 0%,
-    rgba(22, 22, 26, 0.76) 100%
-  );
+  background: linear-gradient(135deg, rgba(38, 38, 43, 0.82) 0%, rgba(22, 22, 26, 0.76) 100%);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
