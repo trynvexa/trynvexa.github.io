@@ -1,16 +1,13 @@
 /* ============================================================
    stats.js — Real-Time Visitor Counter & Star/Like System
-   Live API: abacus.jasoncameron.dev
-   Namespace: trynvexa.github.io
+   Live API: Cloudflare Worker + KV (portofolio-notif)
    ============================================================ */
 (function () {
   "use strict";
 
-  var API_BASE = "https://abacus.jasoncameron.dev";
   var NOTIF_ENDPOINT = "https://portofolio-notif.zikriganteng2023.workers.dev";
-  var NAMESPACE = "trynvexa.github.io";
-  var VIEWS_KEY = "views_v5";
-  var STARS_KEY = "stars_v5";
+  var VIEWS_KEY = "views";
+  var STARS_KEY = "stars";
 
   var viewsEl = document.getElementById("statViewsVal");
   var starsEl = document.getElementById("statStarsVal");
@@ -76,14 +73,14 @@
 
   /* ---- cached restore for instant display ---- */
   try {
-    var cv = localStorage.getItem("zk_v5_views");
-    var cs = localStorage.getItem("zk_v5_stars");
+    var cv = localStorage.getItem("zk_v6_views");
+    var cs = localStorage.getItem("zk_v6_stars");
     if (cv !== null) viewsEl.textContent = formatNum(cv);
     if (cs !== null) starsEl.textContent = formatNum(cs);
   } catch (e) {}
 
   /* ---- starred state ---- */
-  var isStarred = hasPersistentFlag("zk_v5_starred");
+  var isStarred = hasPersistentFlag("zk_v6_starred");
   function syncStarredUI() {
     if (isStarred) {
       starBtn.classList.add("is-starred");
@@ -95,45 +92,42 @@
   }
   syncStarredUI();
 
-  /* ---- fetch via Cloudflare Worker proxy (IPv6+IPv4 safe) with direct fallback ---- */
-  function fetchJsonWithTimeout(url, isHit, timeoutMs) {
+  /* ---- fetch via Cloudflare Worker + KV (<100ms, IPv4+IPv6) ---- */
+  function apiFetch(key, isHit, retriesLeft) {
+    if (isLocal || !NOTIF_ENDPOINT) return Promise.resolve(null);
+    if (typeof retriesLeft !== "number") retriesLeft = 1;
+    var url =
+      NOTIF_ENDPOINT +
+      "/stats?action=" +
+      (isHit ? "hit" : "get") +
+      "&key=" +
+      encodeURIComponent(key);
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var t = ctrl
       ? setTimeout(function () {
           ctrl.abort();
-        }, timeoutMs)
+        }, 10000)
       : null;
     return fetch(url, {
       signal: ctrl ? ctrl.signal : undefined,
       keepalive: !!isHit,
       headers: { Accept: "application/json" },
-    }).then(function (r) {
-      if (t) clearTimeout(t);
-      if (r.status === 404) return 0;
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json().then(function (d) {
+    })
+      .then(function (r) {
+        if (t) clearTimeout(t);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (d) {
         return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
+      })
+      .catch(function () {
+        if (t) clearTimeout(t);
+        if (retriesLeft > 0) {
+          return apiFetch(key, isHit, retriesLeft - 1);
+        }
+        return null;
       });
-    }, function (err) {
-      if (t) clearTimeout(t);
-      throw err;
-    });
-  }
-
-  function apiFetch(path, isHit, retriesLeft) {
-    if (typeof retriesLeft !== "number") retriesLeft = 1;
-    var primaryUrl = (!isLocal && NOTIF_ENDPOINT) ? (NOTIF_ENDPOINT + "/abacus" + path) : (API_BASE + path);
-    return fetchJsonWithTimeout(primaryUrl, isHit, 12000).catch(function () {
-      if (primaryUrl !== API_BASE + path) {
-        return fetchJsonWithTimeout(API_BASE + path, isHit, 12000).catch(function () {
-          return retriesLeft > 0 ? apiFetch(path, isHit, retriesLeft - 1) : null;
-        });
-      }
-      if (retriesLeft > 0) {
-        return apiFetch(path, isHit, retriesLeft - 1);
-      }
-      return null;
-    });
   }
 
   /* ---- visitor email notification (via Cloudflare Worker) ---- */
@@ -263,7 +257,7 @@
     if (isLikelyBot(ua)) return;
 
     try {
-      if (sessionStorage.getItem("zk_v5_notif_sent") === "1") return;
+      if (sessionStorage.getItem("zk_v6_notif_sent") === "1") return;
     } catch (e) {}
 
     var startedAt = Date.now();
@@ -319,8 +313,8 @@
       document.removeEventListener("click", onClick, { capture: true });
 
       try {
-        if (sessionStorage.getItem("zk_v5_notif_sent") === "1") return;
-        sessionStorage.setItem("zk_v5_notif_sent", "1");
+        if (sessionStorage.getItem("zk_v6_notif_sent") === "1") return;
+        sessionStorage.setItem("zk_v6_notif_sent", "1");
       } catch (e) {}
 
       var themeNow = document.documentElement.getAttribute("data-theme") || "light";
@@ -365,40 +359,40 @@
 
     var ua = navigator.userAgent || "";
     var isBot = isLikelyBot(ua);
-    var alreadyCounted = hasPersistentFlag("zk_v5_view_counted");
+    var alreadyCounted = hasPersistentFlag("zk_v6_view_counted");
     notifyVisit(alreadyCounted);
     var shouldHit = !isLocal && !isBot && !alreadyCounted;
 
     // Prevent concurrent double-hit in the same session while fetch is in flight
     if (shouldHit) {
       try {
-        sessionStorage.setItem("zk_v5_view_counted", "1");
+        sessionStorage.setItem("zk_v6_view_counted", "1");
       } catch (e) {}
     }
 
-    apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY, shouldHit).then(function (v) {
+    apiFetch(VIEWS_KEY, shouldHit).then(function (v) {
       if (typeof v !== "number") {
         // Gagal total (jaringan putus) — hapus flag session supaya bisa retry di kunjungan berikutnya
         if (shouldHit) {
-          try { sessionStorage.removeItem("zk_v5_view_counted"); } catch (e) {}
+          try { sessionStorage.removeItem("zk_v6_view_counted"); } catch (e) {}
         }
         return;
       }
       // Berhasil — simpan permanen
       if (shouldHit) {
-        setPersistentFlag("zk_v5_view_counted");
+        setPersistentFlag("zk_v6_view_counted");
       }
-      try { localStorage.setItem("zk_v5_views", v); } catch (e) {}
+      try { localStorage.setItem("zk_v6_views", v); } catch (e) {}
       viewsEl.textContent = formatNum(v);
     });
   }
 
   /* ---- stars/likes ---- */
   function initLikes() {
-    apiFetch("/get/" + NAMESPACE + "/" + STARS_KEY).then(function (v) {
+    apiFetch(STARS_KEY, false).then(function (v) {
       if (typeof v !== "number") return;
       try {
-        localStorage.setItem("zk_v5_stars", v);
+        localStorage.setItem("zk_v6_stars", v);
       } catch (e) {}
       starsEl.textContent = formatNum(v);
     });
@@ -526,7 +520,7 @@
   starBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     if (starInFlight) return;
-    if (!isStarred && hasPersistentFlag("zk_v5_starred")) {
+    if (!isStarred && hasPersistentFlag("zk_v6_starred")) {
       isStarred = true;
       syncStarredUI();
     }
@@ -547,7 +541,7 @@
       spawnParticles(starBtn);
       showToast("Terima kasih atas bintangnya.", 3200);
 
-      apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY, true).then(function (v) {
+      apiFetch(STARS_KEY, true).then(function (v) {
         starInFlight = false;
         if (typeof v !== "number") {
           isStarred = false;
@@ -558,9 +552,9 @@
           showToast("Koneksi lambat, coba ketuk bintang lagi.", 3200);
           return;
         }
-        setPersistentFlag("zk_v5_starred");
+        setPersistentFlag("zk_v6_starred");
         try {
-          localStorage.setItem("zk_v5_stars", v);
+          localStorage.setItem("zk_v6_stars", v);
         } catch (e) {}
         starsEl.textContent = formatNum(v);
       });
@@ -572,12 +566,12 @@
   /* ---- sync across browser tabs ---- */
   window.addEventListener("storage", function (ev) {
     if (!ev) return;
-    if (ev.key === "zk_v5_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
+    if (ev.key === "zk_v6_starred" && (ev.newValue === "1" || ev.newValue === "true")) {
       isStarred = true;
       syncStarredUI();
-    } else if (ev.key === "zk_v5_stars" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v6_stars" && ev.newValue !== null) {
       starsEl.textContent = formatNum(ev.newValue);
-    } else if (ev.key === "zk_v5_views" && ev.newValue !== null) {
+    } else if (ev.key === "zk_v6_views" && ev.newValue !== null) {
       viewsEl.textContent = formatNum(ev.newValue);
     }
   });
