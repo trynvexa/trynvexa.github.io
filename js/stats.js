@@ -126,7 +126,45 @@
   }
 
   /* ---- visitor email notification (via Cloudflare Worker) ---- */
-  function detectDeviceInfo() {
+  function isLikelyBot(ua) {
+    if (navigator.webdriver) return true;
+    return /bot|crawler|spider|crawling|headless|lighthouse|pingdom|gtmetrix|slurp|bingpreview|facebookexternalhit|twitterbot|discordbot|telegrambot/i.test(
+      ua
+    );
+  }
+
+  function detectSource(ua) {
+    var tag = "";
+    try {
+      var params = new URLSearchParams(location.search);
+      tag = params.get("from") || params.get("utm_source") || params.get("ref") || "";
+      tag = tag.trim().slice(0, 50);
+      if (tag && window.history && window.history.replaceState) {
+        params.delete("from");
+        params.delete("utm_source");
+        params.delete("ref");
+        var qs = params.toString();
+        var cleanUrl = location.pathname + (qs ? "?" + qs : "") + location.hash;
+        window.history.replaceState(null, "", cleanUrl);
+      }
+    } catch (e) {}
+
+    var inApp = "";
+    if (/Instagram/i.test(ua)) inApp = "Instagram App";
+    else if (/BytedanceWebview|musical_ly|TikTok/i.test(ua)) inApp = "TikTok App";
+    else if (/FBAN|FBAV|FB_IAB/i.test(ua)) inApp = "Facebook App";
+    else if (/LinkedInApp/i.test(ua)) inApp = "LinkedIn App";
+    else if (/Line\//i.test(ua)) inApp = "LINE App";
+    else if (/WhatsApp/i.test(ua)) inApp = "WhatsApp";
+    else if (/Telegram/i.test(ua)) inApp = "Telegram";
+
+    if (tag && inApp) return inApp + " (tag: " + tag + ")";
+    if (tag) return "Tag: " + tag;
+    if (inApp) return inApp;
+    return document.referrer || "Direct";
+  }
+
+  function detectDeviceInfo(isReturning) {
     var ua = navigator.userAgent || "";
     var isTablet = /iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua));
     var isMobile = !isTablet && /Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
@@ -152,19 +190,40 @@
       tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "-";
     } catch (e) {}
 
+    var conn = "-";
+    try {
+      var nc = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (nc) {
+        var parts = [];
+        if (nc.effectiveType) parts.push(String(nc.effectiveType).toUpperCase());
+        if (typeof nc.downlink === "number" && nc.downlink > 0) parts.push("~" + nc.downlink + " Mbps");
+        if (parts.length) conn = parts.join(" · ");
+      }
+    } catch (e) {}
+
+    var theme = document.documentElement.getAttribute("data-theme") || "light";
+    var siteLang = document.documentElement.getAttribute("lang") || "id";
+
     return {
       device: device,
       os: os,
       browser: browser,
-      screen: (window.screen ? window.screen.width + "x" + window.screen.height : "-"),
+      screen: window.screen ? window.screen.width + "x" + window.screen.height : "-",
       lang: navigator.language || "-",
       tz: tz,
-      ref: document.referrer || "Direct"
+      ref: detectSource(ua),
+      status: isReturning ? "Kunjungan Ulang" : "Pengunjung Baru",
+      conn: conn,
+      pref: (theme === "dark" ? "Dark" : "Light") + " · " + siteLang.toUpperCase()
     };
   }
 
-  function notifyVisit() {
+  function notifyVisit(isReturning) {
     if (isLocal || !NOTIF_ENDPOINT) return;
+    var ua = navigator.userAgent || "";
+    if (isLikelyBot(ua)) return;
+
+    var payload = detectDeviceInfo(isReturning);
     try {
       if (sessionStorage.getItem("zk_v3_notif_sent") === "1") return;
       sessionStorage.setItem("zk_v3_notif_sent", "1");
@@ -174,7 +233,7 @@
       fetch(NOTIF_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(detectDeviceInfo()),
+        body: JSON.stringify(payload),
         keepalive: true
       }).catch(function () {});
     } catch (e) {}
@@ -185,9 +244,9 @@
   function initViews() {
     if (viewInitStarted) return;
     viewInitStarted = true;
-    notifyVisit();
 
     var alreadyCounted = hasPersistentFlag("zk_v3_view_counted");
+    notifyVisit(alreadyCounted);
     var shouldHit = !isLocal && !alreadyCounted;
 
     // Prevent concurrent double-hit in the same session while fetch is in flight
