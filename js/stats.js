@@ -145,22 +145,58 @@
     }
   }
 
-  // Toast feedback notification
+  // Toast feedback notification system
   var toastTimer = null;
-  function showToast(msg) {
+  function showToast(htmlMsg, duration) {
     var toast = document.getElementById("statToast");
     if (!toast) {
       toast = document.createElement("div");
       toast.id = "statToast";
       toast.className = "stat-toast";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
       document.body.appendChild(toast);
     }
-    toast.textContent = msg;
+    toast.innerHTML = htmlMsg;
     toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       toast.classList.remove("show");
-    }, 2400);
+    }, duration || 3400);
+  }
+
+  // Cute & funny thank you messages
+  var cuteThanks = [
+    "Makasih bintangnya! ✨ Bikin Zikri senyum 7 hari 7 malam 😆",
+    "Aww makasih! ⭐ Zikri auto semangat ngoding sampai subuh 🚀",
+    "Wih dapet bintang! Makasih yaa, kamu baik banget (⁠≧⁠▽⁠≦⁠) ⭐",
+    "Makasih bintangnya! Resmi masuk daftar orang keren hari ini 😎✨",
+    "Yay dapet star! ⭐ Hati Zikri langsung berbunga-bunga 🌸",
+  ];
+
+  var alreadyStarredMsgs = [
+    "Bintangmu udah aman di hati Zikri kok! ✨ (⁠ ⁠ꈍ⁠ᴗ⁠ꈍ⁠)",
+    "Udah dapet bintang darimu sebelumnya, makasih banyak yaa! ⭐",
+    "Satu bintang darimu udah bikin Zikri bahagia banget! 🥰✨",
+  ];
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // Welcome notification when visitor enters Home
+  function triggerWelcomeToast() {
+    try {
+      if (sessionStorage.getItem("zk_home_welcomed") === "1") return;
+      sessionStorage.setItem("zk_home_welcomed", "1");
+    } catch (e) {}
+
+    setTimeout(function () {
+      showToast(
+        '<span class="toast-wave">👋</span> Halo! Selamat datang di Ruang Karya Zikri ✨',
+        3800
+      );
+    }, 750);
   }
 
   // Handle star button interaction
@@ -188,7 +224,7 @@
       } catch (e) {}
 
       spawnStarParticles(starBtn);
-      showToast("Terima kasih atas bintangnya! ⭐");
+      showToast(pickRandom(cuteThanks), 3800);
 
       // Persist to server
       apiFetch("/hit/" + NAMESPACE + "/" + STARS_KEY).then(function (val) {
@@ -200,13 +236,13 @@
         }
       });
     } else {
-      // Already starred: cheerful pulse
+      // Already starred: cheerful pulse with cute message
       starBtn.classList.add("pulse");
       setTimeout(function () {
         starBtn.classList.remove("pulse");
       }, 400);
       spawnStarParticles(starBtn);
-      showToast("Bintangmu sudah tersimpan! ✨");
+      showToast(pickRandom(alreadyStarredMsgs), 3400);
     }
   });
 
@@ -219,5 +255,16 @@
   } else {
     initViews();
     initLikes();
+  }
+
+  // Hook into home entrance for the welcome notification
+  if (document.documentElement.classList.contains("intro-on")) {
+    document.addEventListener("introdone", triggerWelcomeToast, { once: true });
+  } else {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", triggerWelcomeToast);
+    } else {
+      triggerWelcomeToast();
+    }
   }
 })();
