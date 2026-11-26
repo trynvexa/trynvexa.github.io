@@ -111,10 +111,11 @@
     })
       .then(function (r) {
         if (t) clearTimeout(t);
-        return r.json();
-      })
-      .then(function (d) {
-        return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
+        // 404 = key belum ada di server (counter baru), anggap nilainya 0
+        if (r.status === 404) return 0;
+        return r.json().then(function (d) {
+          return d && typeof d.value === "number" && isFinite(d.value) && d.value >= 0 ? d.value : 0;
+        });
       })
       .catch(function () {
         if (t) clearTimeout(t);
@@ -341,19 +342,17 @@
 
     apiFetch((shouldHit ? "/hit/" : "/get/") + NAMESPACE + "/" + VIEWS_KEY, shouldHit).then(function (v) {
       if (typeof v !== "number") {
+        // Gagal total (jaringan putus) — hapus flag session supaya bisa retry di kunjungan berikutnya
         if (shouldHit) {
-          try {
-            sessionStorage.removeItem("zk_v4_view_counted");
-          } catch (e) {}
+          try { sessionStorage.removeItem("zk_v4_view_counted"); } catch (e) {}
         }
         return;
       }
+      // Berhasil — simpan permanen
       if (shouldHit) {
         setPersistentFlag("zk_v4_view_counted");
       }
-      try {
-        localStorage.setItem("zk_v4_views", v);
-      } catch (e) {}
+      try { localStorage.setItem("zk_v4_views", v); } catch (e) {}
       viewsEl.textContent = formatNum(v);
     });
   }
