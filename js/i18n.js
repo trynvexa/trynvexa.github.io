@@ -6037,7 +6037,40 @@
       o.lang = x[0];
       o.innerHTML = "<span>" + x[1] + "</span><small>" + x[2] + "</small>";
       o.onclick = function () {
-        set(x[0]);
+        var prevLang = lang;
+        var nextLang = x[0];
+        var reduce =
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (
+          (prevLang === "ja" || nextLang === "ja") &&
+          prevLang !== nextLang &&
+          !reduce &&
+          typeof document.startViewTransition === "function"
+        ) {
+          var rect = b.getBoundingClientRect();
+          var vx = rect.left + rect.width * 0.5;
+          var vy = rect.top + rect.height * 0.5;
+          var vr = Math.hypot(
+            Math.max(vx, window.innerWidth - vx),
+            Math.max(vy, window.innerHeight - vy)
+          );
+          var rs = document.documentElement.style;
+          rs.setProperty("--vt-x", vx.toFixed(1) + "px");
+          rs.setProperty("--vt-y", vy.toFixed(1) + "px");
+          rs.setProperty("--vt-r", vr.toFixed(1) + "px");
+          close(true);
+          try {
+            var vt = document.startViewTransition(function () {
+              set(nextLang);
+            });
+            if (vt && vt.ready && vt.ready.catch) vt.ready.catch(function () {});
+            if (vt && vt.finished && vt.finished.catch) vt.finished.catch(function () {});
+            if (vt && vt.updateCallbackDone && vt.updateCallbackDone.catch)
+              vt.updateCallbackDone.catch(function () {});
+            return;
+          } catch (e) {}
+        }
+        set(nextLang);
         close(true);
       };
       li.appendChild(o);

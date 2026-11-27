@@ -3,6 +3,7 @@ portfolio-v228.html
 *.bak
 temp-*
 .playwright-mcp/
+.superpowers/
 assets/runway/look-*.png
 assets/runway/item-*
 

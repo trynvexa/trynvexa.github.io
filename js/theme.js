@@ -22,11 +22,16 @@
   }
   function syncTheme() {
     if (!themeBtn) return;
-    themeBtn.dataset.mode = isDark() ? "dark" : "light";
+    var dark = isDark();
+    var isJa = document.documentElement.lang === "ja";
+    themeBtn.dataset.mode = dark ? "dark" : "light";
     var tc = document.getElementById("themeColor");
-    if (tc) tc.setAttribute("content", isDark() ? "#090a0d" : "#eeebe2");
-    themeBtn.setAttribute("aria-label", isDark() ? "Ganti ke mode terang" : "Ganti ke mode gelap");
+    if (tc) {
+      tc.setAttribute("content", isJa ? (dark ? "#0c0c0f" : "#f4efe4") : dark ? "#090a0d" : "#eeebe2");
+    }
+    themeBtn.setAttribute("aria-label", dark ? "Ganti ke mode terang" : "Ganti ke mode gelap");
   }
+  window.addEventListener("zk-lang", syncTheme);
   function applyTheme(next) {
     document.documentElement.setAttribute("data-theme", next);
     try {

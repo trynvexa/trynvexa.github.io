@@ -718,6 +718,7 @@
       var curLang = (window.ZK && ZK.lang) || "id";
       var dispName = (window.ZK && ZK.t && ZK.t(rawName, curLang)) || rawName;
       nm.textContent = dispName;
+      if (window.__zkMangaSyncCard) window.__zkMangaSyncCard(activeIdx);
       if (window.__zkBuddyCardReact) window.__zkBuddyCardReact(activeIdx);
       if (window.__zkBgSetCard) window.__zkBgSetCard(activeIdx, cards[activeIdx]);
       if (prevActive >= 0 && !reduce && mk.animate) {
@@ -746,6 +747,7 @@
     if (activeC >= 0 && cards[activeC]) {
       var rawName = cards[activeC].getAttribute("data-n") || "";
       nm.textContent = (window.ZK && ZK.t && ZK.t(rawName, curLang)) || rawName;
+      if (window.__zkMangaSyncCard) window.__zkMangaSyncCard(activeC);
     }
     var tp = ring && ring.querySelector("textPath");
     if (tp && window.__zkWORD) {

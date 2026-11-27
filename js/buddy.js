@@ -157,6 +157,13 @@
   ensureSeat();
   refreshGeom();
 
+  function refreshBuddyGeom() {
+    capK = "";
+    geom.valid = false;
+    ensureSeat();
+  }
+  window.__zkBuddyRefreshGeom = refreshBuddyGeom;
+
   addEventListener(
     "resize",
     function () {
@@ -164,6 +171,10 @@
     },
     { passive: true }
   );
+  window.addEventListener("zk-lang", function () {
+    refreshBuddyGeom();
+    setTimeout(refreshBuddyGeom, 120);
+  });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () {
       capK = "";
@@ -225,6 +236,7 @@
     if (idx === seatIdx && !jump.on) {
       air.vy = -8.5;
       if (window.__zkLetterImpulse) window.__zkLetterImpulse(idx, 18);
+      if (userTriggered && window.__zkMangaBuddySfx) window.__zkMangaBuddySfx("jump");
       set("wave", 1800);
       return;
     }
@@ -238,6 +250,7 @@
     jump.fromIdx = seatIdx;
     jump.toIdx = idx;
     seatIdx = idx;
+    if (userTriggered && window.__zkMangaBuddySfx) window.__zkMangaBuddySfx("jump");
     var letsArr = getLets();
     [].forEach.call(letsArr, function (el, i) {
       el.classList.toggle("seated", i === seatIdx);
@@ -475,6 +488,7 @@
     if (clicks.length >= 3) {
       clicks = [];
       set("angry", 2600);
+      if (window.__zkMangaBuddySfx) window.__zkMangaBuddySfx("angry");
       if (!rd) {
         b.classList.remove("shake");
         void b.offsetWidth;
@@ -483,6 +497,7 @@
     } else {
       air.vy = -7.5;
       if (window.__zkLetterImpulse) window.__zkLetterImpulse(seatIdx, 14);
+      if (window.__zkMangaBuddySfx) window.__zkMangaBuddySfx("poke");
       set("shock", 1400);
     }
   });
@@ -508,6 +523,7 @@
 
   window.__zkBuddyCardReact = function (cardIdx) {
     if (performance.now() - userT > 2800 || pose === "angry" || pose === "shock") return;
+    if (window.__zkMangaBuddySfx) window.__zkMangaBuddySfx(cardIdx === 1 ? "music" : "react");
     if (cardIdx === 1) {
       bopT = performance.now() + 3200;
       set("idle");
