@@ -21,7 +21,10 @@ html:not([lang="ja"]) .mg-sfx {
 html.intro-on .mg-frame,
 body.covered .mg-frame,
 body.covered .mg-speedlines,
-body.covered .mg-page-num {
+body.covered .mg-page-num,
+body:has(#pg:not([hidden])) .mg-frame,
+body:has(#pg:not([hidden])) .mg-speedlines,
+body:has(#pg:not([hidden])) .mg-page-num {
   display: none !important;
 }
 
@@ -164,7 +167,7 @@ html[lang="ja"] .bgfx::before {
 /* Double-ruled manga manuscript page frame + vertical desktop marginalia */
 html[lang="ja"] .mg-frame {
   position: fixed;
-  inset: 10px;
+  inset: 12px;
   pointer-events: none;
   z-index: 9;
   border: 2.5px solid var(--mg-ink);
@@ -175,22 +178,22 @@ html[lang="ja"] .mg-frame {
 
 html[lang="ja"] .mg-code {
   position: absolute;
-  top: 50%;
+  top: 66%;
   font-family: "Space Mono", "Noto Sans JP", monospace;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--mg-ink);
-  opacity: 0.48;
+  opacity: 0.46;
   white-space: nowrap;
   user-select: none;
 }
 html[lang="ja"] .mg-code-l {
-  left: -13px;
+  left: 11px;
   transform: translate(-50%, -50%) rotate(-90deg);
 }
 html[lang="ja"] .mg-code-r {
-  right: -13px;
+  right: 11px;
   transform: translate(50%, -50%) rotate(90deg);
 }
 @media (max-width: 900px) {
@@ -289,8 +292,8 @@ html[lang="ja"] .grid-marks .cross:nth-child(6)::after {
    4. HEADER PANEL (.hd) — NARRATION BOX, CONTROLS, HANKO, LOGO, BUDDY & OBI
    -------------------------------------------------------------------------- */
 html[lang="ja"] .hd {
-  padding: clamp(22px, 3vw, 28px) clamp(26px, 4.5vw, 64px) 0;
-  height: clamp(225px, 33.5svh, 305px);
+  padding: clamp(18px, 2.2vw, 22px) clamp(28px, 4.5vw, 64px) 0;
+  height: clamp(244px, 34svh, 306px);
 }
 
 /* 4a. Top-Left Manga Narration Caption Box */
@@ -298,13 +301,13 @@ html[lang="ja"] .hd .hi {
   background: var(--mg-paper-hi);
   border: 2.5px solid var(--mg-ink);
   box-shadow: 4px 4px 0 var(--mg-ui-shadow);
-  padding: 8px 13px 7px;
-  gap: 3px !important;
+  padding: 6px 12px 5px;
+  gap: 2px !important;
 }
 html[lang="ja"] .hd .hi .hi-k {
   font-family: "Space Mono", "Noto Sans JP", monospace;
   font-weight: 700;
-  font-size: clamp(9px, 0.8vw, 10.5px);
+  font-size: clamp(8.5px, 0.78vw, 10px);
   letter-spacing: 0.1em;
   color: var(--mg-red);
 }
@@ -317,19 +320,19 @@ html[lang="ja"] .hd .hi .hi-m {
   font-family: "Noto Sans JP", sans-serif;
   font-style: normal;
   font-weight: 900;
-  font-size: clamp(19px, 2.3vw, 29px);
+  font-size: clamp(17px, 1.85vw, 24px);
   line-height: 1.08;
   letter-spacing: -0.02em;
   color: var(--mg-ink);
   margin-top: 1px;
 }
 html[lang="ja"] .hd .hi .clk {
-  margin-top: 4px !important;
-  padding-top: 5px;
+  margin-top: 3px !important;
+  padding-top: 4px;
   width: 100%;
   border-top: 1.5px dashed color-mix(in srgb, var(--mg-ink) 36%, transparent);
   font-family: "Space Mono", "Noto Sans JP", monospace;
-  font-size: clamp(9px, 0.85vw, 10.5px);
+  font-size: clamp(8.5px, 0.8vw, 10px);
   font-weight: 700;
   letter-spacing: 0.08em;
   opacity: 0.92;
@@ -364,13 +367,19 @@ html[lang="ja"] .hd .lang-btn .n {
   font-family: "Noto Sans JP", sans-serif;
   font-weight: 700;
 }
-html[lang="ja"] .hd .lang-btn:hover,
-html[lang="ja"] .hd .lang-btn[aria-expanded="true"],
-html[lang="ja"] .hd .theme-btn:hover {
+html[lang="ja"] .hd .lang-btn[aria-expanded="true"] {
   background: var(--mg-ink);
   color: var(--mg-paper);
   border-color: var(--mg-ink);
-  transform: none;
+}
+@media (hover: hover) {
+  html[lang="ja"] .hd .lang-btn:hover,
+  html[lang="ja"] .hd .theme-btn:hover {
+    background: var(--mg-ink);
+    color: var(--mg-paper);
+    border-color: var(--mg-ink);
+    transform: none;
+  }
 }
 html[lang="ja"] .hd .lang-btn:active,
 html[lang="ja"] .hd .theme-btn:active {
@@ -419,9 +428,9 @@ html[lang="ja"] .hd .mark {
 
 /* 4c. Vermilion Hanko Vertical Banner (.block) + Diagonal Crosshatch Shadow */
 html[lang="ja"] .hd .block {
-  top: 12px;
-  bottom: 44px;
-  width: clamp(58px, 7.6vw, 96px) !important;
+  top: 14px;
+  bottom: 46px;
+  width: clamp(58px, 7vw, 88px) !important;
   background: var(--mg-red) !important;
   border: 3px solid var(--mg-ink);
   border-top: 0;
@@ -429,7 +438,7 @@ html[lang="ja"] .hd .block {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 html[lang="ja"] .hd .block::after {
   border: 2.5px solid var(--mg-ink) !important;
@@ -446,13 +455,15 @@ html[lang="ja"] .mg-hanko-txt {
   display: block;
   writing-mode: vertical-rl;
   text-orientation: upright;
+  padding: 5px 4px;
+  border: 1.5px solid rgba(255, 253, 248, 0.78);
   font-family: "Noto Sans JP", sans-serif;
   font-weight: 900;
-  font-size: clamp(9.5px, 1vw, 12.5px);
-  letter-spacing: 0.22em;
+  font-size: clamp(10px, 1vw, 13px);
+  letter-spacing: 0.18em;
   line-height: 1;
-  color: rgba(255, 253, 248, 0.94);
-  text-shadow: 1px 1px 0 rgba(17, 17, 17, 0.5);
+  color: rgba(255, 253, 248, 0.96);
+  text-shadow: 1px 1px 0 rgba(17, 17, 17, 0.45);
   user-select: none;
   pointer-events: none;
 }
@@ -461,8 +472,10 @@ html[lang="ja"] .mg-hanko-txt {
 html[lang="ja"] .title {
   font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
   font-weight: 400;
-  font-size: clamp(32px, 8.8vw, 112px);
+  font-size: clamp(32px, 7.6vw, 96px);
   letter-spacing: -0.02em;
+  align-self: end;
+  margin-bottom: 6px;
 }
 html[lang="ja"] .title .t1 {
   filter: none !important;
@@ -568,8 +581,8 @@ html[lang="ja"] .hd .meta {
   background: var(--mg-paper-hi);
   border-top: 2.5px solid var(--mg-ink);
   border-bottom: 2.5px solid var(--mg-ink);
-  margin: 0 calc(clamp(26px, 4.5vw, 64px) * -1 + 12px);
-  padding: 8px calc(clamp(26px, 4.5vw, 64px) - 12px);
+  margin: 0 calc(clamp(28px, 4.5vw, 64px) * -1 + 12px);
+  padding: 6px calc(clamp(28px, 4.5vw, 64px) - 12px);
 }
 html[lang="ja"] .hd .meta .meta-author {
   flex-direction: row;
@@ -960,9 +973,10 @@ html[lang="ja"] .mg-ch-mk {
 
 /* 5g. Bottom Reader Hint & Page Counter Marginalia */
 html[lang="ja"] .stage::after {
-  bottom: 20px;
-  left: clamp(24px, 4vw, 42px);
-  padding: 4px 11px;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
   background: var(--mg-paper-hi);
   color: var(--mg-ink);
   border: 2px solid var(--mg-ink);
@@ -972,11 +986,12 @@ html[lang="ja"] .stage::after {
   font-weight: 700;
   letter-spacing: 0.1em;
   opacity: 0.96;
+  white-space: nowrap;
 }
 html[lang="ja"] .mg-page-num {
   position: absolute;
-  right: clamp(24px, 4vw, 42px);
-  bottom: 22px;
+  right: clamp(26px, 3.6vw, 40px);
+  bottom: 27px;
   z-index: 6;
   padding: 3px 9px;
   background: var(--mg-ink);
@@ -1040,6 +1055,7 @@ html[lang="ja"] .mg-page-num {
     border-radius: 3px !important;
     border: 2px solid var(--mg-ink) !important;
     background: var(--mg-paper-hi) !important;
+    color: var(--mg-ink) !important;
     box-shadow: 2.5px 2.5px 0 var(--mg-ui-shadow) !important;
   }
   html[lang="ja"] body .hd .mark {
@@ -1060,7 +1076,9 @@ html[lang="ja"] .mg-page-num {
   }
   html[lang="ja"] .mg-hanko-txt {
     font-size: 8.5px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
+    padding: 2px 2px;
+    border-width: 1px;
   }
   html[lang="ja"] body .hd .title {
     font-size: clamp(25px, 8.9vw, 44px) !important;

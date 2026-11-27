@@ -142,7 +142,7 @@
     if (block && !block.querySelector(".mg-hanko-txt")) {
       var hanko = markOwnDecorative(document.createElement("span"));
       hanko.className = "mg-hanko-txt";
-      hanko.textContent = "作品集・二〇二六";
+      hanko.textContent = "作品集";
       block.appendChild(hanko);
     }
 
