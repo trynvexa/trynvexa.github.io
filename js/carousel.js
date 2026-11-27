@@ -2549,6 +2549,7 @@
   function queue() {
     if (!raf) raf = requestAnimationFrame(fit);
   }
+  window.__zkFitHeroTitle = queue;
   fit();
   window.addEventListener("resize", queue);
   window.addEventListener("orientationchange", queue);

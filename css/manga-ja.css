@@ -112,7 +112,7 @@ html[lang="ja"][data-theme="dark"] {
 html[lang="ja"] body {
   background: var(--mg-paper) !important;
   color: var(--mg-ink);
-  font-family: "Noto Sans JP", "Unbounded", system-ui, sans-serif;
+  font-family: "Unbounded", "Noto Sans JP", system-ui, sans-serif;
 }
 
 /* Replace soft radial pointer spotlight with crisp top/bottom Ben-Day halftone wash */
@@ -292,8 +292,8 @@ html[lang="ja"] .grid-marks .cross:nth-child(6)::after {
    4. HEADER PANEL (.hd) — NARRATION BOX, CONTROLS, HANKO, LOGO, BUDDY & OBI
    -------------------------------------------------------------------------- */
 html[lang="ja"] .hd {
-  padding: clamp(18px, 2.2vw, 22px) clamp(28px, 4.5vw, 64px) 0;
-  height: clamp(244px, 34svh, 306px);
+  padding: clamp(14px, 1.8vw, 20px) clamp(28px, 4.5vw, 64px) 0;
+  height: clamp(266px, 37.5svh, 326px);
 }
 
 /* 4a. Top-Left Manga Narration Caption Box */
@@ -472,7 +472,7 @@ html[lang="ja"] .mg-hanko-txt {
 html[lang="ja"] .title {
   font-family: "Dela Gothic One", "Noto Sans JP", sans-serif;
   font-weight: 400;
-  font-size: clamp(32px, 7.6vw, 96px);
+  font-size: clamp(32px, min(7.4vw, 9.2svh), 92px);
   letter-spacing: -0.02em;
   align-self: end;
   margin-bottom: 6px;
@@ -643,6 +643,16 @@ html[lang="ja"] .stat-star.is-starred {
   color: #fffdf8 !important;
   border-color: var(--mg-ink) !important;
 }
+html[lang="ja"][data-theme="dark"] .stat-star.is-starred {
+  background: #c8251e !important;
+  color: #fffdf8 !important;
+}
+@media (prefers-color-scheme: dark) {
+  html[lang="ja"]:not([data-theme="light"]) .stat-star.is-starred {
+    background: #c8251e !important;
+    color: #fffdf8 !important;
+  }
+}
 html[lang="ja"] .stat-star.is-starred .star-ico {
   fill: #fffdf8 !important;
   stroke: #fffdf8 !important;
@@ -711,40 +721,59 @@ html[lang="ja"] .ring text {
 /* 5c. Prev/Next Action Arrows — ONLY when hover-capable / fine pointer!
    Strictly preserves css/pages.css:4140 (v218) sr-only touch-only hidden arrows! */
 @media (hover: hover), (pointer: fine) {
-  html[lang="ja"] .hd .arr {
+  html[lang="ja"] body .hd .arr {
     top: 64% !important;
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 3px;
-    border: 2.5px solid var(--mg-ink);
-    background: var(--mg-paper-hi);
-    color: var(--mg-ink);
-    box-shadow: 4px 4px 0 var(--mg-ui-shadow);
-    opacity: 1;
-    font-size: 15px;
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 3px !important;
+    border: 2.5px solid var(--mg-ink) !important;
+    background: var(--mg-paper-hi) !important;
+    color: var(--mg-ink) !important;
+    box-shadow: 4px 4px 0 var(--mg-ui-shadow) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
     transition:
       transform 0.12s ease,
       box-shadow 0.12s ease,
       background 0.14s ease,
       color 0.14s ease;
   }
-  html[lang="ja"] .hd .arr.l {
-    left: clamp(20px, 2.4vw, 34px);
+  html[lang="ja"].intro-on body .hd .arr {
+    opacity: 0 !important;
   }
-  html[lang="ja"] .hd .arr.r {
-    right: clamp(20px, 2.4vw, 34px);
+  html[lang="ja"] body .hd .arr.l {
+    left: clamp(20px, 2.4vw, 34px) !important;
   }
-  html[lang="ja"] .hd .arr:hover {
-    background: var(--mg-ink);
-    color: var(--mg-paper);
-    transform: translateY(-50%) scale(1.04);
+  html[lang="ja"] body .hd .arr.r {
+    right: clamp(20px, 2.4vw, 34px) !important;
   }
-  html[lang="ja"] .hd .arr:active {
-    transform: translateY(-50%) translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--mg-ui-shadow);
+  html[lang="ja"] body .hd .arr:hover {
+    background: var(--mg-ink) !important;
+    color: var(--mg-paper) !important;
+    transform: translateY(-50%) scale(1.04) !important;
+  }
+  html[lang="ja"] body .hd .arr:active {
+    transform: translateY(-50%) translate(2px, 2px) !important;
+    box-shadow: 2px 2px 0 var(--mg-ui-shadow) !important;
+  }
+  @media (max-width: 700px) {
+    html[lang="ja"] body .hd .arr {
+      top: 56% !important;
+      width: 38px !important;
+      height: 38px !important;
+      font-size: 14px !important;
+    }
+    html[lang="ja"] body .hd .arr.l {
+      left: 14px !important;
+    }
+    html[lang="ja"] body .hd .arr.r {
+      right: 14px !important;
+    }
   }
 }
 
@@ -1015,6 +1044,18 @@ html[lang="ja"] .mg-page-num {
   }
 }
 
+@media (min-width: 701px) {
+  html[lang="ja"] .stage {
+    min-height: 0 !important;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 780px) {
+  html[lang="ja"] .stage {
+    --w: min(192px, 23vw);
+  }
+}
+
 @media (max-width: 700px) {
   html[lang="ja"] .mg-frame {
     inset: 6px;
@@ -1037,12 +1078,14 @@ html[lang="ja"] .mg-page-num {
     max-width: 58vw;
   }
   html[lang="ja"] body .hd .hi .hi-k {
-    font-size: 7.5px !important;
-    letter-spacing: 0.06em !important;
+    font-size: 7px !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap;
   }
   html[lang="ja"] body .hd .hi .hi-m {
-    font-size: clamp(14px, 4.1vw, 18px) !important;
+    font-size: clamp(12.5px, 3.5vw, 17px) !important;
     line-height: 1.1 !important;
+    white-space: nowrap;
   }
   html[lang="ja"] body .hd .hi .clk {
     margin-top: 3px !important;
@@ -1096,6 +1139,14 @@ html[lang="ja"] .mg-page-num {
       2px 2px 0 #f4efe4,
       4px 4px 0 var(--mg-red) !important;
   }
+  @media (prefers-color-scheme: dark) {
+    html[lang="ja"]:not([data-theme="light"]) body .hd .title .t1 {
+      -webkit-text-stroke: 2px #f4efe4;
+      text-shadow:
+        2px 2px 0 #f4efe4,
+        4px 4px 0 var(--mg-red) !important;
+    }
+  }
   html[lang="ja"] body .hd .meta {
     margin: 0 -8px !important;
     padding: 6px 10px 7px !important;
@@ -1144,6 +1195,12 @@ html[lang="ja"] .mg-page-num {
   }
 }
 
+@media (max-width: 400px) {
+  html[lang="ja"] body .hd .hi .hi-k::before {
+    display: none;
+  }
+}
+
 @media (max-width: 700px) and (max-height: 740px) and (orientation: portrait) {
   html[lang="ja"] body .hd {
     height: clamp(242px, 39svh, 278px) !important;
@@ -1153,6 +1210,8 @@ html[lang="ja"] .mg-page-num {
 @media (max-height: 480px) and (orientation: landscape) {
   html[lang="ja"] .mg-frame {
     inset: 4px;
+    border-width: 2px;
+    box-shadow: none;
   }
   html[lang="ja"] body .hd {
     height: clamp(124px, 36svh, 144px) !important;
@@ -1168,6 +1227,21 @@ html[lang="ja"] .mg-page-num {
   }
   html[lang="ja"] body .hd .hi .hi-m {
     font-size: 14px !important;
+  }
+  html[lang="ja"] body .hd .block {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    height: clamp(46px, 15svh, 64px) !important;
+    width: clamp(40px, 8vw, 56px) !important;
+    border-width: 2px;
+    padding-top: 0;
+  }
+  html[lang="ja"] body .hd .meta {
+    margin: 0 -10px !important;
+    padding: 3px 10px !important;
+    border-top-width: 2px !important;
+    border-bottom-width: 2px !important;
   }
   html[lang="ja"] .mg-hanko-txt,
   html[lang="ja"] .mg-page-num {

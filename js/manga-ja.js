@@ -244,22 +244,29 @@
 
   function ensureJaFontsAndBuddy() {
     if (!isJa()) return;
+    if (window.__zkFitHeroTitle) window.__zkFitHeroTitle();
     if (window.__zkBuddyRefreshGeom) {
       window.__zkBuddyRefreshGeom();
     }
     if (document.fonts && document.fonts.load && !jaFontsRequested) {
       jaFontsRequested = true;
       Promise.all([
-        document.fonts.load('400 48px "Dela Gothic One"'),
-        document.fonts.load('900 24px "Noto Sans JP"'),
+        document.fonts.load('400 48px "Dela Gothic One"', "ポートフォリオ"),
+        document.fonts.load('900 24px "Noto Sans JP"', "クリエイティブ空間作品集第話"),
       ])
         .then(function () {
+          if (window.__zkFitHeroTitle) window.__zkFitHeroTitle();
           if (window.__zkBuddyRefreshGeom) window.__zkBuddyRefreshGeom();
         })
-        .catch(function () {});
+        .catch(function () {
+          jaFontsRequested = false;
+        });
     } else if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () {
-        if (isJa() && window.__zkBuddyRefreshGeom) window.__zkBuddyRefreshGeom();
+        if (isJa()) {
+          if (window.__zkFitHeroTitle) window.__zkFitHeroTitle();
+          if (window.__zkBuddyRefreshGeom) window.__zkBuddyRefreshGeom();
+        }
       });
     }
   }
