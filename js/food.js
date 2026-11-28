@@ -64,6 +64,11 @@
     return dt > 250 ? dt : 0;
   }
 
+  function nextStepTarget(curP, manualAnim, dir) {
+    var base = manualAnim ? manualAnim.toIdx : Math.round(curP);
+    return (((base + dir) % 5) + 5) % 5;
+  }
+
   function clamp(v, lo, hi) {
     return v < lo ? lo : v > hi ? hi : v;
   }
@@ -81,6 +86,7 @@
     lerpRgb: lerpRgb,
     rgbToCss: rgbToCss,
     clampGap: clampGap,
+    nextStepTarget: nextStepTarget,
   };
 
   /* ---------- SVG Icon Templates ---------- */
@@ -403,11 +409,17 @@
     }
 
     function setMenuOpen(open) {
+      var wasOpen = menuOpen;
       menuOpen = !!open;
       popoverEl.classList.toggle("is-open", menuOpen);
       popoverEl.setAttribute("aria-hidden", menuOpen ? "false" : "true");
+      popoverEl.inert = !menuOpen;
       menuBtn.setAttribute("aria-expanded", menuOpen ? "true" : "false");
-      if (menuOpen) syncMenuActive();
+      if (menuOpen) {
+        syncMenuActive();
+      } else if (wasOpen && popoverEl.contains(document.activeElement)) {
+        menuBtn.focus({ preventScroll: true });
+      }
     }
 
     function setThemeColors(bgCss, inkCss) {
@@ -1306,15 +1318,24 @@
       asmRaf = requestAnimationFrame(tickAct2);
     }
 
+    function clearFluidCanvases() {
+      var uCtx = fluidUnderCanvas.getContext("2d");
+      if (uCtx) uCtx.clearRect(0, 0, fluidUnderCanvas.width, fluidUnderCanvas.height);
+      var oCtx = fluidOverCanvas.getContext("2d");
+      if (oCtx) oCtx.clearRect(0, 0, fluidOverCanvas.width, fluidOverCanvas.height);
+    }
+
     function openAssembly(dishIdx) {
       var idx = ((dishIdx % 5) + 5) % 5;
       asmDishIdx = idx;
       step = idx;
       curP = idx;
       manualAnim = null;
+      hoverPaused = false;
       setMenuOpen(false);
       stopAct1Loop();
       stopAct2Loop();
+      clearFluidCanvases();
 
       mode = "assembly";
       var myToken = ++asmToken;
@@ -1324,8 +1345,14 @@
       // Match page pastel palette to chosen dish
       setThemeColors(dish.bg, dish.ink);
       stage.classList.add("is-assembling");
+      heroEl.inert = true;
+      heroEl.setAttribute("aria-hidden", "true");
       asmEl.classList.add("is-open");
+      asmEl.inert = false;
       asmEl.setAttribute("aria-hidden", "false");
+      if (!asmEl.contains(document.activeElement)) {
+        asmBackBtn.focus({ preventScroll: true });
+      }
 
       // Update header & story
       asmCountEl.textContent = "0" + (idx + 1) + " / 05";
@@ -1419,12 +1446,18 @@
     function closeAssembly() {
       if (mode !== "assembly") return;
       stopAct2Loop();
+      clearFluidCanvases();
+      hoverPaused = false;
       mode = "carousel";
       stage.classList.remove("is-assembling");
       asmEl.classList.remove("is-open");
+      asmEl.inert = true;
       asmEl.setAttribute("aria-hidden", "true");
+      heroEl.inert = false;
+      heroEl.setAttribute("aria-hidden", "false");
       renderAct1Frame(curP, null);
       syncMenuActive();
+      ctaEl.focus({ preventScroll: true });
       startAct1Loop();
     }
 
@@ -1461,16 +1494,16 @@
       openAssembly(active);
     });
 
-    ctaEl.addEventListener("pointerenter", function () {
-      hoverPaused = true;
+    ctaEl.addEventListener("pointerenter", function (e) {
+      if (e.pointerType === "mouse") hoverPaused = true;
     });
     ctaEl.addEventListener("pointerleave", function () {
       hoverPaused = false;
     });
 
     dishEls.forEach(function (btn, idx) {
-      btn.addEventListener("pointerenter", function () {
-        if (btn.classList.contains("is-front")) hoverPaused = true;
+      btn.addEventListener("pointerenter", function (e) {
+        if (e.pointerType === "mouse" && btn.classList.contains("is-front")) hoverPaused = true;
       });
       btn.addEventListener("pointerleave", function () {
         hoverPaused = false;
@@ -1531,7 +1564,7 @@
       if (dt < 700 && Math.abs(dx) > 54 && Math.abs(dx) > Math.abs(dy) * 1.5) {
         var dir = dx < 0 ? 1 : -1;
         if (mode === "carousel") {
-          stepToDish(Math.round(curP) + dir);
+          stepToDish(nextStepTarget(curP, manualAnim, dir));
         } else {
           openAssembly((asmDishIdx + dir + 5) % 5);
         }
@@ -1545,11 +1578,11 @@
       if (disposed || pg.hidden) return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        if (mode === "carousel") stepToDish(Math.round(curP) + 1);
+        if (mode === "carousel") stepToDish(nextStepTarget(curP, manualAnim, 1));
         else openAssembly((asmDishIdx + 1) % 5);
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
-        if (mode === "carousel") stepToDish(Math.round(curP) - 1);
+        if (mode === "carousel") stepToDish(nextStepTarget(curP, manualAnim, -1));
         else openAssembly((asmDishIdx + 4) % 5);
       } else if (e.key === " " && mode === "carousel") {
         if (e.target && (e.target.tagName === "BUTTON" || e.target.tagName === "A")) return;
@@ -1612,6 +1645,9 @@
     }
 
     /* ---------- Initial Load & Reveal ---------- */
+    heroEl.inert = false;
+    asmEl.inert = true;
+    popoverEl.inert = true;
     syncLocale();
     syncMenuActive();
     updateLayout();
@@ -1635,6 +1671,9 @@
       if (disposed || heroEl.classList.contains("ready")) return;
       updateLayout();
       heroEl.classList.add("ready");
+      if (!stage.contains(document.activeElement)) {
+        backHomeBtn.focus({ preventScroll: true });
+      }
       requestAnimationFrame(function () {
         if (!disposed && mode === "carousel") startAct1Loop();
       });
