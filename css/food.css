@@ -922,14 +922,27 @@ body.fd-active {
 
 /* ---------- RTL Support (Arabic) ---------- */
 html[data-rtl="1"] .pg.p9 .fd-title,
-html[data-rtl="1"] .pg.p9 .fd-flavour {
+html[data-rtl="1"] .pg.p9 .fd-flavour,
+html[data-rtl="1"] .pg.p9 #pgb .fd-title,
+html[data-rtl="1"] .pg.p9 #pgb .fd-flavour {
   direction: ltr;
   unicode-bidi: isolate;
   text-align: left;
 }
 
-html[data-rtl="1"] .pg.p9 .fd-stage.is-portrait .fd-flavour {
+html[data-rtl="1"] .pg.p9 .fd-stage.is-portrait .fd-flavour,
+html[data-rtl="1"] .pg.p9 #pgb .fd-stage.is-portrait .fd-flavour {
   text-align: center;
+}
+
+html[data-rtl="1"] .pg.p9 .fd-home-btn,
+html[data-rtl="1"] .pg.p9 .fd-eyebrow,
+html[data-rtl="1"] .pg.p9 .fd-drag-cue,
+html[data-rtl="1"] .pg.p9 .fd-scroll-cue,
+html[data-rtl="1"] .pg.p9 .fd-beat-kicker,
+html[data-rtl="1"] .pg.p9 .fd-beat-tag,
+html[data-rtl="1"] .pg.p9 .fd-beat-backhint {
+  letter-spacing: 0;
 }
 
 html[data-rtl="1"] .pg.p9 .fd-home-btn {

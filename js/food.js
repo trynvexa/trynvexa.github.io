@@ -484,9 +484,8 @@
         delete frameLoading[slug][idx];
         if (img) {
           cache[idx] = img;
-          // Live-upgrade canvas if this frame belongs to active dish
+          // Live-upgrade canvas only if this newly loaded frame changes the chosen bestIdx
           if (!disposed && DISHES[activeDishIdx].slug === slug) {
-            lastDrawnKey = "";
             drawVideoCanvas(drawnFrame);
           }
         }
@@ -598,23 +597,27 @@
           var dy = canvasH * 0.41 - dh * 0.5;
 
           // Edge-pixel studio extension:
-          // - Top stretches the full clean studio wall row (zero seam)
-          // - Bottom stretches the shadow-free outer table corner + soft shadow fade
+          // - Top uses empty-plate frame 00.webp (pure wall, immune to falling toppings)
+          // - Bottom feathers seamlessly into solid videoBgBottom with zero seam step
           if (dy > 0) {
-            ctx.drawImage(img, 0, 0, iw, 8, dx, 0, dw, dy + 2);
-          }
-          var bottomY = dy + dh;
-          if (bottomY < canvasH) {
-            ctx.drawImage(img, 4, ih - 8, 20, 8, 0, bottomY - 2, canvasW, canvasH - bottomY + 4);
+            var wallImg = cache && cache[0] && cache[0].naturalWidth > 0 ? cache[0] : null;
+            if (wallImg) {
+              ctx.drawImage(wallImg, 0, 0, wallImg.naturalWidth, 8, dx, 0, dw, dy + 2);
+            } else {
+              ctx.drawImage(img, 4, 2, 16, 6, 0, 0, canvasW, dy + 2);
+            }
           }
           ctx.drawImage(img, dx, dy, dw, dh);
+          var bottomY = dy + dh;
           if (bottomY < canvasH) {
-            var bFeather = Math.max(22, dh * 0.1);
-            var botGrad = ctx.createLinearGradient(0, bottomY - bFeather, 0, bottomY + 2);
+            var bFeather = Math.max(24, dh * 0.11);
+            var botGrad = ctx.createLinearGradient(0, bottomY - bFeather, 0, bottomY);
             botGrad.addColorStop(0, "rgba(0,0,0,0)");
             botGrad.addColorStop(1, dish.videoBgBottom);
             ctx.fillStyle = botGrad;
-            ctx.fillRect(0, bottomY - bFeather, canvasW, bFeather + 4);
+            ctx.fillRect(0, bottomY - bFeather, canvasW, bFeather + 1);
+            ctx.fillStyle = dish.videoBgBottom;
+            ctx.fillRect(0, bottomY, canvasW, canvasH - bottomY + 2);
           }
         } else {
           // Full-bleed centered cover for landscape desktop & tablets
@@ -636,12 +639,13 @@
       progressFillEl.style.transform = "scaleX(" + p.toFixed(4) + ")";
 
       var dish = DISHES[activeDishIdx];
+      var reduced = isReduced();
       for (var i = 0; i < 4; i++) {
         var b = dish.beats[i];
         var op = beatOpacity(p, b.start, b.end);
         var el = beatNodes[i].el;
         el.style.opacity = op.toFixed(3);
-        var dy = (1 - op) * 18;
+        var dy = reduced ? 0 : (1 - op) * 18;
         el.style.transform = "translate3d(0, " + dy.toFixed(2) + "px, 0)";
       }
     }
@@ -680,9 +684,15 @@
       if (disposed) return;
       var st = stage.scrollTop || 0;
 
-      // Pause auto-rotation when scrolled down; resume if user hasn't dragged and returns to top
+      // Pause auto-rotation when scrolled down; finish any mid-turn rotation cleanly first
       if (st >= 30) {
-        if (!manualAnim && !drag) stopAct1Loop();
+        if (!manualAnim && !drag) {
+          if (Math.abs(curP - Math.round(curP)) > 0.001) {
+            animateSnapTo(Math.round(curP));
+          } else {
+            stopAct1Loop();
+          }
+        }
       } else if (!userInteracted && !isReduced() && !act1Raf) {
         startAct1Loop();
       }
@@ -871,6 +881,16 @@
 
     /* ---------- Act 1 Render Frame ---------- */
     function renderFlavourSwap(fromIdx, toIdx, t) {
+      if (fromIdx === toIdx) {
+        if (fromIdx !== lastFlavourIdx) {
+          lastFlavourIdx = fromIdx;
+          var sameLines = DISHES[fromIdx].lines;
+          flavourEl.innerHTML = sameLines[0] + "<br>" + sameLines[1];
+        }
+        flavourEl.style.opacity = "1";
+        flavourEl.style.transform = "translate3d(0, 0, 0)";
+        return;
+      }
       var showIdx = t < 0.5 ? fromIdx : toIdx;
       var op = t < 0.5 ? 1 - 2 * t : 1 - 2 * (1 - t);
       var dy = (t < 0.5 ? -2 * t * 8 : 2 * (1 - t) * 8) * geom.u;
@@ -989,6 +1009,7 @@
         toP: targetInt,
         fromIdx: fromIdx,
         toIdx: idx,
+        continuousColor: true,
         start: performance.now(),
         dur: isReduced() ? 1 : 360,
       };
@@ -1037,11 +1058,16 @@
         } else {
           var eased = isReduced() ? 1 : easeTurn(raw);
           curP = manualAnim.fromP + (manualAnim.toP - manualAnim.fromP) * eased;
-          renderAct1Frame(curP, {
-            fromIdx: manualAnim.fromIdx,
-            toIdx: manualAnim.toIdx,
-            t: eased,
-          });
+          renderAct1Frame(
+            curP,
+            manualAnim.continuousColor
+              ? null
+              : {
+                  fromIdx: manualAnim.fromIdx,
+                  toIdx: manualAnim.toIdx,
+                  t: eased,
+                }
+          );
         }
       } else if (userInteracted || isReduced() || (stage.scrollTop || 0) >= 30) {
         // Zero idle CPU once user takes control or scrolls down
@@ -1112,6 +1138,11 @@
 
     function onHeroPointerMove(e) {
       if (!drag || e.pointerId !== drag.id) return;
+      if (e.pointerType === "mouse" && (e.buttons & 1) === 0) {
+        drag = null;
+        heroSec.classList.remove("is-dragging");
+        return;
+      }
       var dx = e.clientX - drag.startX;
       var dy = e.clientY - drag.startY;
 
@@ -1167,9 +1198,15 @@
       }
 
       if (cur.mode === "horiz") {
-        var targetInt = snapTargetFromDrag(curP, cur.vx, getDragPxPerStep());
+        var staleVx = performance.now() - cur.lastT > 80 ? 0 : cur.vx;
+        var targetInt = snapTargetFromDrag(curP, staleVx, getDragPxPerStep());
         animateSnapTo(targetInt);
-      } else if (cur.mode === "pending" && cur.tapDishIdx >= 0) {
+      } else if (
+        e.type === "pointerup" &&
+        cur.mode === "pending" &&
+        cur.tapDishIdx >= 0 &&
+        !(e.target && e.target.closest && e.target.closest("#fdHomeBtn"))
+      ) {
         userInteracted = true;
         stepToDish(cur.tapDishIdx);
       }
@@ -1208,8 +1245,8 @@
     homeBtn.addEventListener("click", onHomeClick);
     heroSec.addEventListener("pointerdown", onHeroPointerDown);
     heroSec.addEventListener("pointermove", onHeroPointerMove);
-    heroSec.addEventListener("pointerup", finishHeroDrag);
-    heroSec.addEventListener("pointercancel", finishHeroDrag);
+    window.addEventListener("pointerup", finishHeroDrag);
+    window.addEventListener("pointercancel", finishHeroDrag);
     heroSec.addEventListener("touchmove", onHeroTouchMove, { passive: false });
     stage.addEventListener("scroll", onStageScroll, { passive: true });
     window.addEventListener("keydown", onKeyDown);
@@ -1282,8 +1319,8 @@
       homeBtn.removeEventListener("click", onHomeClick);
       heroSec.removeEventListener("pointerdown", onHeroPointerDown);
       heroSec.removeEventListener("pointermove", onHeroPointerMove);
-      heroSec.removeEventListener("pointerup", finishHeroDrag);
-      heroSec.removeEventListener("pointercancel", finishHeroDrag);
+      window.removeEventListener("pointerup", finishHeroDrag);
+      window.removeEventListener("pointercancel", finishHeroDrag);
       heroSec.removeEventListener("touchmove", onHeroTouchMove);
       stage.removeEventListener("scroll", onStageScroll);
       window.removeEventListener("keydown", onKeyDown);
@@ -1291,6 +1328,8 @@
       langObserver.disconnect();
 
       document.body.classList.remove("fd-active");
+      pg.style.removeProperty("--fd-bg");
+      pg.style.removeProperty("--fd-ink");
       stage.innerHTML = "";
     };
   }
