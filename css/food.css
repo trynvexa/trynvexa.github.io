@@ -1,5 +1,10 @@
 /* ==========================================================================
-   css/food.css — Card #10: "Food" (TASTE LAB — Zikri's Favourite Food)
+   css/food.css — Card #10: "Food" v2 (TASTE LAB — Zikri's Favourite Food)
+   Zero-button gesture-first culinary showcase:
+   - Single fixed top-left mascot Home button (only <button> on the page)
+   - Section 1 (100svh): Directly draggable Marble Lazy-Susan turntable
+   - Section 2 (360svh): Sticky HiDPI Canvas scroll-scrubbed cinematic video
+     with 4 localized frosted editorial narrative beats
    Strictly scoped under .pg.p9, body.fd-active, .card.foodphoto, and
    html[data-rtl="1"] .pg.p9 (ZERO bleed into Home Wheel or Cards #0–#8).
    ========================================================================== */
@@ -7,6 +12,7 @@
 .card.foodphoto {
   background-color: #262930;
 }
+
 .card.foodphoto .portrait-img {
   object-position: 50% 34%;
 }
@@ -65,6 +71,10 @@ body.fd-active {
   box-sizing: border-box;
 }
 
+.pg.p9 [hidden] {
+  display: none !important;
+}
+
 .pg.p9 button {
   font: inherit;
   color: inherit;
@@ -72,36 +82,152 @@ body.fd-active {
 }
 
 .pg.p9 button:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid #1a1614;
   outline-offset: 3px;
 }
 
-/* ---------- Stage Root & Design Unit (--u scoped to .fd-stage) ---------- */
+/* ---------- Scrollable Stage Root (--u scoped strictly to .fd-stage) ---------- */
 .pg.p9 .fd-stage {
   --u: 1px;
   --hs: 900;
   --fd-bg: #eed9c4;
   --fd-ink: #322018;
+  --fd-vid-bg: #c8b99c;
+  --fd-vid-bg-bottom: #dcd0b9;
   --copy-top: 455;
   --title-top: 632;
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background: var(--fd-bg);
+  color: var(--fd-ink);
+  scrollbar-width: none;
+}
+
+.pg.p9 .fd-stage::-webkit-scrollbar {
+  display: none;
+}
+
+.pg.p9 .fd-stage:focus {
+  outline: none;
+}
+
+/* ---------- Single Fixed Mascot Home Button (ONLY <button> in .pg.p9) ---------- */
+.pg.p9 .fd-home-btn {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 0px), clamp(14px, 2.4vh, 26px));
+  left: max(12px, env(safe-area-inset-left, 0px), clamp(14px, 2.6vw, 34px));
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 15px 5px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 22, 20, 0.16);
+  background: rgba(255, 252, 247, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(20, 12, 10, 0.11);
+  color: #1a1614;
+  font-family: "Archivo", "Inter Tight", "Noto Sans JP", "Noto Sans KR", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease;
+}
+
+.pg.p9 .fd-home-btn:hover {
+  background: rgba(255, 252, 247, 0.96);
+  box-shadow: 0 12px 28px rgba(20, 12, 10, 0.16);
+  transform: translateY(-1px);
+}
+
+.pg.p9 .fd-home-btn:active {
+  transform: scale(0.97);
+}
+
+.pg.p9 .fd-home-mascot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f5efe6;
+  border: 1px solid rgba(26, 22, 20, 0.12);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.pg.p9 .fd-home-mascot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.pg.p9 .fd-home-arr {
+  width: 15px;
+  height: 10px;
+  display: block;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.pg.p9 .fd-home-btn:hover .fd-home-arr {
+  transform: translateX(-3px);
+}
+
+.pg.p9 .fd-home-lbl {
+  display: inline-block;
+}
+
+/* ==========================================================================
+   SECTION 1 — Draggable Marble Lazy-Susan Hero (100svh, Zero Buttons)
+   ========================================================================== */
+.pg.p9 .fd-hero-sec {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  min-height: 100%;
   overflow: hidden;
   background: var(--fd-bg);
   color: var(--fd-ink);
+  cursor: grab;
+  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: pan-y;
+  opacity: 0;
+  transition: opacity 0.45s ease;
 }
 
-/* ---------- Shared Atmospheric Layers (Waves + Vignette) ---------- */
+.pg.p9 .fd-hero-sec.ready {
+  opacity: 1;
+}
+
+.pg.p9 .fd-hero-sec.is-dragging {
+  cursor: grabbing;
+}
+
+/* Atmospheric Wavy Texture & Soft Vignette */
 .pg.p9 .fd-waves {
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.5;
+  opacity: 0.48;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 C 15 4, 30 4, 45 14 S 75 24, 90 14 S 112 6, 120 14' fill='none' stroke='rgba(30,20,50,0.16)' stroke-width='1.1'/%3E%3C/svg%3E");
   background-size: calc(120 * var(--u)) calc(28 * var(--u));
@@ -111,50 +237,32 @@ body.fd-active {
 .pg.p9 .fd-vignette {
   position: absolute;
   inset: 0;
-  z-index: 10;
+  z-index: 8;
   pointer-events: none;
   background: radial-gradient(
     ellipse 75% 70% at 50% 45%,
     transparent 55%,
-    rgba(20, 10, 40, 0.22) 100%
+    rgba(20, 10, 40, 0.18) 100%
   );
 }
 
-/* ==========================================================================
-   ACT 1 — Marble Lazy-Susan Hero (Exact Gelato Lab Fidelity)
-   ========================================================================== */
-.pg.p9 .fd-hero {
+/* Seamless Bottom Gradient Bridge into Studio Video Stage */
+.pg.p9 .fd-hero-bridge {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  opacity: 0;
-  visibility: visible;
-  transition:
-    opacity 0.55s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0s;
-}
-
-.pg.p9 .fd-hero.ready {
-  opacity: 1;
-}
-
-.pg.p9 .fd-stage.is-assembling .fd-hero {
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(0.94);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(64px, 13vh, 136px);
+  z-index: 9;
   pointer-events: none;
-  transition:
-    opacity 0.42s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.42s;
+  background: linear-gradient(to bottom, transparent 0%, var(--fd-vid-bg) 100%);
 }
 
 .pg.p9 .fd-canvas-stage {
   position: absolute;
   left: 50%;
   top: 50%;
-  z-index: 1;
+  z-index: 2;
   width: calc(1440 * var(--u));
   height: calc(900 * var(--u));
   transform: translate(-50%, -50%);
@@ -211,7 +319,7 @@ body.fd-active {
   transform: translateX(-50%);
 }
 
-/* 5 Bowls on Ring + Soft Contact Shadows */
+/* 5 Bowls on Ring + Soft Contact Shadows (Direct Manipulation, NOT Buttons) */
 .pg.p9 .fd-dish-shadow {
   position: absolute;
   left: 0;
@@ -240,6 +348,15 @@ body.fd-active {
   display: block;
   transform-origin: center center;
   will-change: transform;
+  cursor: inherit;
+}
+
+.pg.p9 .fd-dish.is-side {
+  cursor: pointer;
+}
+
+.pg.p9 .fd-hero-sec.is-dragging .fd-dish.is-side {
+  cursor: grabbing;
 }
 
 .pg.p9 .fd-dish-img {
@@ -251,13 +368,8 @@ body.fd-active {
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.pg.p9 .fd-dish.is-front:hover .fd-dish-img,
-.pg.p9 .fd-dish.is-front:focus-visible .fd-dish-img {
-  transform: scale(1.032);
-}
-
-.pg.p9 .fd-dish.is-side:hover .fd-dish-img {
-  transform: scale(1.04);
+.pg.p9 .fd-hero-sec:not(.is-dragging) .fd-dish.is-side:hover .fd-dish-img {
+  transform: scale(1.045);
 }
 
 .pg.p9 .fd-dish:not(.is-front):not(.is-side) {
@@ -326,7 +438,7 @@ body.fd-active {
   font-family: "Archivo", "Inter Tight", sans-serif;
   font-weight: 700;
   font-size: max(11px, calc(21 * var(--u)));
-  line-height: 1.28;
+  line-height: 1.26;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--fd-ink);
@@ -334,44 +446,83 @@ body.fd-active {
   will-change: transform, opacity;
 }
 
-.pg.p9 .fd-cta {
+/* Pure-Typography Zero-Button Drag & Scroll Affordances */
+.pg.p9 .fd-cues {
   position: absolute;
   left: calc(190 * var(--u));
-  top: calc(572 * var(--u));
+  top: calc(564 * var(--u));
   z-index: 6;
-  min-width: calc(156 * var(--u));
-  height: calc(50 * var(--u));
-  padding: 0 calc(20 * var(--u));
-  border: max(1.5px, calc(2 * var(--u))) solid var(--fd-ink);
-  border-radius: calc(8 * var(--u));
-  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(9 * var(--u));
   color: var(--fd-ink);
-  font-family: "Archivo", "Inter Tight", sans-serif;
-  font-weight: 600;
-  font-size: max(9px, calc(13.5 * var(--u)));
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pg.p9 .fd-drag-cue {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease,
-    transform 0.2s ease;
+  gap: calc(8 * var(--u));
+  font-size: max(9px, calc(11.5 * var(--u)));
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.66;
+  white-space: nowrap;
 }
 
-.pg.p9 .fd-cta:hover,
-.pg.p9 .fd-cta:focus-visible {
+.pg.p9 .fd-scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  font-size: max(9.5px, calc(12 * var(--u)));
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.pg.p9 .fd-scroll-line {
+  position: relative;
+  width: max(1.5px, calc(1.8 * var(--u)));
+  height: max(14px, calc(20 * var(--u)));
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--fd-ink) 26%, transparent);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pg.p9 .fd-scroll-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 55%;
   background: var(--fd-ink);
-  color: var(--fd-bg);
+  animation: fd-scroll-drop 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-.pg.p9 .fd-cta:active {
-  transform: scale(0.97);
+@keyframes fd-scroll-drop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
 }
 
-/* Portrait Copy Overrides */
+/* Portrait Hero Copy & Cues Overrides */
 .pg.p9 .fd-stage.is-portrait .fd-eyebrow {
   left: 50%;
   top: calc(var(--copy-top) * var(--u));
@@ -388,620 +539,324 @@ body.fd-active {
 .pg.p9 .fd-stage.is-portrait .fd-flavour {
   left: 0;
   right: 0;
-  top: calc((var(--copy-top) + 30) * var(--u));
+  top: calc((var(--copy-top) + 28) * var(--u));
   text-align: center;
   font-size: max(11px, calc(17 * var(--u)));
 }
 
-.pg.p9 .fd-stage.is-portrait .fd-cta {
+.pg.p9 .fd-stage.is-portrait .fd-cues {
   left: 50%;
-  top: calc((var(--copy-top) + 92) * var(--u));
+  top: calc((var(--copy-top) + 84) * var(--u));
   transform: translateX(-50%);
-  min-width: calc(140 * var(--u));
-  height: calc(46 * var(--u));
-  padding: 0 calc(16 * var(--u));
-  font-size: max(9px, calc(12.5 * var(--u)));
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-cta:active {
-  transform: translateX(-50%) scale(0.97);
-}
-
-/* ---------- Outlined Square Corner Buttons (Gelato Lab §5.2) ---------- */
-.pg.p9 .fd-nav-btn {
-  position: absolute;
-  top: calc(26 * var(--u));
-  z-index: 20;
-  width: max(38px, calc(60 * var(--u)));
-  height: max(38px, calc(60 * var(--u)));
-  border: max(1.25px, calc(1.5 * var(--u))) solid rgba(255, 255, 255, 0.78);
-  border-radius: calc(14 * var(--u));
-  background: color-mix(in srgb, var(--fd-ink) 52%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  transition:
-    background-color 0.25s ease,
-    border-color 0.25s ease,
-    transform 0.2s ease;
-}
-
-.pg.p9 .fd-nav-btn svg {
-  width: max(18px, calc(24 * var(--u)));
-  height: max(18px, calc(24 * var(--u)));
-  display: block;
-}
-
-.pg.p9 .fd-nav-btn:hover {
-  background: color-mix(in srgb, var(--fd-ink) 74%, transparent);
-  border-color: #fff;
-}
-
-.pg.p9 .fd-nav-btn:active {
-  transform: scale(0.95);
-}
-
-.pg.p9 .fd-nav-back {
-  left: calc(40 * var(--u));
-}
-
-.pg.p9 .fd-nav-menu {
-  right: calc(40 * var(--u));
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-nav-btn {
-  top: max(12px, calc(18 * var(--u)));
-  width: max(40px, calc(48 * var(--u)));
-  height: max(40px, calc(48 * var(--u)));
-  border-radius: calc(12 * var(--u));
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-nav-btn svg {
-  width: max(18px, calc(21 * var(--u)));
-  height: max(18px, calc(21 * var(--u)));
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-nav-back {
-  left: max(14px, calc(18 * var(--u)));
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-nav-menu {
-  right: max(14px, calc(18 * var(--u)));
-}
-
-/* ---------- Frosted Quick Dish Menu Popover ---------- */
-.pg.p9 .fd-popover {
-  position: absolute;
-  top: max(64px, calc(98 * var(--u)));
-  right: calc(40 * var(--u));
-  z-index: 25;
-  width: min(290px, calc(100vw - 32px));
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255, 252, 247, 0.9);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(30, 20, 15, 0.14);
-  box-shadow: 0 20px 44px rgba(20, 10, 25, 0.2);
-  color: #211814;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px) scale(0.97);
-  pointer-events: none;
-  transition:
-    opacity 0.22s ease,
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.22s;
-}
-
-.pg.p9 .fd-popover.is-open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-  transition:
-    opacity 0.22s ease,
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0s;
-}
-
-.pg.p9 .fd-stage.is-portrait .fd-popover {
-  top: max(68px, calc(76 * var(--u)));
-  right: max(14px, calc(18 * var(--u)));
-}
-
-.pg.p9 .fd-pop-head {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.62;
-  padding: 2px 6px 10px;
-  border-bottom: 1px solid rgba(30, 20, 15, 0.1);
-  margin-bottom: 8px;
-}
-
-.pg.p9 .fd-pop-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.pg.p9 .fd-pop-item {
-  width: 100%;
-  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: calc(7 * var(--u));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-drag-cue {
+  font-size: max(9px, calc(10.5 * var(--u)));
+  letter-spacing: 0.18em;
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-scroll-cue {
+  font-size: max(9.5px, calc(11 * var(--u)));
+  letter-spacing: 0.18em;
+}
+
+.pg.p9 .fd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
   border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: #211814;
-  text-align: left;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  transition: background-color 0.18s ease;
-}
-
-.pg.p9 .fd-pop-item:hover {
-  background: rgba(30, 20, 15, 0.07);
-}
-
-.pg.p9 .fd-pop-item.is-active {
-  background: rgba(30, 20, 15, 0.11);
-}
-
-.pg.p9 .fd-pop-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0, 0, 0, 0.25);
-  flex-shrink: 0;
-}
-
-.pg.p9 .fd-pop-idx {
-  margin-left: auto;
-  font-size: 11px;
-  opacity: 0.55;
-  font-variant-numeric: tabular-nums;
-}
-
-.pg.p9 .fd-pop-foot {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(30, 20, 15, 0.1);
-  display: flex;
-  gap: 8px;
-}
-
-.pg.p9 .fd-pop-btn {
-  flex: 1;
-  padding: 9px 10px;
-  border-radius: 9px;
-  border: 1px solid rgba(30, 20, 15, 0.2);
-  background: rgba(255, 255, 255, 0.65);
-  color: #211814;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.pg.p9 .fd-pop-btn:hover {
-  background: #211814;
-  color: #fff;
 }
 
 /* ==========================================================================
-   ACT 2 — Hybrid Gravity Drop & Real-Time Fluid Assembly Stage
+   SECTION 2 — Scroll-Scrubbed Cinematic Video Storytelling (360svh Sticky)
    ========================================================================== */
-.pg.p9 .fd-asm {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: clamp(14px, 2.4vh, 26px) clamp(14px, 3vw, 40px) clamp(14px, 2.6vh, 26px);
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(1.03);
-  pointer-events: none;
-  transition:
-    opacity 0.36s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.36s;
-}
-
-.pg.p9 .fd-asm.is-open {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  pointer-events: auto;
-  transition:
-    opacity 0.36s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0s;
-}
-
-/* Top Bar */
-.pg.p9 .fd-asm-topbar {
+.pg.p9 .fd-story-sec {
+  position: relative;
   width: 100%;
-  max-width: 1360px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  z-index: 5;
+  height: 360vh;
+  height: 360svh;
+  min-height: 2000px;
+  background: linear-gradient(to bottom, var(--fd-vid-bg) 0%, var(--fd-vid-bg-bottom) 100%);
 }
 
-.pg.p9 .fd-asm-sqbtn {
-  width: clamp(38px, 4.4vw, 48px);
-  height: clamp(38px, 4.4vw, 48px);
-  border-radius: 12px;
-  border: 1.5px solid color-mix(in srgb, var(--fd-ink) 38%, transparent);
-  background: rgba(255, 255, 255, 0.24);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--fd-ink);
-  display: grid;
-  place-items: center;
-  padding: 0;
-  flex-shrink: 0;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.18s ease;
-}
-
-.pg.p9 .fd-asm-sqbtn svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.pg.p9 .fd-asm-sqbtn:hover {
-  background: var(--fd-ink);
-  color: var(--fd-bg);
-}
-
-.pg.p9 .fd-asm-sqbtn:active {
-  transform: scale(0.94);
-}
-
-.pg.p9 .fd-asm-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  text-align: center;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.26);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in srgb, var(--fd-ink) 20%, transparent);
-}
-
-.pg.p9 .fd-asm-count {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  opacity: 0.68;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.pg.p9 .fd-asm-name {
-  font-family: "Dela Gothic One", "Archivo", sans-serif;
-  font-size: clamp(12px, 1.8vw, 18px);
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+.pg.p9 .fd-story-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
-  text-overflow: ellipsis;
+  background: linear-gradient(to bottom, var(--fd-vid-bg) 0%, var(--fd-vid-bg-bottom) 100%);
 }
 
-.pg.p9 .fd-asm-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Center 2.5D Hybrid Gravity Platter */
-.pg.p9 .fd-platter-wrap {
-  position: relative;
-  flex: 1 1 auto;
-  width: 100%;
-  display: grid;
-  place-items: center;
-  perspective: 1200px;
-  min-height: 0;
-  padding-top: clamp(6px, 2vh, 22px);
-}
-
-.pg.p9 .fd-platter-3d {
-  position: relative;
-  width: min(72vw, 53vh, 490px);
-  height: min(72vw, 53vh, 490px);
-  transform: rotateX(14deg) translateY(3%);
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.pg.p9 .fd-platter-shadow {
-  position: absolute;
-  inset: 4%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(25, 12, 35, 0.34) 0%,
-    rgba(25, 12, 35, 0.16) 52%,
-    transparent 74%
-  );
-  transform: translateY(7%) scale(1.06);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-.pg.p9 .fd-platter-3d.has-plate .fd-platter-shadow {
-  opacity: 1;
-}
-
-.pg.p9 .fd-asm-plate {
+.pg.p9 .fd-vid-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-.pg.p9 .fd-asm-fluid-under,
-.pg.p9 .fd-asm-fluid-over {
-  position: absolute;
-  left: -12%;
-  top: -32%;
-  width: 124%;
-  height: 144%;
   max-width: none;
   max-height: none;
+  display: block;
   pointer-events: none;
 }
 
-.pg.p9 .fd-asm-fluid-under {
+.pg.p9 .fd-story-vignette {
+  position: absolute;
+  inset: 0;
   z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 82% 76% at 50% 50%,
+    transparent 62%,
+    rgba(16, 12, 10, 0.2) 100%
+  );
 }
 
-.pg.p9 .fd-asm-fluid-over {
-  z-index: 12;
+/* Quiet Top-Right Chapter HUD + Bottom Hairline Progress Rail (Zero Buttons) */
+.pg.p9 .fd-progress-rail {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
 }
 
-/* Individual Dropping Ingredient Layers */
-.pg.p9 .fd-asm-ings {
+.pg.p9 .fd-story-hud {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top, 0px), clamp(16px, 2.6vh, 28px));
+  right: max(14px, env(safe-area-inset-right, 0px), clamp(16px, 2.8vw, 36px));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(28, 22, 20, 0.13);
+  color: #1c1614;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pg.p9 .fd-story-idx {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.pg.p9 .fd-story-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.pg.p9 .fd-progress-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(28, 22, 20, 0.14);
+}
+
+.pg.p9 .fd-progress-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--fd-ink);
+  transform-origin: left center;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+/* 4 Synchronized Frosted Editorial Narrative Beats (Zero Buttons) */
+.pg.p9 .fd-beats {
   position: absolute;
   inset: 0;
   z-index: 4;
   pointer-events: none;
 }
 
-.pg.p9 .fd-asm-ing {
+.pg.p9 .fd-beat {
   position: absolute;
-  left: 0;
-  top: 0;
-  transform-origin: center center;
-  will-change: transform, opacity;
+  top: clamp(86px, 13.5vh, 132px);
+  width: min(326px, 26vw);
+  padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 26px);
+  border-radius: 20px;
+  background: rgba(255, 252, 247, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(28, 22, 20, 0.13);
+  box-shadow: 0 22px 48px rgba(18, 12, 10, 0.14);
+  color: #1c1614;
   opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  will-change: opacity, transform;
 }
 
-.pg.p9 .fd-ing-shadow {
-  position: absolute;
-  inset: 8%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(20, 10, 15, 0.36) 0%, transparent 72%);
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform, opacity;
+.pg.p9 .fd-beat.is-left {
+  left: clamp(24px, 4.2vw, 68px);
 }
 
-.pg.p9 .fd-ing-img {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
+.pg.p9 .fd-beat.is-right {
+  right: clamp(24px, 4.2vw, 68px);
 }
 
-.pg.p9 .fd-asm-ing.is-pop .fd-ing-img {
-  animation: fd-ing-bounce 0.56s cubic-bezier(0.22, 1.25, 0.36, 1);
+.pg.p9 .fd-beat-kicker {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6b4c3b;
 }
 
-@keyframes fd-ing-bounce {
-  0% {
-    transform: translateY(0) scale(1);
-    filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
-  }
-  35% {
-    transform: translateY(-18%) scale(1.14);
-    filter: drop-shadow(0 18px 20px rgba(20, 10, 18, 0.32));
-  }
-  68% {
-    transform: translateY(2%) scale(0.95);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
-  }
+.pg.p9 .fd-beat-title {
+  margin: 0 0 10px;
+  font-family: "Archivo", "Inter Tight", "Noto Sans JP", "Noto Sans KR", sans-serif;
+  font-size: clamp(18px, 1.85vw, 25px);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  color: #1a1412;
 }
 
-/* Bottom Story + Interactive Ingredient Chips + Replay Bar */
-.pg.p9 .fd-asm-panel {
-  width: 100%;
-  max-width: 780px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(8px, 1.3vh, 13px);
-  z-index: 5;
-  text-align: center;
-}
-
-.pg.p9 .fd-asm-story {
+.pg.p9 .fd-beat-body {
   margin: 0;
-  max-width: 62ch;
-  text-align: center;
-  font-size: clamp(12px, 1.45vw, 15px);
+  font-size: clamp(13px, 1.05vw, 14.5px);
   font-weight: 500;
-  line-height: 1.45;
-  color: var(--fd-ink);
-  opacity: 0.88;
+  line-height: 1.56;
+  color: rgba(26, 20, 18, 0.84);
 }
 
-.pg.p9 .fd-chips {
+.pg.p9 .fd-beat-tags {
+  margin-top: 13px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
-  max-width: 100%;
-}
-
-.pg.p9 .fd-chip {
-  display: inline-flex;
-  align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1.25px solid color-mix(in srgb, var(--fd-ink) 28%, transparent);
-  background: rgba(255, 255, 255, 0.22);
-  color: var(--fd-ink);
-  font-size: clamp(10.5px, 1.15vw, 12.5px);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  opacity: 0.42;
-  transform: translateY(5px);
-  transition:
-    opacity 0.28s ease,
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.2s ease,
-    color 0.2s ease;
 }
 
-.pg.p9 .fd-chip::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.45;
-}
-
-.pg.p9 .fd-chip.is-landed {
-  opacity: 1;
-  transform: translateY(0);
-  background: rgba(255, 255, 255, 0.44);
-}
-
-.pg.p9 .fd-chip.is-landed::before {
-  opacity: 1;
-}
-
-.pg.p9 .fd-chip.is-landed:hover,
-.pg.p9 .fd-chip.is-active {
-  background: var(--fd-ink);
-  color: var(--fd-bg);
-}
-
-.pg.p9 .fd-asm-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pg.p9 .fd-asm-pill {
+.pg.p9 .fd-beat-tag {
   display: inline-flex;
   align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(26, 20, 18, 0.07);
+  border: 1px solid rgba(26, 20, 18, 0.12);
+  color: #241b18;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.pg.p9 .fd-beat-backhint {
+  margin-top: 14px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(26, 20, 18, 0.11);
+  display: flex;
+  align-items: center;
   gap: 7px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1.5px solid var(--fd-ink);
-  background: transparent;
-  color: var(--fd-ink);
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  white-space: nowrap;
-  transition:
-    background-color 0.22s ease,
-    color 0.22s ease,
-    transform 0.18s ease;
+  color: #5e4436;
 }
 
-.pg.p9 .fd-asm-pill.is-primary {
-  background: var(--fd-ink);
-  color: var(--fd-bg);
+/* ---------- Responsive Layouts (Tablet, Mobile Portrait & Short Landscape) ---------- */
+@media (max-width: 1024px) {
+  .pg.p9 .fd-beat {
+    width: min(304px, 34vw);
+  }
 }
 
-.pg.p9 .fd-asm-pill:hover {
-  background: var(--fd-ink);
-  color: var(--fd-bg);
+.pg.p9 .fd-stage.is-portrait .fd-beat {
+  top: auto;
+  bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  right: 16px;
+  width: auto;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 15px 18px;
+  border-radius: 18px;
+  transform: translate3d(0, 18px, 0);
 }
 
-.pg.p9 .fd-asm-pill.is-primary:hover {
-  opacity: 0.88;
+.pg.p9 .fd-stage.is-portrait .fd-beat-kicker {
+  margin-bottom: 5px;
+  font-size: 10px;
 }
 
-.pg.p9 .fd-asm-pill svg {
-  width: 14px;
-  height: 14px;
+.pg.p9 .fd-stage.is-portrait .fd-beat-title {
+  margin-bottom: 6px;
+  font-size: 17px;
 }
 
-/* ---------- Portrait & Short Landscape Responsive Polish for Act 2 ---------- */
-.pg.p9 .fd-stage.is-portrait .fd-platter-3d {
-  width: min(76vw, 40vh, 360px);
-  height: min(76vw, 40vh, 360px);
+.pg.p9 .fd-stage.is-portrait .fd-beat-body {
+  font-size: 12.5px;
+  line-height: 1.48;
 }
 
-.pg.p9 .fd-stage.is-portrait .fd-asm-badge {
-  padding: 6px 12px;
-  gap: 7px;
+.pg.p9 .fd-stage.is-portrait .fd-beat-tags {
+  margin-top: 9px;
+  gap: 5px;
 }
 
-@media (max-width: 480px) {
-  .pg.p9 #fdAsmReplayIcon {
+.pg.p9 .fd-stage.is-portrait .fd-beat-tag {
+  padding: 3px 8px;
+  font-size: 10.5px;
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-beat-backhint {
+  margin-top: 10px;
+  padding-top: 8px;
+  font-size: 10px;
+}
+
+@media (max-width: 560px) {
+  .pg.p9 .fd-story-dot,
+  .pg.p9 .fd-story-dish {
     display: none;
   }
 
-  .pg.p9 .fd-asm-topbar {
-    gap: 8px;
+  .pg.p9 .fd-story-hud {
+    padding: 7px 12px;
+    font-size: 11px;
   }
 
-  .pg.p9 .fd-asm-controls {
-    gap: 6px;
-  }
-
-  .pg.p9 .fd-asm-badge {
-    padding: 6px 10px;
-    gap: 6px;
+  .pg.p9 .fd-story-idx {
+    opacity: 0.9;
   }
 }
 
-.pg.p9 .fd-stage.is-portrait .fd-asm-story {
-  font-size: 12.5px;
-  line-height: 1.4;
+@media (max-width: 440px) {
+  .pg.p9 .fd-home-btn {
+    padding: 4px 12px 4px 4px;
+    gap: 7px;
+    font-size: 11px;
+  }
+
+  .pg.p9 .fd-home-mascot {
+    width: 26px;
+    height: 26px;
+  }
+
+  .pg.p9 .fd-story-hud {
+    padding: 6px 11px;
+    font-size: 10.5px;
+    gap: 6px;
+  }
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
@@ -1015,39 +870,53 @@ body.fd-active {
     width: calc(40 * var(--u));
   }
 
-  .pg.p9 .fd-asm {
-    padding: 8px 18px 10px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr;
-    align-items: center;
-    gap: 6px 18px;
+  .pg.p9 .fd-home-btn {
+    padding: 4px 12px 4px 4px;
+    font-size: 11px;
+    gap: 7px;
   }
 
-  .pg.p9 .fd-asm-topbar {
-    grid-column: 1 / -1;
+  .pg.p9 .fd-home-mascot {
+    width: 25px;
+    height: 25px;
   }
 
-  .pg.p9 .fd-platter-wrap {
-    padding-top: 0;
+  .pg.p9 .fd-beat {
+    top: 64px;
+    width: min(246px, 31vw);
+    padding: 11px 14px;
+    border-radius: 15px;
   }
 
-  .pg.p9 .fd-platter-3d {
-    width: min(38vw, 72vh, 320px);
-    height: min(38vw, 72vh, 320px);
+  .pg.p9 .fd-beat-kicker {
+    margin-bottom: 4px;
+    font-size: 9.5px;
   }
 
-  .pg.p9 .fd-asm-panel {
-    align-items: flex-start;
-    text-align: start;
+  .pg.p9 .fd-beat-title {
+    margin-bottom: 5px;
+    font-size: 15px;
   }
 
-  .pg.p9 .fd-asm-story {
-    text-align: start;
+  .pg.p9 .fd-beat-body {
+    font-size: 11.5px;
+    line-height: 1.42;
   }
 
-  .pg.p9 .fd-chips {
-    justify-content: flex-start;
+  .pg.p9 .fd-beat-tags {
+    margin-top: 8px;
+    gap: 4px;
+  }
+
+  .pg.p9 .fd-beat-tag {
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  .pg.p9 .fd-beat-backhint {
+    margin-top: 8px;
+    padding-top: 6px;
+    font-size: 9.5px;
   }
 }
 
@@ -1059,42 +928,58 @@ html[data-rtl="1"] .pg.p9 .fd-flavour {
   text-align: left;
 }
 
-html[data-rtl="1"] .pg.p9 .fd-stage.is-portrait .fd-flavour,
-html[data-rtl="1"] .pg.p9 .fd-asm-story {
+html[data-rtl="1"] .pg.p9 .fd-stage.is-portrait .fd-flavour {
   text-align: center;
 }
 
-html[data-rtl="1"] .pg.p9 .fd-asm-topbar,
-html[data-rtl="1"] .pg.p9 .fd-asm-panel,
-html[data-rtl="1"] .pg.p9 .fd-popover {
+html[data-rtl="1"] .pg.p9 .fd-home-btn {
+  left: auto;
+  right: max(12px, env(safe-area-inset-right, 0px), clamp(14px, 2.6vw, 34px));
+  padding: 5px 5px 5px 15px;
   direction: rtl;
 }
 
-html[data-rtl="1"] .pg.p9 .fd-nav-back svg,
-html[data-rtl="1"] .pg.p9 .fd-asm-back svg {
+html[data-rtl="1"] .pg.p9 .fd-home-arr {
   transform: scaleX(-1);
 }
 
-html[data-rtl="1"] .pg.p9 .fd-pop-item {
+html[data-rtl="1"] .pg.p9 .fd-home-btn:hover .fd-home-arr {
+  transform: scaleX(-1) translateX(-3px);
+}
+
+html[data-rtl="1"] .pg.p9 .fd-story-hud {
+  right: auto;
+  left: max(14px, env(safe-area-inset-left, 0px), clamp(16px, 2.8vw, 36px));
+  direction: rtl;
+}
+
+html[data-rtl="1"] .pg.p9 .fd-beat {
+  direction: rtl;
   text-align: right;
 }
 
-html[data-rtl="1"] .pg.p9 .fd-pop-idx {
-  margin-left: 0;
-  margin-right: auto;
+html[data-rtl="1"] .pg.p9 .fd-beat-kicker,
+html[data-rtl="1"] .pg.p9 .fd-beat-title,
+html[data-rtl="1"] .pg.p9 .fd-beat-body {
+  text-align: right;
+}
+
+html[data-rtl="1"] .pg.p9 .fd-progress-fill {
+  transform-origin: right center;
 }
 
 /* ---------- Reduced Motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .pg.p9 .fd-hero,
-  .pg.p9 .fd-asm,
-  .pg.p9 .fd-chip,
-  .pg.p9 .fd-popover,
+  .pg.p9 .fd-hero-sec,
+  .pg.p9 .fd-home-btn,
+  .pg.p9 .fd-home-arr,
   .pg.p9 .fd-dish-img {
     transition: none !important;
   }
 
-  .pg.p9 .fd-asm-ing.is-pop .fd-ing-img {
+  .pg.p9 .fd-scroll-line::after {
     animation: none !important;
+    transform: translateY(35%);
+    opacity: 0.9;
   }
 }

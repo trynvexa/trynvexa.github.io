@@ -1,13 +1,22 @@
 /* ==========================================================================
-   js/food.js — Card #10: "Food" (TASTE LAB — Zikri's Favourite Food)
-   Act 1: Exact Gelato Lab Marble Lazy-Susan Flavour Carousel Hero
-   Act 2: Hybrid Gravity Drop + Real-Time Canvas 2D Fluid Pour & Steam Engine
-   Registered via ZK3D.registerPage(9, mountFood) with 0% idle CPU cleanup.
+   js/food.js — Card #10: "Food" v2 (TASTE LAB — Zikri's Favourite Food)
+   Zero-button gesture-first culinary showcase:
+   - Strictly 1 <button> in .pg.p9: top-left mascot Home pill
+   - Section 1 (100svh): Directly draggable Marble Lazy-Susan turntable
+     with directional axis-locking (never blocks vertical scroll) + flick snap
+   - Section 2 (360svh): Sticky HiDPI Canvas 2D scroll-scrubbed cinematic
+     video (72 WebP frames/dish, progressive coarse-first preloader, damped
+     60fps scrubbing with 0% idle CPU when settled) + 4 localized beats
+   Registered via ZK3D.registerPage(9, mountFood) with deterministic cleanup.
    ========================================================================== */
 (function () {
   "use strict";
 
   /* ---------- Pure Math & Color Utilities ---------- */
+  function clamp(v, lo, hi) {
+    return v < lo ? lo : v > hi ? hi : v;
+  }
+
   function cubicBezierSample(a, b, t) {
     return ((1 - 3 * b + 3 * a) * t + (3 * b - 6 * a)) * t * t + 3 * a * t;
   }
@@ -37,6 +46,10 @@
     return d >= 2.5 ? d - 5 : d;
   }
 
+  function mod5(n) {
+    return ((n % 5) + 5) % 5;
+  }
+
   function hexToRgb(hex) {
     var h = String(hex || "#eed9c4")
       .replace("#", "")
@@ -48,7 +61,7 @@
   }
 
   function lerpRgb(c1, c2, t) {
-    var k = t < 0 ? 0 : t > 1 ? 1 : t;
+    var k = clamp(t, 0, 1);
     return [
       Math.round(c1[0] + (c2[0] - c1[0]) * k),
       Math.round(c1[1] + (c2[1] - c1[1]) * k),
@@ -64,18 +77,39 @@
     return dt > 250 ? dt : 0;
   }
 
-  function nextStepTarget(curP, manualAnim, dir) {
-    var base = manualAnim ? manualAnim.toIdx : Math.round(curP);
-    return (((base + dir) % 5) + 5) % 5;
+  // Smooth editorial beat visibility curve [0..1]
+  function beatOpacity(progress, start, end) {
+    var p = clamp(progress, 0, 1);
+    var span = Math.max(0.01, end - start);
+    var fade = Math.min(0.038, span * 0.2);
+
+    if (p <= start) return start <= 0 && p === 0 ? 1 : 0;
+    if (p >= end) return end >= 1 ? 1 : 0;
+
+    var inA = start <= 0 ? 1 : clamp((p - start) / fade, 0, 1);
+    var outA = end >= 1 ? 1 : clamp((end - p) / fade, 0, 1);
+    var k = Math.min(inA, outA);
+    return k * k * (3 - 2 * k);
   }
 
-  function clamp(v, lo, hi) {
-    return v < lo ? lo : v > hi ? hi : v;
+  // Nearest decoded frame index fallback so scrubbing NEVER flashes blank
+  function nearestLoadedFrame(cache, targetIdx, maxCount) {
+    if (!cache) return -1;
+    var limit = maxCount || 72;
+    var idx = clamp(Math.round(targetIdx), 0, limit - 1);
+    if (cache[idx]) return idx;
+    for (var d = 1; d < limit; d++) {
+      if (idx + d < limit && cache[idx + d]) return idx + d;
+      if (idx - d >= 0 && cache[idx - d]) return idx - d;
+    }
+    return -1;
   }
 
-  function easeOutCubic(t) {
-    var k = 1 - clamp(t, 0, 1);
-    return 1 - k * k * k;
+  // Flick velocity inertia snap: dragging left (vx < 0) advances curP positively
+  function snapTargetFromDrag(curP, vx, dragPxPerStep) {
+    var px = dragPxPerStep || 260;
+    var throwP = clamp((-(vx || 0) / px) * 0.15, -1.15, 1.15);
+    return Math.round(curP + throwP);
   }
 
   // Expose pure math helpers for automated verification
@@ -86,20 +120,18 @@
     lerpRgb: lerpRgb,
     rgbToCss: rgbToCss,
     clampGap: clampGap,
-    nextStepTarget: nextStepTarget,
+    beatOpacity: beatOpacity,
+    nearestLoadedFrame: nearestLoadedFrame,
+    snapTargetFromDrag: snapTargetFromDrag,
   };
 
-  /* ---------- SVG Icon Templates ---------- */
-  var ICO_BACK =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>';
-  var ICO_MENU =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
-  var ICO_PREV =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
-  var ICO_NEXT =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
-  var ICO_REPLAY =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+  /* ---------- Asset & Frame Utilities ---------- */
+  var ICO_HOME_ARR =
+    '<svg class="fd-home-arr" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 5H1M5 1L1 5l4 4"/></svg>';
+
+  function pad2(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
 
   function preloadImage(src) {
     return new Promise(function (resolve) {
@@ -125,6 +157,32 @@
     });
   }
 
+  function buildFramePriorityOrder(total) {
+    var coarse = [0, 9, 18, 27, 36, 45, 54, 63, total - 1];
+    var seen = {};
+    var order = [];
+    for (var i = 0; i < coarse.length; i++) {
+      var c = clamp(coarse[i], 0, total - 1);
+      if (!seen[c]) {
+        seen[c] = true;
+        order.push(c);
+      }
+    }
+    // Mid-stride pass for ultra-fast smooth scrubbing
+    for (var step = 3; step >= 1; step -= 2) {
+      for (var k = 0; k < total; k += step) {
+        if (!seen[k]) {
+          seen[k] = true;
+          order.push(k);
+        }
+      }
+    }
+    for (var m = 0; m < total; m++) {
+      if (!seen[m]) order.push(m);
+    }
+    return order;
+  }
+
   /* ---------- Page Controller (Card #10 / .pg.p9) ---------- */
   function mountFood(pg) {
     var DATA = window.ZK_FOOD_DATA;
@@ -132,11 +190,14 @@
     if (!DATA || !stage) return function () {};
 
     document.body.classList.add("fd-active");
+    stage.setAttribute("tabindex", "-1");
 
     var DISHES = DATA.DISHES;
     var RING = DATA.RING;
     var PROPS = DATA.PROPS;
     var COUPE_FILL = DATA.COUPE_FILL;
+    var FRAME_COUNT = DATA.FRAME_COUNT || 72;
+    var FRAME_ORDER = buildFramePriorityOrder(FRAME_COUNT);
     var dishRgbs = DISHES.map(function (d) {
       return { bg: hexToRgb(d.bg), ink: hexToRgb(d.ink) };
     });
@@ -151,19 +212,34 @@
     };
 
     var disposed = false;
-    var mode = "carousel"; // 'carousel' | 'assembly'
-    var menuOpen = false;
-    var userPaused = false;
-    var hoverPaused = false;
 
-    // Act 1 state
+    // Turntable state
     var step = 0;
     var curP = 0;
+    var activeDishIdx = 0;
+    var userInteracted = false;
     var phaseStart = 0;
     var lastFrame = 0;
     var manualAnim = null; // { fromP, toP, fromIdx, toIdx, start, dur }
     var act1Raf = 0;
     var lastFlavourIdx = -1;
+    var drag = null;
+
+    // Scroll video state
+    var frameCaches = {}; // slug -> { [idx]: HTMLImageElement }
+    var frameLoading = {}; // slug -> { [idx]: true }
+    var loadGen = 0;
+    var rawProgress = 0;
+    var targetFrame = 0;
+    var drawnFrame = 0;
+    var lastDrawnKey = "";
+    var scrubRaf = 0;
+    var readyTimer = 0;
+    var resizeRaf = 0;
+    var canvasW = 0;
+    var canvasH = 0;
+    var canvasDpr = 1;
+
     var geom = {
       u: 1,
       hs: 900,
@@ -177,27 +253,22 @@
       D: 974,
       copyTop: 455,
       titleTop: 632,
+      heroH: 900,
+      storyTop: 900,
+      storySpan: 2340,
     };
 
-    // Act 2 state
-    var asmDishIdx = 0;
-    var asmRaf = 0;
-    var asmStart = 0;
-    var asmLast = 0;
-    var asmToken = 0;
-    var asmIngNodes = [];
-    var asmChipNodes = [];
-    var asmRipples = [];
-    var asmDroplets = [];
-    var asmSteam = [];
-    var asmTimers = [];
-    var readyTimer = 0;
-    var resizeRaf = 0;
-
-    /* ---------- Build Complete Two-Act DOM ---------- */
+    /* ---------- Build Strictly One-Button DOM ---------- */
     stage.innerHTML =
-      '<div class="fd-waves" aria-hidden="true"></div>' +
-      '<div class="fd-hero" id="fdHero">' +
+      '<button class="fd-home-btn" id="fdHomeBtn" type="button">' +
+      '  <span class="fd-home-mascot" aria-hidden="true">' +
+      '    <img src="assets/images/mascot-head.webp" alt="" draggable="false" />' +
+      "  </span>" +
+      ICO_HOME_ARR +
+      '  <span class="fd-home-lbl" id="fdHomeLbl"></span>' +
+      "</button>" +
+      '<section class="fd-hero-sec" id="fdHeroSec">' +
+      '  <div class="fd-waves" aria-hidden="true"></div>' +
       '  <div class="fd-canvas-stage" id="fdCanvasStage">' +
       '    <div class="fd-ring-shadow" id="fdRingShadow" aria-hidden="true"></div>' +
       '    <div class="fd-ring" id="fdRing" aria-hidden="true"></div>' +
@@ -206,70 +277,39 @@
       '    <div class="fd-props-layer" id="fdPropsLayer" aria-hidden="true"></div>' +
       '    <div class="fd-eyebrow" id="fdEyebrow"></div>' +
       '    <p class="fd-flavour" id="fdFlavour"></p>' +
-      '    <button class="fd-cta" id="fdCta" type="button"></button>' +
-      "  </div>" +
-      '  <button class="fd-nav-btn fd-nav-back" id="fdBackHome" type="button">' +
-      ICO_BACK +
-      "</button>" +
-      '  <button class="fd-nav-btn fd-nav-menu" id="fdMenuBtn" type="button" aria-expanded="false">' +
-      ICO_MENU +
-      "</button>" +
-      '  <div class="fd-popover" id="fdPopover" role="menu" aria-hidden="true">' +
-      '    <div class="fd-pop-head" id="fdPopHead"></div>' +
-      '    <div class="fd-pop-list" id="fdPopList"></div>' +
-      '    <div class="fd-pop-foot">' +
-      '      <button class="fd-pop-btn" id="fdPauseBtn" type="button"></button>' +
-      '      <button class="fd-pop-btn" id="fdPopAsmBtn" type="button"></button>' +
+      '    <div class="fd-cues" aria-hidden="true">' +
+      '      <div class="fd-drag-cue" id="fdDragCue"></div>' +
+      '      <div class="fd-scroll-cue">' +
+      '        <span class="fd-scroll-line"></span>' +
+      '        <span id="fdScrollCue"></span>' +
+      "      </div>" +
       "    </div>" +
       "  </div>" +
-      "</div>" +
-      '<section class="fd-asm" id="fdAsm" aria-hidden="true">' +
-      '  <div class="fd-asm-topbar">' +
-      '    <button class="fd-asm-sqbtn fd-asm-back" id="fdAsmBack" type="button">' +
-      ICO_BACK +
-      "</button>" +
-      '    <div class="fd-asm-badge">' +
-      '      <span class="fd-asm-count" id="fdAsmCount">01 / 05</span>' +
-      '      <span class="fd-asm-name" id="fdAsmName">TONKOTSU RAMEN</span>' +
-      "    </div>" +
-      '    <div class="fd-asm-controls">' +
-      '      <button class="fd-asm-sqbtn" id="fdAsmPrev" type="button">' +
-      ICO_PREV +
-      "</button>" +
-      '      <button class="fd-asm-sqbtn" id="fdAsmNext" type="button">' +
-      ICO_NEXT +
-      "</button>" +
-      '      <button class="fd-asm-sqbtn" id="fdAsmReplayIcon" type="button">' +
-      ICO_REPLAY +
-      "</button>" +
-      "    </div>" +
-      "  </div>" +
-      '  <div class="fd-platter-wrap">' +
-      '    <div class="fd-platter-3d" id="fdPlatter3d">' +
-      '      <div class="fd-platter-shadow" aria-hidden="true"></div>' +
-      '      <img class="fd-asm-plate" id="fdAsmPlate" alt="" draggable="false" />' +
-      '      <canvas class="fd-asm-fluid-under" id="fdFluidUnder" aria-hidden="true"></canvas>' +
-      '      <div class="fd-asm-ings" id="fdAsmIngs"></div>' +
-      '      <canvas class="fd-asm-fluid-over" id="fdFluidOver" aria-hidden="true"></canvas>' +
-      "    </div>" +
-      "  </div>" +
-      '  <div class="fd-asm-panel">' +
-      '    <p class="fd-asm-story" id="fdAsmStory"></p>' +
-      '    <div class="fd-chips" id="fdChips"></div>' +
-      '    <div class="fd-asm-actions">' +
-      '      <button class="fd-asm-pill is-primary" id="fdAsmReplay" type="button">' +
-      ICO_REPLAY +
-      '        <span id="fdAsmReplayLbl"></span>' +
-      "</button>" +
-      '      <button class="fd-asm-pill" id="fdAsmBackPill" type="button">' +
-      '        <span id="fdAsmBackLbl"></span>' +
-      "</button>" +
-      "    </div>" +
-      "  </div>" +
+      '  <div class="fd-vignette" aria-hidden="true"></div>' +
+      '  <div class="fd-hero-bridge" aria-hidden="true"></div>' +
+      '  <p class="fd-sr-only" id="fdSrHint"></p>' +
       "</section>" +
-      '<div class="fd-vignette" aria-hidden="true"></div>';
+      '<section class="fd-story-sec" id="fdStorySec">' +
+      '  <div class="fd-story-sticky" id="fdStorySticky">' +
+      '    <canvas class="fd-vid-canvas" id="fdVidCanvas" aria-hidden="true"></canvas>' +
+      '    <div class="fd-story-vignette" aria-hidden="true"></div>' +
+      '    <div class="fd-beats" id="fdBeats"></div>' +
+      '    <div class="fd-progress-rail" aria-hidden="true">' +
+      '      <div class="fd-story-hud">' +
+      '        <span class="fd-story-idx" id="fdStoryIdx">01 / 05</span>' +
+      '        <span class="fd-story-dot"></span>' +
+      '        <span class="fd-story-dish" id="fdStoryDish">TONKOTSU RAMEN</span>' +
+      "      </div>" +
+      '      <div class="fd-progress-track">' +
+      '        <div class="fd-progress-fill" id="fdProgressFill"></div>' +
+      "      </div>" +
+      "    </div>" +
+      "  </div>" +
+      "</section>";
 
-    var heroEl = stage.querySelector("#fdHero");
+    var homeBtn = stage.querySelector("#fdHomeBtn");
+    var homeLbl = stage.querySelector("#fdHomeLbl");
+    var heroSec = stage.querySelector("#fdHeroSec");
     var ringShadowEl = stage.querySelector("#fdRingShadow");
     var ringEl = stage.querySelector("#fdRing");
     var titleEl = stage.querySelector("#fdTitle");
@@ -277,38 +317,21 @@
     var propsLayer = stage.querySelector("#fdPropsLayer");
     var eyebrowEl = stage.querySelector("#fdEyebrow");
     var flavourEl = stage.querySelector("#fdFlavour");
-    var ctaEl = stage.querySelector("#fdCta");
-    var backHomeBtn = stage.querySelector("#fdBackHome");
-    var menuBtn = stage.querySelector("#fdMenuBtn");
-    var popoverEl = stage.querySelector("#fdPopover");
-    var popHeadEl = stage.querySelector("#fdPopHead");
-    var popListEl = stage.querySelector("#fdPopList");
-    var pauseBtn = stage.querySelector("#fdPauseBtn");
-    var popAsmBtn = stage.querySelector("#fdPopAsmBtn");
+    var dragCueEl = stage.querySelector("#fdDragCue");
+    var scrollCueEl = stage.querySelector("#fdScrollCue");
+    var srHintEl = stage.querySelector("#fdSrHint");
 
-    var asmEl = stage.querySelector("#fdAsm");
-    var asmBackBtn = stage.querySelector("#fdAsmBack");
-    var asmCountEl = stage.querySelector("#fdAsmCount");
-    var asmNameEl = stage.querySelector("#fdAsmName");
-    var asmPrevBtn = stage.querySelector("#fdAsmPrev");
-    var asmNextBtn = stage.querySelector("#fdAsmNext");
-    var asmReplayIconBtn = stage.querySelector("#fdAsmReplayIcon");
-    var platter3dEl = stage.querySelector("#fdPlatter3d");
-    var asmPlateEl = stage.querySelector("#fdAsmPlate");
-    var fluidUnderCanvas = stage.querySelector("#fdFluidUnder");
-    var fluidOverCanvas = stage.querySelector("#fdFluidOver");
-    var asmIngsEl = stage.querySelector("#fdAsmIngs");
-    var asmStoryEl = stage.querySelector("#fdAsmStory");
-    var chipsEl = stage.querySelector("#fdChips");
-    var asmReplayBtn = stage.querySelector("#fdAsmReplay");
-    var asmReplayLbl = stage.querySelector("#fdAsmReplayLbl");
-    var asmBackPill = stage.querySelector("#fdAsmBackPill");
-    var asmBackLbl = stage.querySelector("#fdAsmBackLbl");
+    var storySec = stage.querySelector("#fdStorySec");
+    var vidCanvas = stage.querySelector("#fdVidCanvas");
+    var vidCtx = vidCanvas.getContext("2d");
+    var beatsHost = stage.querySelector("#fdBeats");
+    var storyIdxEl = stage.querySelector("#fdStoryIdx");
+    var storyDishEl = stage.querySelector("#fdStoryDish");
+    var progressFillEl = stage.querySelector("#fdProgressFill");
 
-    /* ---------- Build 5 Dish Elements, 5 Props, and Popover Items ---------- */
+    /* ---------- Build 5 Direct-Manipulation Dish Nodes & 5 Static Props ---------- */
     var dishEls = [];
     var dishShadowEls = [];
-    var popItems = [];
 
     DISHES.forEach(function (dish, idx) {
       var sh = document.createElement("div");
@@ -317,42 +340,18 @@
       dishesLayer.appendChild(sh);
       dishShadowEls.push(sh);
 
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "fd-dish";
-      btn.setAttribute("data-idx", String(idx));
-      btn.setAttribute("aria-label", dish.fullName);
+      var el = document.createElement("div");
+      el.className = "fd-dish";
+      el.setAttribute("data-idx", String(idx));
+      el.setAttribute("aria-hidden", "true");
       var img = document.createElement("img");
       img.className = "fd-dish-img";
       img.src = dish.dishSrc;
       img.alt = "";
       img.draggable = false;
-      btn.appendChild(img);
-      dishesLayer.appendChild(btn);
-      dishEls.push(btn);
-
-      var pi = document.createElement("button");
-      pi.type = "button";
-      pi.className = "fd-pop-item";
-      pi.setAttribute("role", "menuitem");
-      pi.innerHTML =
-        '<span class="fd-pop-dot" style="background:' +
-        dish.bg +
-        ";border-color:" +
-        dish.ink +
-        '"></span>' +
-        "<span>" +
-        dish.fullName +
-        "</span>" +
-        '<span class="fd-pop-idx">0' +
-        (idx + 1) +
-        "</span>";
-      pi.addEventListener("click", function () {
-        setMenuOpen(false);
-        stepToDish(idx);
-      });
-      popListEl.appendChild(pi);
-      popItems.push(pi);
+      el.appendChild(img);
+      dishesLayer.appendChild(el);
+      dishEls.push(el);
     });
 
     var propEls = PROPS.map(function (prop) {
@@ -367,66 +366,337 @@
       return wrap;
     });
 
-    /* ---------- Localization Sync ---------- */
-    function syncLocale() {
-      var lang = getLang();
-      eyebrowEl.textContent = DATA.t(lang, "eyebrow");
-      ctaEl.textContent = DATA.t(lang, "cta");
-      backHomeBtn.setAttribute("aria-label", DATA.t(lang, "backHome"));
-      menuBtn.setAttribute("aria-label", DATA.t(lang, "menuLabel"));
-      popHeadEl.textContent = DATA.t(lang, "menuTitle");
-      pauseBtn.textContent = userPaused ? DATA.t(lang, "play") : DATA.t(lang, "pause");
-      popAsmBtn.textContent = DATA.t(lang, "cta");
+    /* ---------- Build 4 Reusable Editorial Beat Cards (Zero Buttons) ---------- */
+    var beatNodes = [];
+    for (var bi = 0; bi < 4; bi++) {
+      var art = document.createElement("article");
+      art.className = "fd-beat " + (bi % 2 === 0 ? "is-left" : "is-right");
+      var kicker = document.createElement("p");
+      kicker.className = "fd-beat-kicker";
+      var h2 = document.createElement("h2");
+      h2.className = "fd-beat-title";
+      var body = document.createElement("p");
+      body.className = "fd-beat-body";
+      var tags = document.createElement("div");
+      tags.className = "fd-beat-tags";
+      tags.hidden = true;
+      var backHint = document.createElement("div");
+      backHint.className = "fd-beat-backhint";
+      backHint.hidden = true;
 
-      asmBackBtn.setAttribute("aria-label", DATA.t(lang, "backCarousel"));
-      asmPrevBtn.setAttribute("aria-label", DATA.t(lang, "prevDish"));
-      asmNextBtn.setAttribute("aria-label", DATA.t(lang, "nextDish"));
-      asmReplayIconBtn.setAttribute("aria-label", DATA.t(lang, "replay"));
-      asmReplayLbl.textContent = DATA.t(lang, "replay");
-      asmBackLbl.textContent = DATA.t(lang, "backCarousel");
+      art.appendChild(kicker);
+      art.appendChild(h2);
+      art.appendChild(body);
+      art.appendChild(tags);
+      art.appendChild(backHint);
+      beatsHost.appendChild(art);
 
-      var hint = DATA.t(lang, "assembleHint");
-      dishEls.forEach(function (btn, idx) {
-        btn.setAttribute("aria-label", DISHES[idx].fullName + " — " + hint);
-      });
-
-      if (mode === "assembly") {
-        var d = DISHES[asmDishIdx];
-        asmStoryEl.textContent = DATA.getDishStory(d, lang);
-        d.ingredients.forEach(function (ing, i) {
-          if (asmChipNodes[i]) {
-            asmChipNodes[i].textContent = DATA.getIngLabel(ing, lang);
-          }
-        });
-      }
-    }
-
-    function syncMenuActive() {
-      var active = ((Math.round(curP) % 5) + 5) % 5;
-      popItems.forEach(function (el, i) {
-        el.classList.toggle("is-active", i === active);
+      beatNodes.push({
+        el: art,
+        kicker: kicker,
+        title: h2,
+        body: body,
+        tags: tags,
+        backHint: backHint,
       });
     }
 
-    function setMenuOpen(open) {
-      var wasOpen = menuOpen;
-      menuOpen = !!open;
-      popoverEl.classList.toggle("is-open", menuOpen);
-      popoverEl.setAttribute("aria-hidden", menuOpen ? "false" : "true");
-      popoverEl.inert = !menuOpen;
-      menuBtn.setAttribute("aria-expanded", menuOpen ? "true" : "false");
-      if (menuOpen) {
-        syncMenuActive();
-      } else if (wasOpen && popoverEl.contains(document.activeElement)) {
-        menuBtn.focus({ preventScroll: true });
-      }
-    }
-
+    /* ---------- Theme & Localization Sync ---------- */
     function setThemeColors(bgCss, inkCss) {
       stage.style.setProperty("--fd-bg", bgCss);
       stage.style.setProperty("--fd-ink", inkCss);
       pg.style.setProperty("--fd-bg", bgCss);
       pg.style.setProperty("--fd-ink", inkCss);
+    }
+
+    function setStoryBackdrop(dish) {
+      stage.style.setProperty("--fd-vid-bg", dish.videoBg);
+      stage.style.setProperty("--fd-vid-bg-bottom", dish.videoBgBottom);
+    }
+
+    function renderBeatContents(dishIdx) {
+      var dish = DISHES[dishIdx];
+      var lang = getLang();
+      storyIdxEl.textContent = pad2(dishIdx + 1) + " / 05";
+      storyDishEl.textContent = dish.fullName;
+
+      for (var i = 0; i < 4; i++) {
+        var b = dish.beats[i];
+        var node = beatNodes[i];
+        var txt = DATA.getBeatText(b, lang);
+        node.el.classList.toggle("is-left", b.side !== "right");
+        node.el.classList.toggle("is-right", b.side === "right");
+        if (!txt) continue;
+
+        node.kicker.textContent = txt.kicker;
+        node.title.textContent = txt.title;
+        node.body.textContent = txt.body;
+
+        if (txt.tags && txt.tags.length) {
+          node.tags.hidden = false;
+          node.tags.innerHTML = "";
+          for (var ti = 0; ti < txt.tags.length; ti++) {
+            var sp = document.createElement("span");
+            sp.className = "fd-beat-tag";
+            sp.textContent = txt.tags[ti];
+            node.tags.appendChild(sp);
+          }
+        } else {
+          node.tags.hidden = true;
+          node.tags.innerHTML = "";
+        }
+
+        if (i === 3) {
+          node.backHint.hidden = false;
+          node.backHint.textContent = "↑  " + DATA.t(lang, "backTopHint");
+        } else {
+          node.backHint.hidden = true;
+        }
+      }
+    }
+
+    function syncLocale() {
+      var lang = getLang();
+      homeLbl.textContent = DATA.t(lang, "homeLabel");
+      homeBtn.setAttribute("aria-label", DATA.t(lang, "backHome"));
+      eyebrowEl.textContent = DATA.t(lang, "eyebrow");
+      dragCueEl.textContent = "←  " + DATA.t(lang, "dragCue") + "  →";
+      scrollCueEl.textContent = DATA.t(lang, "scrollCue");
+      srHintEl.textContent = DATA.t(lang, "turntableHint");
+      storySec.setAttribute("aria-label", DATA.t(lang, "storyRegion"));
+      renderBeatContents(activeDishIdx);
+    }
+
+    /* ---------- Progressive Coarse-First WebP Frame Loader ---------- */
+    function ensureCache(slug) {
+      if (!frameCaches[slug]) frameCaches[slug] = {};
+      if (!frameLoading[slug]) frameLoading[slug] = {};
+      return frameCaches[slug];
+    }
+
+    function loadSingleFrame(dish, idx) {
+      var slug = dish.slug;
+      var cache = ensureCache(slug);
+      if (cache[idx] || frameLoading[slug][idx]) return Promise.resolve(cache[idx] || null);
+      frameLoading[slug][idx] = true;
+      var url = dish.framesDir + "/" + pad2(idx) + ".webp";
+      return preloadImage(url).then(function (img) {
+        delete frameLoading[slug][idx];
+        if (img) {
+          cache[idx] = img;
+          // Live-upgrade canvas if this frame belongs to active dish
+          if (!disposed && DISHES[activeDishIdx].slug === slug) {
+            lastDrawnKey = "";
+            drawVideoCanvas(drawnFrame);
+          }
+        }
+        return img;
+      });
+    }
+
+    function prioritizeDishFrames(dishIdx) {
+      var dish = DISHES[dishIdx];
+      var myGen = ++loadGen;
+      var cache = ensureCache(dish.slug);
+      var queue = [];
+      for (var i = 0; i < FRAME_ORDER.length; i++) {
+        var fIdx = FRAME_ORDER[i];
+        if (!cache[fIdx] && !frameLoading[dish.slug][fIdx]) {
+          queue.push(fIdx);
+        }
+      }
+      if (!queue.length) return;
+
+      var cursor = 0;
+      var CONCURRENCY = 6;
+
+      function worker() {
+        if (disposed || myGen !== loadGen) return;
+        if (cursor >= queue.length) return;
+        var nextIdx = queue[cursor++];
+        loadSingleFrame(dish, nextIdx).then(worker);
+      }
+
+      for (var w = 0; w < Math.min(CONCURRENCY, queue.length); w++) {
+        worker();
+      }
+    }
+
+    function activateDishForStory(newIdx) {
+      var idx = mod5(newIdx);
+      if (idx === activeDishIdx && lastDrawnKey !== "") return;
+      activeDishIdx = idx;
+      var dish = DISHES[idx];
+      setStoryBackdrop(dish);
+      renderBeatContents(idx);
+      lastDrawnKey = "";
+      prioritizeDishFrames(idx);
+      drawVideoCanvas(drawnFrame);
+      updateBeatsAndProgress(rawProgress);
+    }
+
+    /* ---------- HiDPI Canvas Video Drawing & Smart Framing ---------- */
+    function resizeVideoCanvas() {
+      var rect = vidCanvas.getBoundingClientRect();
+      var w = Math.max(1, Math.round(rect.width || stage.clientWidth || window.innerWidth));
+      var h = Math.max(1, Math.round(rect.height || stage.clientHeight || window.innerHeight));
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (w === canvasW && h === canvasH && dpr === canvasDpr) return;
+      canvasW = w;
+      canvasH = h;
+      canvasDpr = dpr;
+      vidCanvas.width = Math.round(w * dpr);
+      vidCanvas.height = Math.round(h * dpr);
+      lastDrawnKey = "";
+      drawVideoCanvas(drawnFrame);
+    }
+
+    function drawVideoCanvas(frameFloat) {
+      if (!vidCtx || canvasW <= 0 || canvasH <= 0) return;
+      var dish = DISHES[activeDishIdx];
+      var cache = frameCaches[dish.slug];
+
+      var wantedIdx;
+      if (isReduced()) {
+        wantedIdx = rawProgress < 0.24 ? 0 : rawProgress < 0.52 ? 24 : rawProgress < 0.77 ? 48 : 71;
+      } else {
+        wantedIdx = clamp(Math.round(frameFloat), 0, FRAME_COUNT - 1);
+      }
+
+      var bestIdx = nearestLoadedFrame(cache, wantedIdx, FRAME_COUNT);
+      var key = dish.slug + ":" + bestIdx + ":" + canvasW + "x" + canvasH;
+      if (key === lastDrawnKey) return;
+      lastDrawnKey = key;
+
+      var ctx = vidCtx;
+      ctx.save();
+      ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
+
+      // Studio-matched seamless vertical backdrop gradient
+      var bgGrad = ctx.createLinearGradient(0, 0, 0, canvasH);
+      bgGrad.addColorStop(0, dish.videoBg);
+      bgGrad.addColorStop(1, dish.videoBgBottom);
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, canvasW, canvasH);
+
+      var img = bestIdx >= 0 && cache ? cache[bestIdx] : null;
+      if (img && img.naturalWidth > 0) {
+        var iw = img.naturalWidth;
+        var ih = img.naturalHeight;
+        var isPortrait = canvasW / canvasH < 0.9;
+
+        if (isPortrait) {
+          // Keep full centered bowl uncropped & lifted above bottom frosted card
+          var dw = canvasW * 1.48;
+          var dh = dw * (ih / iw);
+          var maxH = canvasH * 0.62;
+          if (dh > maxH) {
+            dh = maxH;
+            dw = dh * (iw / ih);
+          }
+          var dx = (canvasW - dw) * 0.5;
+          var dy = canvasH * 0.41 - dh * 0.5;
+
+          // Edge-pixel studio extension:
+          // - Top stretches the full clean studio wall row (zero seam)
+          // - Bottom stretches the shadow-free outer table corner + soft shadow fade
+          if (dy > 0) {
+            ctx.drawImage(img, 0, 0, iw, 8, dx, 0, dw, dy + 2);
+          }
+          var bottomY = dy + dh;
+          if (bottomY < canvasH) {
+            ctx.drawImage(img, 4, ih - 8, 20, 8, 0, bottomY - 2, canvasW, canvasH - bottomY + 4);
+          }
+          ctx.drawImage(img, dx, dy, dw, dh);
+          if (bottomY < canvasH) {
+            var bFeather = Math.max(22, dh * 0.1);
+            var botGrad = ctx.createLinearGradient(0, bottomY - bFeather, 0, bottomY + 2);
+            botGrad.addColorStop(0, "rgba(0,0,0,0)");
+            botGrad.addColorStop(1, dish.videoBgBottom);
+            ctx.fillStyle = botGrad;
+            ctx.fillRect(0, bottomY - bFeather, canvasW, bFeather + 4);
+          }
+        } else {
+          // Full-bleed centered cover for landscape desktop & tablets
+          var scale = Math.max(canvasW / iw, canvasH / ih);
+          var cw = iw * scale;
+          var ch = ih * scale;
+          var cx = (canvasW - cw) * 0.5;
+          var cy = (canvasH - ch) * 0.5;
+          ctx.drawImage(img, cx, cy, cw, ch);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    /* ---------- 4-Beat Editorial Choreography & Progress Hairline ---------- */
+    function updateBeatsAndProgress(progress) {
+      var p = clamp(progress, 0, 1);
+      progressFillEl.style.transform = "scaleX(" + p.toFixed(4) + ")";
+
+      var dish = DISHES[activeDishIdx];
+      for (var i = 0; i < 4; i++) {
+        var b = dish.beats[i];
+        var op = beatOpacity(p, b.start, b.end);
+        var el = beatNodes[i].el;
+        el.style.opacity = op.toFixed(3);
+        var dy = (1 - op) * 18;
+        el.style.transform = "translate3d(0, " + dy.toFixed(2) + "px, 0)";
+      }
+    }
+
+    /* ---------- Damped Scroll-Scrub Loop (Auto-Sleeps When Settled) ---------- */
+    function computeScrollProgress() {
+      var st = stage.scrollTop || 0;
+      var span = Math.max(1, geom.storySpan);
+      return clamp((st - geom.storyTop) / span, 0, 1);
+    }
+
+    function tickScrub() {
+      if (disposed) {
+        scrubRaf = 0;
+        return;
+      }
+      if (isReduced()) {
+        drawnFrame = targetFrame;
+        drawVideoCanvas(drawnFrame);
+        scrubRaf = 0;
+        return;
+      }
+      var diff = targetFrame - drawnFrame;
+      if (Math.abs(diff) < 0.015) {
+        drawnFrame = targetFrame;
+        drawVideoCanvas(drawnFrame);
+        scrubRaf = 0;
+        return;
+      }
+      drawnFrame += diff * 0.22;
+      drawVideoCanvas(drawnFrame);
+      scrubRaf = requestAnimationFrame(tickScrub);
+    }
+
+    function onStageScroll() {
+      if (disposed) return;
+      var st = stage.scrollTop || 0;
+
+      // Pause auto-rotation when scrolled down; resume if user hasn't dragged and returns to top
+      if (st >= 30) {
+        if (!manualAnim && !drag) stopAct1Loop();
+      } else if (!userInteracted && !isReduced() && !act1Raf) {
+        startAct1Loop();
+      }
+
+      rawProgress = computeScrollProgress();
+      targetFrame = rawProgress * (FRAME_COUNT - 1);
+      updateBeatsAndProgress(rawProgress);
+
+      if (isReduced()) {
+        drawnFrame = targetFrame;
+        drawVideoCanvas(drawnFrame);
+      } else if (!scrubRaf) {
+        scrubRaf = requestAnimationFrame(tickScrub);
+      }
     }
 
     /* ---------- Act 1 Layout & Title Fit ---------- */
@@ -465,12 +735,12 @@
       var bowlY, copyTop, titleTop;
 
       if (isPortrait) {
-        var stackH = big + 22 + 138 + 20 + 50;
-        var top = 82;
-        var avail = hs - 70 - top;
-        bowlY = top + Math.max(0, (avail - stackH) * 0.45) + big / 2;
-        copyTop = bowlY + big / 2 + 22;
-        titleTop = copyTop + 158;
+        var stackH = big + 20 + 144 + 16 + 50;
+        var top = 74;
+        var avail = hs - 64 - top;
+        bowlY = top + Math.max(0, (avail - stackH) * 0.44) + big / 2;
+        copyTop = bowlY + big / 2 + 20;
+        titleTop = copyTop + 144;
       } else {
         bowlY = 418;
         copyTop = 455;
@@ -483,6 +753,10 @@
       var cx = stageW / 2;
       var cy = bowlY - R;
       var D = (2 * R) / RING.band;
+
+      var heroH = heroSec.offsetHeight || H;
+      var storyTop = storySec.offsetTop || heroH;
+      var storySpan = Math.max(1, (storySec.offsetHeight || H * 3.6) - H);
 
       geom = {
         u: u,
@@ -497,9 +771,12 @@
         D: D,
         copyTop: copyTop,
         titleTop: titleTop,
+        heroH: heroH,
+        storyTop: storyTop,
+        storySpan: storySpan,
       };
 
-      // Configure Marble Ring background & CSS radial mask
+      // Configure Marble Ring background & radial cutout mask
       var k = D / (2 * RING.ro);
       var dPx = D * u;
       var riPx = (D / 2) * (RING.ri / RING.ro) * u;
@@ -526,7 +803,7 @@
       ringEl.style.maskImage = maskGrad;
       ringEl.style.webkitMaskImage = maskGrad;
 
-      // Expanded Ring Shadow (+28u container) so outer blur feather NEVER clips
+      // Expanded Ring Shadow (+28u) so outer blur feather never clips
       var shPad = 14;
       var shD = (D + shPad * 2) * u;
       ringShadowEl.style.width = shD.toFixed(2) + "px";
@@ -587,6 +864,9 @@
 
       fitTitle();
       renderAct1Frame(curP, null);
+      resizeVideoCanvas();
+      rawProgress = computeScrollProgress();
+      updateBeatsAndProgress(rawProgress);
     }
 
     /* ---------- Act 1 Render Frame ---------- */
@@ -612,7 +892,6 @@
       var big = geom.big;
       var small = geom.small;
 
-      // Interpolate bg & ink + flavour swap
       var fromIdx, toIdx, t;
       if (colorPair) {
         fromIdx = colorPair.fromIdx;
@@ -620,7 +899,7 @@
         t = colorPair.t;
       } else {
         var base = Math.floor(p);
-        fromIdx = ((base % 5) + 5) % 5;
+        fromIdx = mod5(base);
         toIdx = (fromIdx + 1) % 5;
         t = p - base;
       }
@@ -683,28 +962,42 @@
     }
 
     function stepToDish(targetIdx) {
-      var idx = ((targetIdx % 5) + 5) % 5;
-      var curIdx = ((Math.round(curP) % 5) + 5) % 5;
+      var idx = mod5(targetIdx);
+      var curIdx = mod5(Math.round(curP));
       if (idx === curIdx && !manualAnim) {
-        phaseStart = performance.now();
+        activateDishForStory(idx);
         return;
       }
       var diff = wrapDiff(idx, curP);
-      var fromP = curP;
-      var toP = curP + diff;
-      var now = performance.now();
       manualAnim = {
-        fromP: fromP,
-        toP: toP,
+        fromP: curP,
+        toP: curP + diff,
         fromIdx: curIdx,
         toIdx: idx,
-        start: now,
-        dur: isReduced() ? 1 : 500,
+        start: performance.now(),
+        dur: isReduced() ? 1 : 440,
       };
+      activateDishForStory(idx);
+      startAct1Loop();
+    }
+
+    function animateSnapTo(targetInt) {
+      var idx = mod5(targetInt);
+      var fromIdx = mod5(Math.round(curP));
+      manualAnim = {
+        fromP: curP,
+        toP: targetInt,
+        fromIdx: fromIdx,
+        toIdx: idx,
+        start: performance.now(),
+        dur: isReduced() ? 1 : 360,
+      };
+      activateDishForStory(idx);
+      startAct1Loop();
     }
 
     function tickAct1(now) {
-      if (disposed || mode !== "carousel") {
+      if (disposed) {
         act1Raf = 0;
         return;
       }
@@ -715,11 +1008,16 @@
       var dt = now - lastFrame;
       lastFrame = now;
 
-      // Tab-gap protection (>250ms pushes phaseStart forward so no multi-step jump)
       var gap = clampGap(dt);
       if (gap > 0) {
         phaseStart += gap;
         if (manualAnim) manualAnim.start += gap;
+      }
+
+      if (drag && drag.mode === "horiz") {
+        // Driven directly by pointermove
+        act1Raf = 0;
+        return;
       }
 
       if (manualAnim) {
@@ -730,7 +1028,12 @@
           manualAnim = null;
           phaseStart = now;
           renderAct1Frame(curP, null);
-          syncMenuActive();
+          activateDishForStory(step);
+          // Sleep cleanly when user has manually selected a dish or reduced motion
+          if (userInteracted || isReduced() || (stage.scrollTop || 0) >= 30) {
+            act1Raf = 0;
+            return;
+          }
         } else {
           var eased = isReduced() ? 1 : easeTurn(raw);
           curP = manualAnim.fromP + (manualAnim.toP - manualAnim.fromP) * eased;
@@ -740,19 +1043,19 @@
             t: eased,
           });
         }
-      } else if (userPaused || hoverPaused || menuOpen) {
-        // Freeze phase clock cleanly while paused or hovering interactive controls
-        phaseStart += dt;
+      } else if (userInteracted || isReduced() || (stage.scrollTop || 0) >= 30) {
+        // Zero idle CPU once user takes control or scrolls down
+        act1Raf = 0;
+        return;
       } else {
-        var reduced = isReduced();
-        var HOLD = reduced ? 3000 : 1400;
-        var TURN = reduced ? 1 : 500;
+        var HOLD = 2400;
+        var TURN = 550;
         var e = now - phaseStart;
         if (e < HOLD) {
           curP = step;
           renderAct1Frame(curP, null);
         } else if (e < HOLD + TURN) {
-          var t = reduced ? 1 : easeTurn((e - HOLD) / TURN);
+          var t = easeTurn((e - HOLD) / TURN);
           curP = step + t;
           renderAct1Frame(curP, null);
         } else {
@@ -760,7 +1063,7 @@
           phaseStart += HOLD + TURN;
           curP = step;
           renderAct1Frame(curP, null);
-          syncMenuActive();
+          activateDishForStory(step);
         }
       }
 
@@ -768,7 +1071,7 @@
     }
 
     function startAct1Loop() {
-      if (disposed || mode !== "carousel" || act1Raf) return;
+      if (disposed || act1Raf) return;
       lastFrame = performance.now();
       phaseStart = lastFrame;
       act1Raf = requestAnimationFrame(tickAct1);
@@ -781,878 +1084,154 @@
       }
     }
 
-    /* ========================================================================
-       ACT 2 — Hybrid Gravity Drop + Real-Time Canvas 2D Fluid & Steam Engine
-       ======================================================================== */
-    function clearAsmTimers() {
-      for (var i = 0; i < asmTimers.length; i++) clearTimeout(asmTimers[i]);
-      asmTimers.length = 0;
+    /* ---------- Direct Pointer/Touch Drag on Marble Lazy-Susan ---------- */
+    function getDragPxPerStep() {
+      return geom.isPortrait ? 175 : 290;
     }
 
-    function stopAct2Loop() {
-      if (asmRaf) {
-        cancelAnimationFrame(asmRaf);
-        asmRaf = 0;
-      }
-      clearAsmTimers();
-    }
+    function onHeroPointerDown(e) {
+      if (disposed) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (e.target && e.target.closest && e.target.closest("#fdHomeBtn")) return;
 
-    function syncFluidCanvasSize(canvas) {
-      var w = canvas.clientWidth || 400;
-      var h = canvas.clientHeight || 460;
-      var dpr = Math.min(2, window.devicePixelRatio || 1);
-      var pw = Math.round(w * dpr);
-      var ph = Math.round(h * dpr);
-      if (canvas.width !== pw || canvas.height !== ph) {
-        canvas.width = pw;
-        canvas.height = ph;
-      }
-      var ctx = canvas.getContext("2d");
-      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { ctx: ctx, w: w, h: h };
-    }
+      var sideEl = e.target && e.target.closest ? e.target.closest(".fd-dish.is-side") : null;
+      var tapDishIdx = sideEl ? parseInt(sideEl.getAttribute("data-idx"), 10) : -1;
 
-    // Convert platter normalized coordinates (0..1) into the expanded fluid canvas (-12%..+12%, -32%..+12%)
-    function toCanvasXY(px, py, cw, ch) {
-      return {
-        x: ((0.12 + px) / 1.24) * cw,
-        y: ((0.32 + py) / 1.44) * ch,
-        unit: cw / 1.24,
+      drag = {
+        id: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        lastX: e.clientX,
+        lastT: performance.now(),
+        startP: curP,
+        vx: 0,
+        mode: "pending",
+        tapDishIdx: isNaN(tapDishIdx) ? -1 : tapDishIdx,
       };
     }
 
-    function spawnRipple(px, py, color, maxRFrac) {
-      if (asmRipples.length > 14) asmRipples.shift();
-      asmRipples.push({
-        px: px,
-        py: py,
-        r: 0.02,
-        maxR: maxRFrac || 0.24,
-        alpha: 0.62,
-        color: color,
-      });
-    }
+    function onHeroPointerMove(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.startX;
+      var dy = e.clientY - drag.startY;
 
-    function spawnDroplets(px, py, color, count) {
-      for (var i = 0; i < count; i++) {
-        var ang = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-        var spd = 0.08 + Math.random() * 0.14;
-        asmDroplets.push({
-          px: px,
-          py: py,
-          vx: Math.cos(ang) * spd,
-          vy: Math.sin(ang) * spd - 0.04,
-          r: 2.2 + Math.random() * 3.8,
-          alpha: 0.92,
-          color: color,
-        });
-      }
-    }
-
-    function initSteamPool() {
-      asmSteam = [];
-      for (var i = 0; i < 9; i++) {
-        asmSteam.push({
-          xOff: (Math.random() - 0.5) * 0.34,
-          yOff: (Math.random() - 0.5) * 0.18,
-          phase: (i / 9) * Math.PI * 2,
-          age: Math.random(),
-          speed: 0.22 + Math.random() * 0.12,
-          radius: 0.055 + Math.random() * 0.045,
-        });
-      }
-    }
-
-    function drawPourStream(ctx, tx, ty, unit, pourT, fluid) {
-      // Pouring stream enters smoothly from y=0 down to (tx, ty), then retracts cleanly at tail
-      var headT = clamp(pourT / 0.26, 0, 1);
-      var tailT = pourT > 0.72 ? clamp((pourT - 0.72) / 0.28, 0, 1) : 0;
-      if (tailT >= 1) return;
-
-      var yStart = tailT * ty;
-      var yEnd = easeOutCubic(headT) * ty;
-      var sway = Math.sin(pourT * Math.PI * 5) * unit * 0.012;
-      var baseWidth =
-        fluid.kind === "broth"
-          ? unit * 0.048
-          : fluid.kind === "curry" || fluid.kind === "marinara"
-            ? unit * 0.044
-            : unit * 0.026;
-      var thickness = baseWidth * (1 - tailT * 0.75);
-
-      ctx.save();
-      ctx.lineCap = "round";
-
-      // Main viscous ribbon
-      ctx.beginPath();
-      ctx.moveTo(tx + sway * 0.4, yStart);
-      ctx.quadraticCurveTo(tx + sway, (yStart + yEnd) * 0.5, tx, yEnd);
-      ctx.strokeStyle = fluid.fillColor;
-      ctx.lineWidth = thickness;
-      ctx.stroke();
-
-      // Deep core shadow edge
-      ctx.beginPath();
-      ctx.moveTo(tx + thickness * 0.16, yStart);
-      ctx.quadraticCurveTo(
-        tx + sway + thickness * 0.16,
-        (yStart + yEnd) * 0.5,
-        tx + thickness * 0.12,
-        yEnd
-      );
-      ctx.strokeStyle = fluid.deepColor;
-      ctx.lineWidth = Math.max(1.5, thickness * 0.26);
-      ctx.globalAlpha = 0.55;
-      ctx.stroke();
-
-      // Glossy specular highlight streak
-      ctx.beginPath();
-      ctx.moveTo(tx - thickness * 0.22, yStart);
-      ctx.quadraticCurveTo(
-        tx + sway - thickness * 0.22,
-        (yStart + yEnd) * 0.5,
-        tx - thickness * 0.16,
-        yEnd
-      );
-      ctx.strokeStyle = fluid.highlightColor || "#ffffff";
-      ctx.lineWidth = Math.max(1.5, thickness * 0.24);
-      ctx.globalAlpha = 0.72;
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    function drawFluidUnder(dish, elapsedMs, isStatic) {
-      var info = syncFluidCanvasSize(fluidUnderCanvas);
-      var ctx = info.ctx;
-      if (!ctx) return;
-      ctx.clearRect(0, 0, info.w, info.h);
-
-      var fluid = dish.fluid;
-      if (fluid.layer !== "under") return;
-
-      var center = toCanvasXY(0.5, 0.5, info.w, info.h);
-      var target = toCanvasXY(fluid.targetX, fluid.targetY, info.w, info.h);
-      var unit = center.unit;
-      var basinR = (fluid.basinR || 0.345) * unit;
-
-      var pourT = isStatic ? 1 : clamp((elapsedMs - fluid.startMs) / fluid.durationMs, 0, 1);
-      if (pourT <= 0) return;
-
-      var fillFrac = isStatic ? 1 : easeOutCubic(clamp((pourT - 0.12) / 0.76, 0, 1));
-
-      ctx.save();
-      // Clip cleanly inside circular bowl basin
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, basinR, 0, Math.PI * 2);
-      ctx.clip();
-
-      if (fluid.kind === "broth") {
-        // Creamy Tonkotsu broth expanding smoothly from center
-        var curR = Math.max(4, basinR * 1.04 * fillFrac);
-        var grad = ctx.createRadialGradient(
-          target.x - curR * 0.15,
-          target.y - curR * 0.15,
-          curR * 0.06,
-          center.x,
-          center.y,
-          curR
-        );
-        grad.addColorStop(0, fluid.highlightColor);
-        grad.addColorStop(0.55, fluid.fillColor);
-        grad.addColorStop(0.92, fluid.deepColor);
-        grad.addColorStop(1, fluid.deepColor);
-
-        ctx.beginPath();
-        ctx.arc(target.x, target.y, curR, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        // Subtle inner-wall meniscus shadow so broth looks deep inside the ceramic bowl
-        var rimGrad = ctx.createRadialGradient(
-          center.x,
-          center.y,
-          basinR * 0.72,
-          center.x,
-          center.y,
-          basinR
-        );
-        rimGrad.addColorStop(0, "rgba(40, 22, 8, 0)");
-        rimGrad.addColorStop(1, "rgba(32, 18, 8, 0.24)");
-        ctx.fillStyle = rimGrad;
-        ctx.fillRect(center.x - basinR, center.y - basinR, basinR * 2, basinR * 2);
-
-        // Shimmering golden tare oil droplets floating on tonkotsu surface
-        if (fillFrac > 0.35) {
-          var oilA = clamp((fillFrac - 0.35) / 0.5, 0, 1) * 0.58;
-          ctx.fillStyle = fluid.oilColor;
-          ctx.globalAlpha = oilA;
-          for (var d = 0; d < 14; d++) {
-            var a = d * 2.39996 + (isStatic ? 0 : elapsedMs * 0.00012);
-            var dist = (0.28 + ((d * 37) % 58) / 100) * curR * 0.9;
-            var ox = center.x + Math.cos(a) * dist;
-            var oy = center.y + Math.sin(a) * dist;
-            var or = (2.2 + (d % 4) * 1.6) * (unit / 420);
-            ctx.beginPath();
-            ctx.ellipse(ox, oy, or * 1.25, or, a, 0, Math.PI * 2);
-            ctx.fill();
+      if (drag.mode === "pending") {
+        if (Math.hypot(dx, dy) < 8) return;
+        if (Math.abs(dx) >= Math.abs(dy) * 1.15) {
+          drag.mode = "horiz";
+          userInteracted = true;
+          manualAnim = null;
+          stopAct1Loop();
+          heroSec.classList.add("is-dragging");
+          try {
+            heroSec.setPointerCapture(drag.id);
+          } catch (_) {
+            /* ignore unsupported capture */
           }
-          ctx.globalAlpha = 1;
-        }
-      } else if (fluid.kind === "curry") {
-        // Thick velvety Japanese curry blooming in lower-right crescent under the curry cutout
-        var cr = Math.max(4, unit * 0.25 * fillFrac);
-        var cGrad = ctx.createRadialGradient(
-          target.x - cr * 0.2,
-          target.y - cr * 0.2,
-          cr * 0.08,
-          target.x,
-          target.y,
-          cr
-        );
-        cGrad.addColorStop(0, fluid.highlightColor);
-        cGrad.addColorStop(0.6, fluid.fillColor);
-        cGrad.addColorStop(1, fluid.deepColor);
-        ctx.beginPath();
-        ctx.ellipse(target.x, target.y, cr * 1.12, cr * 0.96, 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = cGrad;
-        ctx.globalAlpha = 0.85;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-
-      // Draw active liquid surface ripples clipped to basin
-      for (var i = 0; i < asmRipples.length; i++) {
-        var rp = asmRipples[i];
-        var rPos = toCanvasXY(rp.px, rp.py, info.w, info.h);
-        ctx.beginPath();
-        ctx.arc(rPos.x, rPos.y, rp.r * unit, 0, Math.PI * 2);
-        ctx.strokeStyle = rp.color || "rgba(255,255,255,0.6)";
-        ctx.lineWidth = Math.max(1.2, 2.2 * (unit / 420));
-        ctx.globalAlpha = rp.alpha;
-        ctx.stroke();
-      }
-
-      ctx.restore();
-    }
-
-    function drawFluidOver(dish, elapsedMs, dtSec, isStatic) {
-      var info = syncFluidCanvasSize(fluidOverCanvas);
-      var ctx = info.ctx;
-      if (!ctx) return;
-      ctx.clearRect(0, 0, info.w, info.h);
-
-      var fluid = dish.fluid;
-      var target = toCanvasXY(fluid.targetX, fluid.targetY, info.w, info.h);
-      var unit = target.unit;
-      var pourT = isStatic ? 1 : clamp((elapsedMs - fluid.startMs) / fluid.durationMs, 0, 1);
-
-      // 1. Active pouring stream from above the plate (all pouring dishes except chili splash)
-      if (!isStatic && pourT > 0 && pourT < 1 && fluid.kind !== "chili") {
-        drawPourStream(ctx, target.x, target.y, unit, pourT, fluid);
-      }
-
-      // 2. Persistent organic chef-style glossy demi-glace drizzle across grilled steak (sweeping across upper & lower slices around center butter)
-      if (fluid.kind === "glaze" && pourT > 0.18) {
-        var gProg = isStatic ? 1 : easeOutCubic(clamp((pourT - 0.18) / 0.72, 0, 1));
-        ctx.save();
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        var pStart = toCanvasXY(0.62, 0.35, info.w, info.h);
-        var pEnd = toCanvasXY(0.41, 0.66, info.w, info.h);
-        var segs = 26;
-        var maxSeg = Math.max(1, Math.floor(segs * gProg));
-        for (var k = 0; k < maxSeg; k++) {
-          var t0 = k / segs;
-          var t1 = (k + 1) / segs;
-          // Gently break/thin slightly across center butter pat (0.40..0.56) so yellow herb butter stays hero
-          var overButter = t0 > 0.38 && t0 < 0.56;
-          var x0 = pStart.x + (pEnd.x - pStart.x) * t0 + Math.sin(t0 * Math.PI * 2.2) * unit * 0.02;
-          var y0 = pStart.y + (pEnd.y - pStart.y) * t0;
-          var x1 = pStart.x + (pEnd.x - pStart.x) * t1 + Math.sin(t1 * Math.PI * 2.2) * unit * 0.02;
-          var y1 = pStart.y + (pEnd.y - pStart.y) * t1;
-          var taper = (Math.sin(t0 * Math.PI) * 0.68 + 0.25) * (overButter ? 0.35 : 1);
-
-          ctx.beginPath();
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
-          ctx.strokeStyle = fluid.fillColor;
-          ctx.lineWidth = unit * 0.026 * taper;
-          ctx.globalAlpha = overButter ? 0.26 : 0.74;
-          ctx.stroke();
-
-          if (!overButter) {
-            ctx.beginPath();
-            ctx.moveTo(x0 - unit * 0.004, y0 - unit * 0.003);
-            ctx.lineTo(x1 - unit * 0.004, y1 - unit * 0.003);
-            ctx.strokeStyle = fluid.highlightColor;
-            ctx.lineWidth = Math.max(1.2, unit * 0.007 * taper);
-            ctx.globalAlpha = 0.42;
-            ctx.stroke();
-          }
-        }
-        ctx.restore();
-      }
-
-      // 3. Expanding ripples for over-layer sauces (marinara, chili, glaze)
-      if (!isStatic && fluid.layer === "over") {
-        for (var r = 0; r < asmRipples.length; r++) {
-          var rp = asmRipples[r];
-          var rPos = toCanvasXY(rp.px, rp.py, info.w, info.h);
-          ctx.beginPath();
-          ctx.arc(rPos.x, rPos.y, rp.r * unit, 0, Math.PI * 2);
-          ctx.strokeStyle = rp.color;
-          ctx.lineWidth = 2.2;
-          ctx.globalAlpha = rp.alpha;
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      // 4. Splash droplets (chili oil / broth / marinara impact droplets)
-      if (!isStatic && asmDroplets.length) {
-        for (var d = asmDroplets.length - 1; d >= 0; d--) {
-          var dr = asmDroplets[d];
-          dr.px += dr.vx * dtSec;
-          dr.py += dr.vy * dtSec;
-          dr.vx *= 0.94;
-          dr.vy *= 0.94;
-          dr.alpha -= dtSec * 1.45;
-          if (dr.alpha <= 0.02) {
-            asmDroplets.splice(d, 1);
-            continue;
-          }
-          var dp = toCanvasXY(dr.px, dr.py, info.w, info.h);
-          ctx.beginPath();
-          ctx.arc(dp.x, dp.y, dr.r * (unit / 420), 0, Math.PI * 2);
-          ctx.fillStyle = dr.color;
-          ctx.globalAlpha = clamp(dr.alpha, 0, 1);
-          ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      // 5. Soft rising steam wisps once assembly finishes (disabled under reduced motion)
-      var lastDrop = dish.ingredients[dish.ingredients.length - 1].delayMs + 380;
-      if (!isStatic && elapsedMs > lastDrop) {
-        var steamFade = clamp((elapsedMs - lastDrop) / 900, 0, 1);
-        var center = toCanvasXY(0.5, 0.46, info.w, info.h);
-        for (var s = 0; s < asmSteam.length; s++) {
-          var st = asmSteam[s];
-          st.age += dtSec * st.speed;
-          if (st.age >= 1) {
-            st.age -= 1;
-            st.xOff = (Math.random() - 0.5) * 0.34;
-          }
-          var sx = center.x + (st.xOff + Math.sin(st.age * Math.PI * 2 + st.phase) * 0.045) * unit;
-          var sy = center.y + st.yOff * unit - st.age * unit * 0.42;
-          var sr = st.radius * unit * (0.7 + st.age * 1.35);
-          var op = Math.sin(st.age * Math.PI) * 0.16 * steamFade;
-          if (op <= 0.005) continue;
-
-          var sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr);
-          sg.addColorStop(0, "rgba(255, 255, 255, " + op.toFixed(3) + ")");
-          sg.addColorStop(0.55, "rgba(255, 252, 246, " + (op * 0.45).toFixed(3) + ")");
-          sg.addColorStop(1, "rgba(255, 255, 255, 0)");
-          ctx.fillStyle = sg;
-          ctx.beginPath();
-          ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
-
-    function updateRipples(dtSec) {
-      for (var i = asmRipples.length - 1; i >= 0; i--) {
-        var rp = asmRipples[i];
-        rp.r += (rp.maxR - rp.r) * Math.min(1, dtSec * 3.8) + dtSec * 0.04;
-        rp.alpha -= dtSec * 0.85;
-        if (rp.alpha <= 0.015 || rp.r >= rp.maxR) {
-          asmRipples.splice(i, 1);
-        }
-      }
-    }
-
-    function bounceIngredient(idx) {
-      var node = asmIngNodes[idx];
-      var chip = asmChipNodes[idx];
-      if (!node || !node.landed) return;
-      node.el.classList.remove("is-pop");
-      void node.el.offsetWidth;
-      node.el.classList.add("is-pop");
-      if (chip) {
-        chip.classList.add("is-active");
-        asmTimers.push(
-          setTimeout(function () {
-            if (chip) chip.classList.remove("is-active");
-          }, 560)
-        );
-      }
-      var dish = DISHES[asmDishIdx];
-      var ing = dish.ingredients[idx];
-      if (ing && !isReduced()) {
-        spawnRipple(ing.x / 100, ing.y / 100, dish.fluid.highlightColor || "#fff", 0.22);
-      }
-    }
-
-    function tickAct2(now) {
-      if (disposed || mode !== "assembly") {
-        asmRaf = 0;
-        return;
-      }
-      if (!asmLast) asmLast = now;
-      var rawDt = now - asmLast;
-      asmLast = now;
-      var dt = Math.min(rawDt, 60);
-      var dtSec = dt * 0.001;
-      var elapsed = now - asmStart;
-      var dish = DISHES[asmDishIdx];
-
-      // Plate gentle landing (0..340ms)
-      var plateT = clamp(elapsed / 340, 0, 1);
-      var pEase = easeOutCubic(plateT);
-      var plateY = (1 - pEase) * 14;
-      var plateSc = 0.88 + 0.12 * pEase;
-      asmPlateEl.style.opacity = clamp(plateT * 1.4, 0, 1).toFixed(3);
-      asmPlateEl.style.transform =
-        "translate3d(0, " + plateY.toFixed(2) + "%, 0) scale(" + plateSc.toFixed(4) + ")";
-      if (plateT >= 0.45 && !platter3dEl.classList.contains("has-plate")) {
-        platter3dEl.classList.add("has-plate");
-      }
-
-      // Pour splash triggers
-      if (!dish._pourSplashed && elapsed >= dish.fluid.startMs + dish.fluid.durationMs * 0.22) {
-        dish._pourSplashed = true;
-        spawnRipple(
-          dish.fluid.targetX,
-          dish.fluid.targetY,
-          dish.fluid.highlightColor || "#fff",
-          0.32
-        );
-        spawnDroplets(
-          dish.fluid.targetX,
-          dish.fluid.targetY,
-          dish.fluid.oilColor || dish.fluid.fillColor,
-          dish.fluid.kind === "chili" ? 14 : 8
-        );
-      }
-
-      // Update each ingredient's Hybrid Gravity Drop physics
-      var DROP_DUR = 540;
-      for (var i = 0; i < asmIngNodes.length; i++) {
-        var n = asmIngNodes[i];
-        var ing = n.ing;
-        var local = elapsed - ing.delayMs;
-        if (local < 0) {
-          n.el.style.opacity = "0";
-          continue;
-        }
-        var u = clamp(local / DROP_DUR, 0, 1);
-        var curX, curY, scX, scY, curRot, op, shOp, shSc, shY;
-
-        if (u < 0.72) {
-          var f = u / 0.72;
-          // Cubic gravity acceleration: starts poised above, drops briskly into plate
-          var g = Math.pow(f, 2.15);
-          curX = ing.fromX * (1 - g);
-          curY = -128 * (1 - g);
-          var sc = 1.68 - 0.68 * g;
-          scX = sc;
-          scY = sc;
-          curRot = ing.fromRot + (ing.rot - ing.fromRot) * g;
-          op = clamp(f * 3.8, 0, 1);
-          shOp = 0.06 + 0.24 * g;
-          shSc = 1.5 - 0.5 * g;
-          shY = 44 * (1 - g) + 4;
         } else {
-          // Impact squash & damped elastic settle
-          var b = (u - 0.72) / 0.28;
-          var damp = Math.exp(-3.4 * b) * Math.sin(b * Math.PI * 2.1);
-          curX = 0;
-          curY = -Math.abs(damp) * 5.5;
-          scX = 1 + damp * 0.08;
-          scY = 1 - damp * 0.07;
-          curRot = ing.rot;
-          op = 1;
-          shOp = 0.3;
-          shSc = 1;
-          shY = 4;
-
-          if (!n.landed) {
-            n.landed = true;
-            if (asmChipNodes[i]) asmChipNodes[i].classList.add("is-landed");
-            spawnRipple(
-              ing.x / 100,
-              ing.y / 100,
-              dish.fluid.highlightColor || "rgba(255,255,255,0.65)",
-              0.2
-            );
-            if (dish.fluid.kind === "broth" && i <= 2) {
-              spawnDroplets(ing.x / 100, ing.y / 100, dish.fluid.fillColor, 5);
-            }
-          }
-        }
-
-        n.el.style.opacity = op.toFixed(3);
-        n.el.style.transform =
-          "translate3d(calc(-50% + " +
-          curX.toFixed(2) +
-          "%), calc(-50% + " +
-          curY.toFixed(2) +
-          "%), 0) rotate(" +
-          curRot.toFixed(2) +
-          "deg) scale(" +
-          scX.toFixed(4) +
-          ", " +
-          scY.toFixed(4) +
-          ")";
-        n.shadowEl.style.opacity = shOp.toFixed(3);
-        n.shadowEl.style.transform =
-          "translate3d(0, " + shY.toFixed(1) + "%, 0) scale(" + shSc.toFixed(3) + ")";
-      }
-
-      updateRipples(dtSec);
-      drawFluidUnder(dish, elapsed, false);
-      drawFluidOver(dish, elapsed, dtSec, false);
-
-      asmRaf = requestAnimationFrame(tickAct2);
-    }
-
-    function clearFluidCanvases() {
-      var uCtx = fluidUnderCanvas.getContext("2d");
-      if (uCtx) uCtx.clearRect(0, 0, fluidUnderCanvas.width, fluidUnderCanvas.height);
-      var oCtx = fluidOverCanvas.getContext("2d");
-      if (oCtx) oCtx.clearRect(0, 0, fluidOverCanvas.width, fluidOverCanvas.height);
-    }
-
-    function openAssembly(dishIdx) {
-      var idx = ((dishIdx % 5) + 5) % 5;
-      asmDishIdx = idx;
-      step = idx;
-      curP = idx;
-      manualAnim = null;
-      hoverPaused = false;
-      setMenuOpen(false);
-      stopAct1Loop();
-      stopAct2Loop();
-      clearFluidCanvases();
-
-      mode = "assembly";
-      var myToken = ++asmToken;
-      var dish = DISHES[idx];
-      var lang = getLang();
-
-      // Match page pastel palette to chosen dish
-      setThemeColors(dish.bg, dish.ink);
-      stage.classList.add("is-assembling");
-      heroEl.inert = true;
-      heroEl.setAttribute("aria-hidden", "true");
-      asmEl.classList.add("is-open");
-      asmEl.inert = false;
-      asmEl.setAttribute("aria-hidden", "false");
-      if (!asmEl.contains(document.activeElement)) {
-        asmBackBtn.focus({ preventScroll: true });
-      }
-
-      // Update header & story
-      asmCountEl.textContent = "0" + (idx + 1) + " / 05";
-      asmNameEl.textContent = dish.fullName;
-      asmStoryEl.textContent = DATA.getDishStory(dish, lang);
-
-      // Reset platter & chips
-      platter3dEl.classList.remove("has-plate");
-      asmPlateEl.src = dish.plateSrc;
-      asmPlateEl.style.opacity = "0";
-      asmIngsEl.innerHTML = "";
-      chipsEl.innerHTML = "";
-      asmIngNodes = [];
-      asmChipNodes = [];
-      asmRipples = [];
-      asmDroplets = [];
-      dish._pourSplashed = false;
-      initSteamPool();
-
-      dish.ingredients.forEach(function (ing, i) {
-        var wrap = document.createElement("div");
-        wrap.className = "fd-asm-ing";
-        wrap.style.left = ing.x + "%";
-        wrap.style.top = ing.y + "%";
-        wrap.style.width = ing.w + "%";
-        wrap.style.zIndex = String(ing.z);
-
-        var sh = document.createElement("div");
-        sh.className = "fd-ing-shadow";
-        wrap.appendChild(sh);
-
-        var img = document.createElement("img");
-        img.className = "fd-ing-img";
-        img.src = ing.src;
-        img.alt = "";
-        img.draggable = false;
-        wrap.appendChild(img);
-
-        asmIngsEl.appendChild(wrap);
-        asmIngNodes.push({ el: wrap, shadowEl: sh, ing: ing, landed: false });
-
-        var chip = document.createElement("button");
-        chip.type = "button";
-        chip.className = "fd-chip";
-        chip.textContent = DATA.getIngLabel(ing, lang);
-        chip.setAttribute("title", DATA.t(lang, "ingredientsHint"));
-        chip.addEventListener("click", function () {
-          bounceIngredient(i);
-        });
-        chipsEl.appendChild(chip);
-        asmChipNodes.push(chip);
-      });
-
-      // Preload plate + dish ingredients before firing drop clock so zero blank drops occur
-      var srcs = [dish.plateSrc].concat(
-        dish.ingredients.map(function (ing) {
-          return ing.src;
-        })
-      );
-      var preloadDone = Promise.all(srcs.map(preloadImage));
-      var timeoutFallback = new Promise(function (resolve) {
-        asmTimers.push(setTimeout(resolve, 1200));
-      });
-
-      Promise.race([preloadDone, timeoutFallback]).then(function () {
-        if (disposed || mode !== "assembly" || myToken !== asmToken) return;
-        if (isReduced()) {
-          // Instant static render under prefers-reduced-motion: reduce (0 continuous rAF)
-          platter3dEl.classList.add("has-plate");
-          asmPlateEl.style.opacity = "1";
-          asmPlateEl.style.transform = "translate3d(0,0,0) scale(1)";
-          asmIngNodes.forEach(function (n, i) {
-            n.landed = true;
-            n.el.style.opacity = "1";
-            n.el.style.transform =
-              "translate3d(-50%, -50%, 0) rotate(" + n.ing.rot + "deg) scale(1, 1)";
-            n.shadowEl.style.opacity = "0.28";
-            n.shadowEl.style.transform = "translate3d(0, 4%, 0) scale(1)";
-            if (asmChipNodes[i]) asmChipNodes[i].classList.add("is-landed");
-          });
-          drawFluidUnder(dish, 9999, true);
-          drawFluidOver(dish, 9999, 0, true);
+          // Vertical scroll gesture — release immediately so native scroll wins
+          drag = null;
           return;
         }
-        asmStart = performance.now();
-        asmLast = asmStart;
-        asmRaf = requestAnimationFrame(tickAct2);
-      });
+      }
+
+      if (drag.mode === "horiz") {
+        var now = performance.now();
+        var dtSec = Math.max(0.008, (now - drag.lastT) / 1000);
+        var instVx = (e.clientX - drag.lastX) / dtSec;
+        drag.vx = drag.vx * 0.45 + instVx * 0.55;
+        drag.lastX = e.clientX;
+        drag.lastT = now;
+
+        curP = drag.startP - dx / getDragPxPerStep();
+        renderAct1Frame(curP, null);
+
+        var nearest = mod5(Math.round(curP));
+        if (nearest !== activeDishIdx) {
+          activateDishForStory(nearest);
+        }
+      }
     }
 
-    function closeAssembly() {
-      if (mode !== "assembly") return;
-      stopAct2Loop();
-      clearFluidCanvases();
-      hoverPaused = false;
-      mode = "carousel";
-      stage.classList.remove("is-assembling");
-      asmEl.classList.remove("is-open");
-      asmEl.inert = true;
-      asmEl.setAttribute("aria-hidden", "true");
-      heroEl.inert = false;
-      heroEl.setAttribute("aria-hidden", "false");
-      renderAct1Frame(curP, null);
-      syncMenuActive();
-      ctaEl.focus({ preventScroll: true });
-      startAct1Loop();
+    function finishHeroDrag(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var cur = drag;
+      drag = null;
+      heroSec.classList.remove("is-dragging");
+      try {
+        if (heroSec.hasPointerCapture && heroSec.hasPointerCapture(cur.id)) {
+          heroSec.releasePointerCapture(cur.id);
+        }
+      } catch (_) {
+        /* ignore */
+      }
+
+      if (cur.mode === "horiz") {
+        var targetInt = snapTargetFromDrag(curP, cur.vx, getDragPxPerStep());
+        animateSnapTo(targetInt);
+      } else if (cur.mode === "pending" && cur.tapDishIdx >= 0) {
+        userInteracted = true;
+        stepToDish(cur.tapDishIdx);
+      }
     }
 
-    function closeFoodPage() {
-      var bk = pg.querySelector(".pgb > .bk");
-      if (bk) {
-        bk.click();
-      } else if (window.zkClosePage) {
-        window.zkClosePage();
+    function onHeroTouchMove(e) {
+      if (drag && drag.mode === "horiz" && e.cancelable) {
+        e.preventDefault();
       }
     }
 
     /* ---------- Event Bindings ---------- */
-    backHomeBtn.addEventListener("click", closeFoodPage);
-
-    menuBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      setMenuOpen(!menuOpen);
-    });
-
-    pauseBtn.addEventListener("click", function () {
-      userPaused = !userPaused;
-      syncLocale();
-      if (!userPaused) phaseStart = performance.now();
-    });
-
-    popAsmBtn.addEventListener("click", function () {
-      var active = ((Math.round(curP) % 5) + 5) % 5;
-      openAssembly(active);
-    });
-
-    ctaEl.addEventListener("click", function () {
-      var active = ((Math.round(curP) % 5) + 5) % 5;
-      openAssembly(active);
-    });
-
-    ctaEl.addEventListener("pointerenter", function (e) {
-      if (e.pointerType === "mouse") hoverPaused = true;
-    });
-    ctaEl.addEventListener("pointerleave", function () {
-      hoverPaused = false;
-    });
-
-    dishEls.forEach(function (btn, idx) {
-      btn.addEventListener("pointerenter", function (e) {
-        if (e.pointerType === "mouse" && btn.classList.contains("is-front")) hoverPaused = true;
-      });
-      btn.addEventListener("pointerleave", function () {
-        hoverPaused = false;
-      });
-      btn.addEventListener("click", function () {
-        if (menuOpen) {
-          setMenuOpen(false);
-          return;
-        }
-        var active = ((Math.round(curP) % 5) + 5) % 5;
-        if (idx === active) {
-          openAssembly(idx);
-        } else {
-          stepToDish(idx);
-        }
-      });
-    });
-
-    asmBackBtn.addEventListener("click", closeAssembly);
-    asmBackPill.addEventListener("click", closeAssembly);
-    asmReplayBtn.addEventListener("click", function () {
-      openAssembly(asmDishIdx);
-    });
-    asmReplayIconBtn.addEventListener("click", function () {
-      openAssembly(asmDishIdx);
-    });
-    asmPrevBtn.addEventListener("click", function () {
-      openAssembly((asmDishIdx + 4) % 5);
-    });
-    asmNextBtn.addEventListener("click", function () {
-      openAssembly((asmDishIdx + 1) % 5);
-    });
-
-    // Click outside popover closes it
-    function onStageClick(e) {
-      if (menuOpen && !popoverEl.contains(e.target) && !menuBtn.contains(e.target)) {
-        setMenuOpen(false);
-      }
+    function onHomeClick() {
+      var realBk = pg.querySelector(".pgb > .bk");
+      if (realBk) realBk.click();
     }
-    stage.addEventListener("click", onStageClick);
 
-    // Horizontal swipe on Act 1 / Act 2 switches dishes cleanly
-    var swipeX = 0;
-    var swipeY = 0;
-    var swipeTime = 0;
-    function onTouchStart(e) {
-      if (e.touches.length !== 1) return;
-      swipeX = e.touches[0].clientX;
-      swipeY = e.touches[0].clientY;
-      swipeTime = Date.now();
-    }
-    function onTouchEnd(e) {
-      if (!swipeTime || e.changedTouches.length !== 1) return;
-      var dx = e.changedTouches[0].clientX - swipeX;
-      var dy = e.changedTouches[0].clientY - swipeY;
-      var dt = Date.now() - swipeTime;
-      swipeTime = 0;
-      if (dt < 700 && Math.abs(dx) > 54 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-        var dir = dx < 0 ? 1 : -1;
-        if (mode === "carousel") {
-          stepToDish(nextStepTarget(curP, manualAnim, dir));
-        } else {
-          openAssembly((asmDishIdx + dir + 5) % 5);
-        }
-      }
-    }
-    stage.addEventListener("touchstart", onTouchStart, { passive: true });
-    stage.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    // Keyboard navigation scoped while .pg.p9 is open
     function onKeyDown(e) {
-      if (disposed || pg.hidden) return;
-      if (e.key === "ArrowRight") {
+      if (!pg.classList.contains("open")) return;
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         e.preventDefault();
-        if (mode === "carousel") stepToDish(nextStepTarget(curP, manualAnim, 1));
-        else openAssembly((asmDishIdx + 1) % 5);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (mode === "carousel") stepToDish(nextStepTarget(curP, manualAnim, -1));
-        else openAssembly((asmDishIdx + 4) % 5);
-      } else if (e.key === " " && mode === "carousel") {
-        if (e.target && (e.target.tagName === "BUTTON" || e.target.tagName === "A")) return;
-        e.preventDefault();
-        userPaused = !userPaused;
-        syncLocale();
-        if (!userPaused) phaseStart = performance.now();
-      } else if (e.key === "Enter" && mode === "carousel") {
-        if (e.target && (e.target.tagName === "BUTTON" || e.target.tagName === "A")) return;
-        e.preventDefault();
-        openAssembly(((Math.round(curP) % 5) + 5) % 5);
+        userInteracted = true;
+        var base = manualAnim ? manualAnim.toIdx : Math.round(curP);
+        stepToDish(mod5(base + (e.key === "ArrowRight" ? 1 : -1)));
       }
     }
-    window.addEventListener("keydown", onKeyDown);
-
-    // Escape hierarchy: Popover -> Act 2 -> Act 1 (false lets carousel.js close .pg.p9)
-    window.__zkFoodEscape = function () {
-      if (menuOpen) {
-        setMenuOpen(false);
-        return true;
-      }
-      if (mode === "assembly") {
-        closeAssembly();
-        return true;
-      }
-      return false;
-    };
 
     function onResize() {
       if (resizeRaf) return;
       resizeRaf = requestAnimationFrame(function () {
         resizeRaf = 0;
-        if (disposed) return;
-        updateLayout();
-        if (mode === "assembly" && isReduced()) {
-          var dish = DISHES[asmDishIdx];
-          drawFluidUnder(dish, 9999, true);
-          drawFluidOver(dish, 9999, 0, true);
-        }
-      });
-    }
-    window.addEventListener("resize", onResize);
-
-    // Live language observer
-    var langObs = null;
-    if (window.MutationObserver) {
-      langObs = new MutationObserver(syncLocale);
-      langObs.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ["lang"],
+        if (!disposed) updateLayout();
       });
     }
 
-    function onReducedChange() {
-      if (disposed) return;
-      if (mode === "assembly") openAssembly(asmDishIdx);
-    }
-    if (reduceMq && reduceMq.addEventListener) {
-      reduceMq.addEventListener("change", onReducedChange);
-    }
+    homeBtn.addEventListener("click", onHomeClick);
+    heroSec.addEventListener("pointerdown", onHeroPointerDown);
+    heroSec.addEventListener("pointermove", onHeroPointerMove);
+    heroSec.addEventListener("pointerup", finishHeroDrag);
+    heroSec.addEventListener("pointercancel", finishHeroDrag);
+    heroSec.addEventListener("touchmove", onHeroTouchMove, { passive: false });
+    stage.addEventListener("scroll", onStageScroll, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize, { passive: true });
 
-    /* ---------- Initial Load & Reveal ---------- */
-    heroEl.inert = false;
-    asmEl.inert = true;
-    popoverEl.inert = true;
+    var langObserver = new MutationObserver(syncLocale);
+    langObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang", "data-rtl"],
+    });
+
+    /* ---------- Boot & Preload ---------- */
     syncLocale();
-    syncMenuActive();
+    activateDishForStory(0);
+    stage.scrollTop = 0;
     updateLayout();
 
-    var act1Srcs = [RING.src]
+    // Move keyboard focus safely into Food without triggering an initial button focus ring
+    stage.focus({ preventScroll: true });
+
+    // Preload hero ring, dishes, props + frame 00 of all 5 dishes upfront (~75KB)
+    var heroAssets = [RING.src]
       .concat(
         DISHES.map(function (d) {
           return d.dishSrc;
@@ -1664,75 +1243,59 @@
         })
       );
 
-    var fontsReady =
-      document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-
-    function revealHero() {
-      if (disposed || heroEl.classList.contains("ready")) return;
-      updateLayout();
-      heroEl.classList.add("ready");
-      if (!stage.contains(document.activeElement)) {
-        backHomeBtn.focus({ preventScroll: true });
-      }
-      requestAnimationFrame(function () {
-        if (!disposed && mode === "carousel") startAct1Loop();
-      });
-    }
-
-    // Safety fallback so hero never stays hidden if fonts/images are slow
-    readyTimer = setTimeout(revealHero, 2500);
-
-    Promise.all([Promise.all(act1Srcs.map(preloadImage)), fontsReady]).then(function () {
-      clearTimeout(readyTimer);
-      revealHero();
+    DISHES.forEach(function (d) {
+      loadSingleFrame(d, 0);
     });
 
-    // Re-fit display wordmark once fonts settle even if safety timeout fired early
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () {
-        if (!disposed) fitTitle();
-      });
+    function revealHero() {
+      if (disposed || heroSec.classList.contains("ready")) return;
+      clearTimeout(readyTimer);
+      updateLayout();
+      heroSec.classList.add("ready");
+      if (!isReduced() && !userInteracted && (stage.scrollTop || 0) < 30) {
+        startAct1Loop();
+      }
     }
 
-    /* ---------- Deterministic Cleanup (0% Idle CPU/GPU) ---------- */
-    return function cleanup() {
+    Promise.all(
+      heroAssets
+        .map(preloadImage)
+        .concat([document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()])
+    ).then(revealHero);
+    readyTimer = setTimeout(revealHero, 2200);
+
+    /* ---------- Deterministic Zero-Leak Cleanup ---------- */
+    return function cleanupFood() {
       disposed = true;
+      loadGen++;
       stopAct1Loop();
-      stopAct2Loop();
+      if (scrubRaf) {
+        cancelAnimationFrame(scrubRaf);
+        scrubRaf = 0;
+      }
       clearTimeout(readyTimer);
       if (resizeRaf) {
         cancelAnimationFrame(resizeRaf);
         resizeRaf = 0;
       }
+
+      homeBtn.removeEventListener("click", onHomeClick);
+      heroSec.removeEventListener("pointerdown", onHeroPointerDown);
+      heroSec.removeEventListener("pointermove", onHeroPointerMove);
+      heroSec.removeEventListener("pointerup", finishHeroDrag);
+      heroSec.removeEventListener("pointercancel", finishHeroDrag);
+      heroSec.removeEventListener("touchmove", onHeroTouchMove);
+      stage.removeEventListener("scroll", onStageScroll);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("resize", onResize);
-      stage.removeEventListener("click", onStageClick);
-      stage.removeEventListener("touchstart", onTouchStart);
-      stage.removeEventListener("touchend", onTouchEnd);
-      if (langObs) langObs.disconnect();
-      if (reduceMq && reduceMq.removeEventListener) {
-        reduceMq.removeEventListener("change", onReducedChange);
-      }
-      if (window.__zkFoodEscape) delete window.__zkFoodEscape;
+      langObserver.disconnect();
+
       document.body.classList.remove("fd-active");
+      stage.innerHTML = "";
     };
   }
 
-  function register() {
-    if (window.ZK3D && typeof window.ZK3D.registerPage === "function") {
-      window.ZK3D.registerPage(9, mountFood);
-      return true;
-    }
-    return false;
-  }
-
-  if (!register()) {
-    window.addEventListener(
-      "DOMContentLoaded",
-      function () {
-        register();
-      },
-      { once: true }
-    );
+  if (window.ZK3D && typeof window.ZK3D.registerPage === "function") {
+    window.ZK3D.registerPage(9, mountFood);
   }
 })();
