@@ -1,0 +1,1040 @@
+/* ==========================================================================
+   css/food.css — Card #10: "Food" (TASTE LAB — Zikri's Favourite Food)
+   Strictly scoped under .pg.p9, body.fd-active, .card.foodphoto, and
+   html[data-rtl="1"] .pg.p9 (ZERO bleed into Home Wheel or Cards #0–#8).
+   ========================================================================== */
+
+.card.foodphoto {
+  background-color: #262930;
+}
+.card.foodphoto .portrait-img {
+  object-position: 50% 34%;
+}
+
+body.fd-active {
+  overflow: hidden;
+}
+
+/* ---------- Page p9 Fullscreen Isolation ---------- */
+.pg.p9,
+.pg.p9.open {
+  background: var(--fd-bg, #eed9c4);
+  color: var(--fd-ink, #322018);
+  overflow: hidden;
+  padding: 0;
+  font-family: "Archivo", "Inter Tight", "Noto Sans JP", "Noto Sans KR", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pg.p9 > .pgb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pg.p9 > .pgb > .bg,
+.pg.p9 > .pgb > .bk,
+.pg.p9 > .pgb > .pnav,
+.pg.p9 #zkBar {
+  display: none !important;
+}
+
+.pg.p9 .bd {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.pg.p9 *,
+.pg.p9 *::before,
+.pg.p9 *::after {
+  box-sizing: border-box;
+}
+
+.pg.p9 button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pg.p9 button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ---------- Stage Root & Design Unit (--u scoped to .fd-stage) ---------- */
+.pg.p9 .fd-stage {
+  --u: 1px;
+  --hs: 900;
+  --fd-bg: #eed9c4;
+  --fd-ink: #322018;
+  --copy-top: 455;
+  --title-top: 632;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--fd-bg);
+  color: var(--fd-ink);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+/* ---------- Shared Atmospheric Layers (Waves + Vignette) ---------- */
+.pg.p9 .fd-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 C 15 4, 30 4, 45 14 S 75 24, 90 14 S 112 6, 120 14' fill='none' stroke='rgba(30,20,50,0.16)' stroke-width='1.1'/%3E%3C/svg%3E");
+  background-size: calc(120 * var(--u)) calc(28 * var(--u));
+  background-repeat: repeat;
+}
+
+.pg.p9 .fd-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 45%,
+    transparent 55%,
+    rgba(20, 10, 40, 0.22) 100%
+  );
+}
+
+/* ==========================================================================
+   ACT 1 — Marble Lazy-Susan Hero (Exact Gelato Lab Fidelity)
+   ========================================================================== */
+.pg.p9 .fd-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition:
+    opacity 0.55s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pg.p9 .fd-hero.ready {
+  opacity: 1;
+}
+
+.pg.p9 .fd-stage.is-assembling .fd-hero {
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
+}
+
+.pg.p9 .fd-canvas-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: calc(1440 * var(--u));
+  height: calc(900 * var(--u));
+  transform: translate(-50%, -50%);
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-canvas-stage {
+  width: calc(390 * var(--u));
+  height: calc(var(--hs) * var(--u));
+}
+
+/* Marble Ring & Unclipped Expanded Shadow */
+.pg.p9 .fd-ring-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.pg.p9 .fd-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Giant Chunky Display Title ("TASTE LAB") behind Front Dish */
+.pg.p9 .fd-title {
+  position: absolute;
+  left: calc(190 * var(--u));
+  top: calc(632 * var(--u));
+  z-index: 3;
+  margin: 0;
+  font-family: "Dela Gothic One", "Anton", sans-serif;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--fd-ink);
+  pointer-events: none;
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-title {
+  left: 50%;
+  top: calc(var(--title-top) * var(--u));
+  transform: translateX(-50%);
+}
+
+/* 5 Bowls on Ring + Soft Contact Shadows */
+.pg.p9 .fd-dish-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(25, 12, 45, 0.3) 0%,
+    rgba(25, 12, 45, 0.14) 48%,
+    transparent 70%
+  );
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.pg.p9 .fd-dish {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  display: block;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.pg.p9 .fd-dish-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pg.p9 .fd-dish.is-front:hover .fd-dish-img,
+.pg.p9 .fd-dish.is-front:focus-visible .fd-dish-img {
+  transform: scale(1.032);
+}
+
+.pg.p9 .fd-dish.is-side:hover .fd-dish-img {
+  transform: scale(1.04);
+}
+
+.pg.p9 .fd-dish:not(.is-front):not(.is-side) {
+  pointer-events: none;
+}
+
+/* 5 Static Edge Table Props */
+.pg.p9 .fd-prop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  pointer-events: none;
+  transform-origin: center center;
+  filter: drop-shadow(0 calc(6 * var(--u)) calc(8 * var(--u)) rgba(25, 12, 45, 0.22));
+}
+
+.pg.p9 .fd-prop img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Left Copy Column (Desktop) / Centered Column (Portrait) */
+.pg.p9 .fd-eyebrow {
+  position: absolute;
+  left: calc(158 * var(--u));
+  top: calc(455 * var(--u));
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--u));
+  font-family: "Archivo", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: max(9px, calc(15 * var(--u)));
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fd-ink);
+  pointer-events: none;
+}
+
+.pg.p9 .fd-eyebrow::before,
+.pg.p9 .fd-eyebrow::after {
+  content: "";
+  display: block;
+  width: calc(64 * var(--u));
+  height: max(1px, calc(1.5 * var(--u)));
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.pg.p9 .fd-eyebrow::after {
+  margin-left: calc(-6 * var(--u));
+}
+
+.pg.p9 .fd-flavour {
+  position: absolute;
+  left: calc(190 * var(--u));
+  top: calc(497 * var(--u));
+  z-index: 6;
+  margin: 0;
+  font-family: "Archivo", "Inter Tight", sans-serif;
+  font-weight: 700;
+  font-size: max(11px, calc(21 * var(--u)));
+  line-height: 1.28;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fd-ink);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.pg.p9 .fd-cta {
+  position: absolute;
+  left: calc(190 * var(--u));
+  top: calc(572 * var(--u));
+  z-index: 6;
+  min-width: calc(156 * var(--u));
+  height: calc(50 * var(--u));
+  padding: 0 calc(20 * var(--u));
+  border: max(1.5px, calc(2 * var(--u))) solid var(--fd-ink);
+  border-radius: calc(8 * var(--u));
+  background: transparent;
+  color: var(--fd-ink);
+  font-family: "Archivo", "Inter Tight", sans-serif;
+  font-weight: 600;
+  font-size: max(9px, calc(13.5 * var(--u)));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.pg.p9 .fd-cta:hover,
+.pg.p9 .fd-cta:focus-visible {
+  background: var(--fd-ink);
+  color: var(--fd-bg);
+}
+
+.pg.p9 .fd-cta:active {
+  transform: scale(0.97);
+}
+
+/* Portrait Copy Overrides */
+.pg.p9 .fd-stage.is-portrait .fd-eyebrow {
+  left: 50%;
+  top: calc(var(--copy-top) * var(--u));
+  transform: translateX(-50%);
+  gap: calc(12 * var(--u));
+  font-size: max(9px, calc(12 * var(--u)));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-eyebrow::before,
+.pg.p9 .fd-stage.is-portrait .fd-eyebrow::after {
+  width: calc(40 * var(--u));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-flavour {
+  left: 0;
+  right: 0;
+  top: calc((var(--copy-top) + 30) * var(--u));
+  text-align: center;
+  font-size: max(11px, calc(17 * var(--u)));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-cta {
+  left: 50%;
+  top: calc((var(--copy-top) + 92) * var(--u));
+  transform: translateX(-50%);
+  min-width: calc(140 * var(--u));
+  height: calc(46 * var(--u));
+  padding: 0 calc(16 * var(--u));
+  font-size: max(9px, calc(12.5 * var(--u)));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-cta:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+/* ---------- Outlined Square Corner Buttons (Gelato Lab §5.2) ---------- */
+.pg.p9 .fd-nav-btn {
+  position: absolute;
+  top: calc(26 * var(--u));
+  z-index: 20;
+  width: max(38px, calc(60 * var(--u)));
+  height: max(38px, calc(60 * var(--u)));
+  border: max(1.25px, calc(1.5 * var(--u))) solid rgba(255, 255, 255, 0.58);
+  border-radius: calc(14 * var(--u));
+  background: rgba(25, 16, 12, 0.14);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.pg.p9 .fd-nav-btn svg {
+  width: max(18px, calc(24 * var(--u)));
+  height: max(18px, calc(24 * var(--u)));
+  display: block;
+}
+
+.pg.p9 .fd-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.pg.p9 .fd-nav-btn:active {
+  transform: scale(0.95);
+}
+
+.pg.p9 .fd-nav-back {
+  left: calc(40 * var(--u));
+}
+
+.pg.p9 .fd-nav-menu {
+  right: calc(40 * var(--u));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-nav-btn {
+  top: max(12px, calc(18 * var(--u)));
+  width: max(40px, calc(48 * var(--u)));
+  height: max(40px, calc(48 * var(--u)));
+  border-radius: calc(12 * var(--u));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-nav-btn svg {
+  width: max(18px, calc(21 * var(--u)));
+  height: max(18px, calc(21 * var(--u)));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-nav-back {
+  left: max(14px, calc(18 * var(--u)));
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-nav-menu {
+  right: max(14px, calc(18 * var(--u)));
+}
+
+/* ---------- Frosted Quick Dish Menu Popover ---------- */
+.pg.p9 .fd-popover {
+  position: absolute;
+  top: max(64px, calc(98 * var(--u)));
+  right: calc(40 * var(--u));
+  z-index: 25;
+  width: min(290px, calc(100vw - 32px));
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.9);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(30, 20, 15, 0.14);
+  box-shadow: 0 20px 44px rgba(20, 10, 25, 0.2);
+  color: #211814;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pg.p9 .fd-popover.is-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-popover {
+  top: max(68px, calc(76 * var(--u)));
+  right: max(14px, calc(18 * var(--u)));
+}
+
+.pg.p9 .fd-pop-head {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.62;
+  padding: 2px 6px 10px;
+  border-bottom: 1px solid rgba(30, 20, 15, 0.1);
+  margin-bottom: 8px;
+}
+
+.pg.p9 .fd-pop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pg.p9 .fd-pop-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #211814;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background-color 0.18s ease;
+}
+
+.pg.p9 .fd-pop-item:hover {
+  background: rgba(30, 20, 15, 0.07);
+}
+
+.pg.p9 .fd-pop-item.is-active {
+  background: rgba(30, 20, 15, 0.11);
+}
+
+.pg.p9 .fd-pop-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.pg.p9 .fd-pop-idx {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+
+.pg.p9 .fd-pop-foot {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(30, 20, 15, 0.1);
+  display: flex;
+  gap: 8px;
+}
+
+.pg.p9 .fd-pop-btn {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(30, 20, 15, 0.2);
+  background: rgba(255, 255, 255, 0.65);
+  color: #211814;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.pg.p9 .fd-pop-btn:hover {
+  background: #211814;
+  color: #fff;
+}
+
+/* ==========================================================================
+   ACT 2 — Hybrid Gravity Drop & Real-Time Fluid Assembly Stage
+   ========================================================================== */
+.pg.p9 .fd-asm {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(14px, 2.4vh, 26px) clamp(14px, 3vw, 40px) clamp(14px, 2.6vh, 26px);
+  opacity: 0;
+  transform: scale(1.03);
+  pointer-events: none;
+  transition:
+    opacity 0.36s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pg.p9 .fd-asm.is-open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Top Bar */
+.pg.p9 .fd-asm-topbar {
+  width: 100%;
+  max-width: 1360px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 5;
+}
+
+.pg.p9 .fd-asm-sqbtn {
+  width: clamp(38px, 4.4vw, 48px);
+  height: clamp(38px, 4.4vw, 48px);
+  border-radius: 12px;
+  border: 1.5px solid color-mix(in srgb, var(--fd-ink) 38%, transparent);
+  background: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--fd-ink);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.18s ease;
+}
+
+.pg.p9 .fd-asm-sqbtn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.pg.p9 .fd-asm-sqbtn:hover {
+  background: var(--fd-ink);
+  color: var(--fd-bg);
+}
+
+.pg.p9 .fd-asm-sqbtn:active {
+  transform: scale(0.94);
+}
+
+.pg.p9 .fd-asm-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--fd-ink) 20%, transparent);
+}
+
+.pg.p9 .fd-asm-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  opacity: 0.68;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pg.p9 .fd-asm-name {
+  font-family: "Dela Gothic One", "Archivo", sans-serif;
+  font-size: clamp(12px, 1.8vw, 18px);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pg.p9 .fd-asm-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Center 2.5D Hybrid Gravity Platter */
+.pg.p9 .fd-platter-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  perspective: 1200px;
+  min-height: 0;
+  padding-top: clamp(6px, 2vh, 22px);
+}
+
+.pg.p9 .fd-platter-3d {
+  position: relative;
+  width: min(72vw, 53vh, 490px);
+  height: min(72vw, 53vh, 490px);
+  transform: rotateX(14deg) translateY(3%);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.pg.p9 .fd-platter-shadow {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(25, 12, 35, 0.34) 0%,
+    rgba(25, 12, 35, 0.16) 52%,
+    transparent 74%
+  );
+  transform: translateY(7%) scale(1.06);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.pg.p9 .fd-platter-3d.has-plate .fd-platter-shadow {
+  opacity: 1;
+}
+
+.pg.p9 .fd-asm-plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.pg.p9 .fd-asm-fluid-under,
+.pg.p9 .fd-asm-fluid-over {
+  position: absolute;
+  left: -12%;
+  top: -32%;
+  width: 124%;
+  height: 144%;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+}
+
+.pg.p9 .fd-asm-fluid-under {
+  z-index: 2;
+}
+
+.pg.p9 .fd-asm-fluid-over {
+  z-index: 12;
+}
+
+/* Individual Dropping Ingredient Layers */
+.pg.p9 .fd-asm-ings {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.pg.p9 .fd-asm-ing {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.pg.p9 .fd-ing-shadow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 10, 15, 0.36) 0%, transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
+.pg.p9 .fd-ing-img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
+}
+
+.pg.p9 .fd-asm-ing.is-pop .fd-ing-img {
+  animation: fd-ing-bounce 0.56s cubic-bezier(0.22, 1.25, 0.36, 1);
+}
+
+@keyframes fd-ing-bounce {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
+  }
+  35% {
+    transform: translateY(-18%) scale(1.14);
+    filter: drop-shadow(0 18px 20px rgba(20, 10, 18, 0.32));
+  }
+  68% {
+    transform: translateY(2%) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 8px rgba(20, 10, 18, 0.22));
+  }
+}
+
+/* Bottom Story + Interactive Ingredient Chips + Replay Bar */
+.pg.p9 .fd-asm-panel {
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.3vh, 13px);
+  z-index: 5;
+  text-align: center;
+}
+
+.pg.p9 .fd-asm-story {
+  margin: 0;
+  max-width: 62ch;
+  font-size: clamp(12px, 1.45vw, 15px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--fd-ink);
+  opacity: 0.88;
+}
+
+.pg.p9 .fd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  max-width: 100%;
+}
+
+.pg.p9 .fd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1.25px solid color-mix(in srgb, var(--fd-ink) 28%, transparent);
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--fd-ink);
+  font-size: clamp(10.5px, 1.15vw, 12.5px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.42;
+  transform: translateY(5px);
+  transition:
+    opacity 0.28s ease,
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.pg.p9 .fd-chip::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.pg.p9 .fd-chip.is-landed {
+  opacity: 1;
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.pg.p9 .fd-chip.is-landed::before {
+  opacity: 1;
+}
+
+.pg.p9 .fd-chip.is-landed:hover,
+.pg.p9 .fd-chip.is-active {
+  background: var(--fd-ink);
+  color: var(--fd-bg);
+}
+
+.pg.p9 .fd-asm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pg.p9 .fd-asm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--fd-ink);
+  background: transparent;
+  color: var(--fd-ink);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.18s ease;
+}
+
+.pg.p9 .fd-asm-pill.is-primary {
+  background: var(--fd-ink);
+  color: var(--fd-bg);
+}
+
+.pg.p9 .fd-asm-pill:hover {
+  background: var(--fd-ink);
+  color: var(--fd-bg);
+}
+
+.pg.p9 .fd-asm-pill.is-primary:hover {
+  opacity: 0.88;
+}
+
+.pg.p9 .fd-asm-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Portrait & Short Landscape Responsive Polish for Act 2 ---------- */
+.pg.p9 .fd-stage.is-portrait .fd-platter-3d {
+  width: min(76vw, 40vh, 360px);
+  height: min(76vw, 40vh, 360px);
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-asm-badge {
+  padding: 6px 12px;
+  gap: 7px;
+}
+
+@media (max-width: 480px) {
+  .pg.p9 #fdAsmReplayIcon {
+    display: none;
+  }
+
+  .pg.p9 .fd-asm-topbar {
+    gap: 8px;
+  }
+
+  .pg.p9 .fd-asm-controls {
+    gap: 6px;
+  }
+
+  .pg.p9 .fd-asm-badge {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+}
+
+.pg.p9 .fd-stage.is-portrait .fd-asm-story {
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .pg.p9 .fd-asm {
+    padding: 8px 18px 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: 6px 18px;
+  }
+
+  .pg.p9 .fd-asm-topbar {
+    grid-column: 1 / -1;
+  }
+
+  .pg.p9 .fd-platter-wrap {
+    padding-top: 0;
+  }
+
+  .pg.p9 .fd-platter-3d {
+    width: min(38vw, 72vh, 320px);
+    height: min(38vw, 72vh, 320px);
+  }
+
+  .pg.p9 .fd-asm-panel {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .pg.p9 .fd-chips {
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- RTL Support (Arabic) ---------- */
+html[data-rtl="1"] .pg.p9 .fd-asm-topbar,
+html[data-rtl="1"] .pg.p9 .fd-asm-panel,
+html[data-rtl="1"] .pg.p9 .fd-popover {
+  direction: rtl;
+}
+
+html[data-rtl="1"] .pg.p9 .fd-nav-back svg,
+html[data-rtl="1"] .pg.p9 .fd-asm-back svg {
+  transform: scaleX(-1);
+}
+
+html[data-rtl="1"] .pg.p9 .fd-pop-item {
+  text-align: right;
+}
+
+html[data-rtl="1"] .pg.p9 .fd-pop-idx {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* ---------- Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pg.p9 .fd-hero,
+  .pg.p9 .fd-asm,
+  .pg.p9 .fd-chip,
+  .pg.p9 .fd-popover,
+  .pg.p9 .fd-dish-img {
+    transition: none !important;
+  }
+
+  .pg.p9 .fd-asm-ing.is-pop .fd-ing-img {
+    animation: none !important;
+  }
+}

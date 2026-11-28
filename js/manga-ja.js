@@ -24,7 +24,7 @@
   var pageNumEl = null;
   var chMkEl = null;
   var sfxEl = null;
-  var totalCards = 9;
+  var totalCards = 10;
   var lastIdx = 2;
   var prevSyncedIdx = -1;
   var snapTimer = null;
@@ -40,9 +40,7 @@
   }
 
   function prefersReduced() {
-    return !!(
-      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
   function markOwnDecorative(el) {
@@ -155,7 +153,7 @@
       if (!pageNumEl) {
         pageNumEl = markOwnDecorative(document.createElement("span"));
         pageNumEl.className = "mg-page-num";
-        pageNumEl.textContent = "第 03 / 09 話";
+        pageNumEl.textContent = "第 03 / 10 話";
         stage.appendChild(pageNumEl);
       }
     }
@@ -198,7 +196,7 @@
   }
 
   function syncCard(idx) {
-    var safeTotal = totalCards > 0 ? totalCards : 9;
+    var safeTotal = totalCards > 0 ? totalCards : 10;
     var clamped = ((idx % safeTotal) + safeTotal) % safeTotal;
     lastIdx = clamped;
 

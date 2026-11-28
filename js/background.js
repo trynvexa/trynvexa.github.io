@@ -19,6 +19,7 @@
     { a: [138, 168, 142], b: [198, 142, 110] }, // 6: Kontak
     { a: [128, 148, 184], b: [178, 102, 98] }, // 7: Fashion
     { a: [62, 108, 198], b: [220, 156, 98] }, // 8: Rumah (Dream House)
+    { a: [224, 132, 86], b: [208, 168, 112] }, // 9: Food (Taste Lab)
   ];
 
   var FALLBACK_IMGS = [
@@ -31,6 +32,7 @@
     "assets/images/card-contact.webp",
     "assets/runway/card-runway.webp",
     "assets/estate/card-home.webp",
+    "assets/food/card/card-food.webp",
   ];
 
   window.__zkBgSetCard = function (idx, cardEl) {

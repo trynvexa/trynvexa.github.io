@@ -4636,12 +4636,15 @@
       ["Buka kartu Keahlian", "Keahlian"],
       ["Buka kartu Kontak", "Kontak"],
       ["Buka kartu Fashion", "Fashion"],
+      ["Buka kartu Food", "Food"],
     ].forEach(function (p) {
       var nm =
         T[p[1]] ||
         (p[1] === "Fashion"
           ? ["Fashion", "时尚", "Moda", "أزياء", "Mode", "ファッション", "패션"]
-          : T["Skill"]);
+          : p[1] === "Food"
+            ? ["Food", "美食", "Comida", "طعام", "Cuisine", "グルメ", "음식"]
+            : T["Skill"]);
       if (!nm) return;
       T[p[0]] = LN.map(function (l, i) {
         return OPEN[l].replace("{}", nm[i]);
@@ -4650,6 +4653,8 @@
     Object.assign(T, {
       Fashion: ["Fashion", "时尚", "Moda", "أزياء", "Mode", "ファッション", "패션"],
       FASHION: ["FASHION", "时尚", "MODA", "أزياء", "MODE", "ファッション", "패션"],
+      Food: ["Food", "美食", "Comida", "طعام", "Cuisine", "グルメ", "음식"],
+      FOOD: ["FOOD", "美食", "COMIDA", "طعام", "CUISINE", "グルメ", "음식"],
     });
     /* Isian Korea: nama pada paragraf Perkenalan ditulis dengan Hangul */
     Object.keys(H).forEach(function (k) {
@@ -4786,6 +4791,15 @@
       "Mode — Archive de style de Zikri",
       "ファッション — Zikri のスタイルアーカイブ",
       "패션 — 지크리의 스타일 아카이브",
+    ],
+    "Food — Menu Favorit Zikri": [
+      "Food — Zikri’s Favourite Dishes",
+      "美食 — Zikri 的最爱料理",
+      "Comida — Platos favoritos de Zikri",
+      "طعام — أطباق زكري المفضلة",
+      "Cuisine — Plats favoris de Zikri",
+      "グルメ — Zikri のお気に入り料理",
+      "음식 — 지크리의 최애 메뉴",
     ],
     "Lagi sering": [
       "On repeat",

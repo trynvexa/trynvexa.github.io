@@ -1452,6 +1452,10 @@
       "",
       '<div class="dh-stage" data-i18n-own="1" role="region" aria-label="The Grand Estate — Zikri’s Dream House"></div>',
     ],
+    [
+      "",
+      '<div class="fd-stage" data-i18n-own="1" role="region" aria-label="Taste Lab — Zikri’s Favourite Food"></div>',
+    ],
   ];
 
   /* ===== FX Transitions State ===== */
@@ -2038,6 +2042,7 @@
       if (cur === 5 && window.__zkDepotEscape && window.__zkDepotEscape()) return;
       if (cur === 7 && window.__zkRunwayEscape && window.__zkRunwayEscape()) return;
       if (cur === 8 && window.__zkHouseEscape && window.__zkHouseEscape()) return;
+      if (cur === 9 && window.__zkFoodEscape && window.__zkFoodEscape()) return;
       closePage();
     }
   });
@@ -2053,7 +2058,7 @@
 
   document.addEventListener("keydown", function (e) {
     if (cur >= 0) {
-      if (cur === 2 || cur === 5 || cur === 7 || cur === 8) return; // Halaman Me, Proyek Depot, Fashion & Dream House menangani navigasi sendiri
+      if (cur === 2 || cur === 5 || cur === 7 || cur === 8 || cur === 9) return; // Halaman Me, Proyek Depot, Fashion, Dream House & Food menangani navigasi sendiri
       if (e.key === "ArrowLeft") switchPage(-1);
       if (e.key === "ArrowRight") switchPage(1);
       return;
@@ -2477,7 +2482,7 @@
   if (!pg) return;
   var touchOnly = window.matchMedia("(hover: none) and (pointer: coarse)");
   var BLOCK =
-    '.me-dive,.dp-stage,.dp-modal,.dh-stage,.dh-drawer,.ge-drawer,.ge-float-card,.ge-fp-modal,.ge-dpad,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,dialog,input,textarea,select,button,a';
+    '.me-dive,.dp-stage,.dp-modal,.dh-stage,.dh-drawer,.ge-drawer,.ge-float-card,.ge-fp-modal,.ge-dpad,.fd-stage,runway-section,.rw,.rw-sheet-host,#rw-bag-dialog,.rw-site-header,.gstage,.lbx,[class*="rail"],.sk-panel,.sk-card,.sk-orbit,.sk-stage,.sk-ic,.sk-cats,dialog,input,textarea,select,button,a';
   var x0 = 0,
     y0 = 0,
     t0 = 0,
